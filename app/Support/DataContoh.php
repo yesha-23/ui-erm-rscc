@@ -21,12 +21,37 @@ class DataContoh
     public static function kunjunganPerUnit(): array
     {
         return [
-            ['unit' => 'Klinik Penyakit Dalam', 'jumlah' => 44],
-            ['unit' => 'Klinik Syaraf',         'jumlah' => 29],
-            ['unit' => 'Klinik Gigi dan Mulut', 'jumlah' => 29],
-            ['unit' => 'Fisioterapi',           'jumlah' => 25],
-            ['unit' => 'Laboratorium',          'jumlah' => 24],
-            ['unit' => 'IGD',                   'jumlah' => 23],
+            ['unit' => 'Klinik Penyakit Dalam',     'jumlah' => 44],
+            ['unit' => 'Klinik Syaraf',             'jumlah' => 29],
+            ['unit' => 'Klinik Gigi dan Mulut',     'jumlah' => 29],
+            ['unit' => 'Fisioterapi',               'jumlah' => 25],
+            ['unit' => 'Laboratorium',              'jumlah' => 24],
+            ['unit' => 'IGD',                       'jumlah' => 23],
+            ['unit' => 'Klinik Mata',               'jumlah' => 23],
+            ['unit' => 'Klinik Kesehatan Jiwa',     'jumlah' => 20],
+            ['unit' => 'Terapi Wicara',             'jumlah' => 20],
+            ['unit' => 'Klinik Rehabilitasi Medik', 'jumlah' => 18],
+            ['unit' => 'Hemodialisa',               'jumlah' => 17],
+            ['unit' => 'Klinik Anak',               'jumlah' => 12],
+            ['unit' => 'Okupasi Terapi',            'jumlah' => 11],
+        ];
+    }
+
+    /**
+     * Pekerjaan yang belum selesai hari ini (tampil di Beranda).
+     * 'query' memakai nama tab di KonfigurasiUnit, jadi klik langsung membuka tab yang sesuai.
+     */
+    public static function tugas(): array
+    {
+        return [
+            ['label' => 'Pasien IGD belum close',          'jumlah' => 8, 'ikon' => 'bi-activity',
+             'route' => 'kunjungan.igd',   'query' => ['status' => 'belum_close']],
+            ['label' => 'BRM rawat jalan belum terisi',    'jumlah' => 3, 'ikon' => 'bi-file-earmark-medical',
+             'route' => 'kunjungan.rajal', 'query' => ['status' => 'brm']],
+            ['label' => 'BRM hemodialisa belum terisi',    'jumlah' => 3, 'ikon' => 'bi-droplet',
+             'route' => 'kunjungan.hd',    'query' => ['status' => 'brm']],
+            ['label' => 'Pasien rawat inap tanpa diagnosa', 'jumlah' => 2, 'ikon' => 'bi-clipboard2-x',
+             'route' => 'kunjungan.ranap', 'query' => ['status' => 'tanpa_diagnosa']],
         ];
     }
 
