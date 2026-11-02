@@ -1567,6 +1567,111 @@
     font-size: 22px;
 }
 
+/* ---------- Anti geser ke samping ---------- */
+.rs-content {
+    min-width: 0;
+}
+
+/* kolom konten boleh menyempit di dalam flex */
+.rs-body-app {
+    overflow-x: clip;
+}
+
+/* jaring pengaman terakhir */
+.rs-content img,
+.rs-content canvas {
+    max-width: 100%;
+}
+
+/* Tabel lebar: digulir di dalam kotaknya sendiri, halaman tetap diam */
+.rs-content .table-responsive {
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+    .rs-table-kartu {
+        min-width: 960px;
+    }
+
+    /* tidak diperas sampai teks patah 3 baris */
+}
+
+/* ---------- Tabel → kartu di HP ---------- */
+@media (max-width: 767.98px) {
+    .rs-table-kartu thead {
+        display: none;
+    }
+
+    .rs-table-kartu,
+    .rs-table-kartu tbody,
+    .rs-table-kartu tr,
+    .rs-table-kartu td {
+        display: block;
+        width: 100%;
+    }
+
+    .rs-table-kartu tr {
+        position: relative;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--rs-border);
+    }
+
+    .rs-table-kartu tr:last-child {
+        border-bottom: 0;
+    }
+
+    .rs-table-kartu td {
+        display: flex;
+        gap: 12px;
+        padding: 3px 0 !important;
+        border: 0 !important;
+        font-size: 13px;
+        background: transparent !important;
+    }
+
+    .rs-table-kartu td::before {
+        content: attr(data-label);
+        flex: 0 0 38%;
+        color: var(--rs-text-muted);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .rs-table-kartu td:not([data-label])::before {
+        content: none;
+    }
+
+    /* Baris judul kartu = nama pasien */
+    .rs-table-kartu .rs-td-utama {
+        margin-bottom: 6px;
+        padding-right: 120px !important;
+        /* ruang untuk tombol Buka */
+        font-size: 15px;
+    }
+
+    .rs-table-kartu .rs-td-utama::before {
+        content: none;
+    }
+
+    /* Tombol Buka + ⋯ di pojok kanan atas kartu */
+    .rs-table-kartu .rs-td-aksi {
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        width: auto;
+    }
+
+    .rs-table-kartu .rs-td-aksi::before {
+        content: none;
+    }
+
+    /* Filter: kotak tanggal boleh menyempit dan turun baris */
+    .rs-content input[type="date"] {
+        min-width: 0;
+        flex: 1 1 130px;
+    }
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {

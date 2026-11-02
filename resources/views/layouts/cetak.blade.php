@@ -14,18 +14,20 @@
     <div class="rs-print-toolbar no-print">
         <button type="button" class="rs-btn" data-rs-close>← Tutup</button>
         <span class="judul">@yield('title')</span>
-        <span class="hint">Kertas A4 · skala 100% · matikan "Header dan footer" di jendela cetak</span>
+        <span class="hint">Kertas A4 · skala 100% · margin "Default"</span>
         <button type="button" class="rs-btn rs-btn-primary" data-rs-print>🖨 Cetak</button>
     </div>
 
     <main class="rs-sheet">
         @if ($draf ?? false)
-            <div class="rs-watermark" aria-hidden="true">DRAF</div>
+            <div class="rs-watermark" aria-hidden="true"><span>DRAF</span></div>
         @endif
 
         <x-kop-surat />
 
-        @yield('content')
+        <div class="rs-isi">
+            @yield('content')
+        </div>
 
         <footer class="rs-sheet-foot">
             <span>No. RM {{ $pasien['no_rm'] ?? '-' }} · No. Reg {{ $pasien['no_reg'] ?? '-' }}</span>

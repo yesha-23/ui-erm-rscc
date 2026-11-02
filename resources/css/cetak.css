@@ -2,18 +2,25 @@
    Tampilan cetak A4 — hanya dipakai layouts/cetak.blade.php
    ========================================================= */
 :root {
-    --ink: #101828;
-    --ink-2: #344054;
-    --muted: #667085;
-    --line: #D0D5DD;
+    --ink: #1A1A1A;
+    --ink-2: #3D3D3D;
+    --muted: #6B7280;
+    --line: #BFC5CD;
+    --green: #157A4F;
+    /* hijau kop RS */
+    --soft: #EEF6F1;
     --primary: #2B6CB0;
+    /* biru aplikasi (tombol) */
     --primary-dark: #245A94;
-    --soft: #F2F6FB;
+    --serif: 'Times New Roman', Times, 'Liberation Serif', serif;
+    --sans: 'Plus Jakarta Sans', Arial, sans-serif;
 }
 
+/* Margin 0 → Chrome tidak bisa menaruh tanggal/URL di pojok kertas.
+   Jarak tepi diganti padding di .rs-sheet (diulang tiap halaman). */
 @page {
     size: A4;
-    margin: 16mm 18mm 18mm;
+    margin: 0;
 }
 
 * {
@@ -28,7 +35,7 @@ body {
 body.rs-print-body {
     background: #E9EDF2;
     color: var(--ink);
-    font: 11pt/1.55 'Plus Jakarta Sans', Arial, sans-serif;
+    font-family: var(--sans);
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
 }
@@ -43,7 +50,7 @@ body.rs-print-body {
     gap: 12px;
     padding: 10px 20px;
     background: #fff;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid #D0D5DD;
     box-shadow: 0 2px 8px rgba(16, 24, 40, .06);
     font-size: 14px;
 }
@@ -64,10 +71,10 @@ body.rs-print-body {
     gap: 6px;
     min-height: 38px;
     padding: 0 16px;
-    border: 1px solid var(--line);
+    border: 1px solid #D0D5DD;
     border-radius: 10px;
     background: #fff;
-    color: var(--ink-2);
+    color: #344054;
     font: inherit;
     font-weight: 600;
     text-decoration: none;
@@ -93,152 +100,180 @@ body.rs-print-body {
     outline-offset: 2px;
 }
 
-/* ---------- Kertas A4 di layar ---------- */
+/* ---------- Kertas A4 ---------- */
 .rs-sheet {
     position: relative;
+    isolation: isolate;
+    /* cap DRAF bisa di belakang teks */
     width: 210mm;
     min-height: 297mm;
     margin: 24px auto 48px;
-    padding: 16mm 18mm 26mm;
+    padding: 12mm 18mm 26mm 20mm;
+    /* atas kanan bawah kiri */
     background: #fff;
     box-shadow: 0 4px 24px rgba(16, 24, 40, .12);
-    overflow: hidden;
-}
-
-.rs-sheet>*:not(.rs-watermark) {
-    position: relative;
-    z-index: 1;
+    color: var(--ink);
+    font: 12pt/1.5 var(--serif);
+    -webkit-box-decoration-break: clone;
+    /* padding diulang di tiap halaman cetak */
+    box-decoration-break: clone;
 }
 
 /* ---------- Kop surat ---------- */
 .rs-kop {
-    display: flex;
+    position: relative;
+    display: grid;
+    grid-template-columns: 30mm 1fr;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 18px;
-    padding-bottom: 10px;
-    border-bottom: 3px double var(--ink);
+    column-gap: 5mm;
+    margin-bottom: 8mm;
+    padding-bottom: 2.5mm;
+    border-bottom: 3pt solid var(--ink-2);
+    /* garis tebal */
+}
+
+.rs-kop::after {
+    /* garis tipis di bawahnya */
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6pt;
+    border-top: .75pt solid var(--ink-2);
 }
 
 .rs-kop img {
-    width: 64px;
-    height: 64px;
-    object-fit: contain;
+    display: block;
+    width: 30mm;
+    height: auto;
 }
 
-.rs-kop-nama {
+.rs-kop p {
     margin: 0;
-    color: var(--primary);
-    font-size: 16pt;
-    font-weight: 800;
+}
+
+.rs-kop-teks {
+    color: var(--green);
+    font-family: var(--serif);
+}
+
+.rs-kop-pt {
+    font-size: 11pt;
+    font-weight: 700;
     letter-spacing: .02em;
     line-height: 1.2;
     text-transform: uppercase;
 }
 
+.rs-kop .rs-kop-nama {
+    margin: .5mm 0 1.5mm;
+    font-size: 20pt;
+    font-weight: 700;
+    letter-spacing: .01em;
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
 .rs-kop-alamat {
-    margin: 2px 0 0;
-    color: var(--ink-2);
-    font-size: 9pt;
+    font-size: 9.5pt;
     line-height: 1.45;
 }
 
-/* ---------- Judul & isi ---------- */
+.rs-kop-web {
+    text-decoration: underline;
+}
+
+/* ---------- Isi surat ---------- */
 .rs-print-title {
     margin: 0;
+    font: 700 13pt/1.3 var(--serif);
+    letter-spacing: .03em;
     text-align: center;
-    font-size: 13pt;
-    font-weight: 800;
-    letter-spacing: .04em;
     text-decoration: underline;
-    text-underline-offset: 4px;
+    text-underline-offset: 3px;
 }
 
 .rs-print-number {
-    margin: 2px 0 18px;
+    margin: 1mm 0 6mm;
+    font-size: 11pt;
     text-align: center;
-    color: var(--ink-2);
-    font-size: 10pt;
 }
 
-.rs-sheet p {
-    margin: 0 0 10px;
+.rs-isi>p {
+    margin: 0 0 3mm;
+    text-align: justify;
 }
 
-/* Baris "Label : isi" */
+.rs-kepada {
+    margin: 0 0 5mm;
+    line-height: 1.45;
+}
+
+/* Baris "Label : isi" — titik dua punya kolom sendiri */
 .rs-fields {
-    width: 100%;
-    margin: 0 0 12px;
+    width: calc(100% - 8mm);
+    margin: 0 0 3mm 8mm;
     border-collapse: collapse;
 }
 
-.rs-fields th {
-    width: 34%;
-    padding: 2px 8px 2px 0;
-    color: var(--ink-2);
-    font-weight: 500;
-    text-align: left;
-    vertical-align: top;
-}
-
+.rs-fields th,
 .rs-fields td {
-    padding: 2px 0;
+    padding: .6mm 0;
     vertical-align: top;
+    text-align: left;
 }
 
-.rs-fields td::before {
-    content: ':\00a0\00a0';
+.rs-fields th {
+    width: 48mm;
+    font-weight: 400;
 }
 
-.rs-fields-indent {
-    margin-left: 24px;
-    width: calc(100% - 24px);
+.rs-fields .sep {
+    width: 5mm;
+    text-align: center;
 }
 
-/* Identitas resume (2 kolom) */
+/* ---------- Resume medis ---------- */
 .rs-ident {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2px 24px;
-    margin: 0 0 14px;
-    padding: 10px 12px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    font-size: 10.5pt;
+    gap: 1mm 8mm;
+    margin: 0 0 5mm;
+    padding: 3mm 4mm;
+    border: .75pt solid var(--line);
+    font-size: 11pt;
 }
 
 .rs-ident div {
     display: flex;
-    gap: 6px;
+    gap: 2mm;
 }
 
 .rs-ident dt {
     flex: 0 0 32mm;
-    color: var(--ink-2);
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .rs-ident dd {
     margin: 0;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .rs-ident .is-alert dd {
     color: #B42318;
 }
 
-/* Tabel bergaris (resume) */
 .rs-section-table {
     width: 100%;
-    margin-bottom: 14px;
+    margin-bottom: 4mm;
     border-collapse: collapse;
-    font-size: 10.5pt;
+    font-size: 11pt;
 }
 
 .rs-section-table th,
 .rs-section-table td {
-    padding: 6px 8px;
-    border: 1px solid var(--line);
+    padding: 1.8mm 2.5mm;
+    border: .75pt solid var(--line);
     text-align: left;
     vertical-align: top;
 }
@@ -258,8 +293,8 @@ body.rs-print-body {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 10mm;
-    margin-top: 22px;
+    gap: 6mm;
+    margin-top: 8mm;
     break-inside: avoid;
 }
 
@@ -268,68 +303,71 @@ body.rs-print-body {
 }
 
 .rs-sign-box {
-    flex: 0 0 54mm;
+    flex: 0 1 58mm;
     text-align: center;
 }
 
-.rs-sign-date {
-    min-height: 1.55em;
-}
-
+.rs-sign-date,
 .rs-sign-role {
-    color: var(--ink-2);
-    font-size: 10pt;
+    min-height: 1.5em;
 }
 
 .rs-sign-space {
-    height: 22mm;
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 24mm;
     color: var(--muted);
-    font-size: 9pt;
+    font-size: 10pt;
     font-style: italic;
 }
 
 .rs-sign-name {
-    display: inline-block;
-    min-width: 50mm;
-    padding-top: 4px;
-    border-top: 1px solid var(--ink);
     font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.rs-sign-ket {
+    font-size: 10.5pt;
 }
 
 /* ---------- Kaki halaman ---------- */
 .rs-sheet-foot {
     position: absolute;
-    left: 18mm;
+    left: 20mm;
     right: 18mm;
     bottom: 10mm;
     display: flex;
     justify-content: space-between;
-    gap: 12px;
-    padding-top: 6px;
-    border-top: 1px solid var(--line);
+    gap: 4mm;
+    padding-top: 1.5mm;
+    border-top: .5pt solid var(--line);
     color: var(--muted);
-    font-size: 8pt;
+    font: 7.5pt/1.3 var(--sans);
 }
 
 /* ---------- Cap DRAF ---------- */
 .rs-watermark {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    z-index: 0;
-    transform: translate(-50%, -50%) rotate(-30deg);
-    color: rgba(180, 35, 24, .09);
-    font-size: 110pt;
-    font-weight: 800;
-    letter-spacing: .1em;
+    inset: 0;
+    z-index: -1;
+    /* di belakang teks, di atas kertas */
+    display: grid;
+    place-items: center;
+    overflow: hidden;
     pointer-events: none;
     user-select: none;
 }
 
-/* ---------- Saat benar-benar dicetak ---------- */
+.rs-watermark span {
+    transform: rotate(-30deg);
+    color: rgba(180, 35, 24, .08);
+    font: 800 120pt/1 var(--sans);
+    letter-spacing: .1em;
+}
+
+/* ---------- Saat dicetak ---------- */
 @media print {
     body.rs-print-body {
         background: #fff;
@@ -343,36 +381,29 @@ body.rs-print-body {
         width: auto;
         min-height: 0;
         margin: 0;
-        padding: 0 0 12mm;
         box-shadow: none;
-        overflow: visible;
     }
 
-    .rs-sheet-foot {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-
-    /* muncul di tiap halaman */
+    .rs-sheet-foot,
     .rs-watermark {
         position: fixed;
     }
 
-    a {
-        color: inherit;
-        text-decoration: none;
-    }
+    /* muncul di setiap halaman */
 }
 
-/* ---------- Layar kecil (pratinjau di HP) ---------- */
+/* ---------- Pratinjau di HP ---------- */
 @media screen and (max-width: 860px) {
     .rs-sheet {
         width: auto;
         min-height: 0;
         margin: 12px;
-        padding: 20px 16px 56px;
+        padding: 20px 16px 72px;
+        font-size: 11pt;
+    }
+
+    .rs-print-toolbar {
+        padding: 10px 12px;
     }
 
     .rs-print-toolbar .hint {
@@ -381,9 +412,58 @@ body.rs-print-body {
 
     .rs-print-toolbar .judul {
         margin-right: auto;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .rs-kop {
+        grid-template-columns: 18mm 1fr;
+        column-gap: 3mm;
+    }
+
+    .rs-kop img {
+        width: 18mm;
+    }
+
+    .rs-kop .rs-kop-nama {
+        font-size: 14pt;
+    }
+
+    .rs-kop-pt {
+        font-size: 9pt;
+    }
+
+    .rs-kop-alamat {
+        font-size: 8pt;
+    }
+
+    .rs-fields {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .rs-fields th {
+        width: 38%;
     }
 
     .rs-ident {
         grid-template-columns: 1fr;
+    }
+
+    .rs-sign {
+        justify-content: center;
+    }
+
+    .rs-watermark span {
+        font-size: 64pt;
+    }
+
+    .rs-sheet-foot {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        flex-direction: column;
+        gap: 2px;
     }
 }

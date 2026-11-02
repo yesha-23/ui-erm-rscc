@@ -205,7 +205,7 @@ class DataContoh
         $hari  = now()->locale('id');
         $tgl   = fn ($c) => $c->translatedFormat('d F Y');
         $kode  = collect(explode('-', $dokumen['slug']))->map(fn ($s) => strtoupper($s[0]))->join('');
-        $dokter = [['Dokter pemeriksa', $pasien['dpjp_nama']]];
+        $dokter = [['Dokter pemeriksa', $pasien['dpjp_nama'], 'SIP. [No. SIP]']];
 
         $isi = match ($dokumen['form']) {
             'sakit' => [
@@ -233,7 +233,8 @@ class DataContoh
                 'penandatangan' => $dokter,
             ],
             'rujukan' => [
-                'pembuka'   => 'Kepada Yth. dokter spesialis di [Nama RS / faskes tujuan]. Mohon pemeriksaan dan penanganan lebih lanjut terhadap pasien:',
+                'kepada'    => ['Yth. Dokter Spesialis Penyakit Dalam', '[Nama RS / faskes tujuan]', 'di Tempat'],
+                'pembuka'   => 'Dengan hormat, mohon pemeriksaan dan penanganan lebih lanjut terhadap pasien:',
                 'pengantar' => 'Dengan keterangan sebagai berikut:',
                 'rincian'   => [
                     'Poli / spesialis tujuan' => 'Penyakit Dalam',

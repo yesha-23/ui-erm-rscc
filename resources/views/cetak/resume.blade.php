@@ -31,5 +31,5 @@
     </tbody>
 </table>
 
-@include('cetak._tanda-tangan', ['penandatangan' => [['Dokter penanggung jawab (DPJP)', $pasien['dpjp_nama']]]])
+@include('cetak._tanda-tangan', ['penandatangan' => [['Dokter penanggung jawab (DPJP)', $pasien['dpjp_nama'], 'SIP. [No. SIP]']]])
 @endsection
