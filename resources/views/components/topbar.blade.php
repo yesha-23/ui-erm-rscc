@@ -1,6 +1,11 @@
+@php
+    $u = \App\Support\DataContoh::pengguna();
+    $belumDibaca = collect(\App\Support\DataContoh::pesan())->where('dibaca', false)->count();
+@endphp
+
 <header class="rs-topbar">
 
-    {{-- Tombol buka menu: hanya muncul di layar kecil (HP / tablet) --}}
+    {{-- Tombol buka menu: hanya di layar kecil --}}
     <button type="button" class="btn btn-outline-secondary d-lg-none"
             data-bs-toggle="offcanvas" data-bs-target="#sidebarUtama"
             aria-controls="sidebarUtama" aria-label="Buka menu">
@@ -11,21 +16,35 @@
     <form class="rs-topbar-search" role="search">
         <label for="cari-pasien" class="visually-hidden">Cari pasien</label>
         <div class="input-group">
-            <span class="input-group-text rs-search-icon">
-                <i class="bi bi-search" aria-hidden="true"></i>
-            </span>
+            <span class="input-group-text rs-search-icon"><i class="bi bi-search" aria-hidden="true"></i></span>
             <input id="cari-pasien" type="search" class="form-control rs-search-input"
                    placeholder="Cari pasien (nama / No. RM)…">
         </div>
     </form>
 
-    {{-- Pengguna yang sedang login --}}
-    <div class="ms-auto d-flex align-items-center gap-2">
-        <span class="rs-avatar" aria-hidden="true">ZK</span>
-        <span class="d-none d-sm-flex flex-column lh-sm">
-            <span class="fw-bold small">Zaki Kurnia B., S.Kom</span>
-            <span class="rs-text-muted small">Admin IT</span>
-        </span>
+    {{-- Menu pengguna --}}
+    <div class="dropdown ms-auto">
+        <button type="button" class="rs-user-btn" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="rs-avatar" aria-hidden="true">{{ $u['inisial'] }}</span>
+            <span class="d-none d-sm-flex flex-column lh-sm text-start">
+                <span class="fw-bold small">{{ $u['nama_pendek'] }}</span>
+                <span class="rs-text-muted small">{{ $u['jabatan'] }}</span>
+            </span>
+            <i class="bi bi-chevron-down small rs-text-muted" aria-hidden="true"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end rs-dropdown">
+            <li><a class="dropdown-item" href="{{ route('akun.profil') }}"><i class="bi bi-person me-2" aria-hidden="true"></i>Profil saya</a></li>
+            <li>
+                <a class="dropdown-item d-flex align-items-center" href="{{ route('akun.inbox') }}">
+                    <i class="bi bi-inbox me-2" aria-hidden="true"></i>Inbox
+                    @if ($belumDibaca)
+                        <span class="rs-badge-count">{{ $belumDibaca }}</span>
+                    @endif
+                </a>
+            </li>
+            <li><a class="dropdown-item" href="{{ route('akun.pengaturan') }}"><i class="bi bi-gear me-2" aria-hidden="true"></i>Pengaturan</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ route('login') }}"><i class="bi bi-box-arrow-left me-2" aria-hidden="true"></i>Keluar</a></li>
+        </ul>
     </div>
-
 </header>

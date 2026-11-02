@@ -55,6 +55,64 @@ class DataContoh
         ];
     }
 
+    /** Pengguna yang sedang login. Catatan untuk IT: ganti dengan auth()->user(). */
+    public static function pengguna(): array
+    {
+        return [
+            'nama'        => 'Zaki Kurnia Bhaskara, S.Kom',
+            'nama_pendek' => 'Zaki Kurnia B., S.Kom',
+            'panggilan'   => 'Zaki',
+            'inisial'     => 'ZK',
+            'jabatan'     => 'Admin IT',
+            'unit'        => 'Teknologi Informasi',
+            'nip'         => '[NIP]',
+            'no_hp'       => '08xx-xxxx-xxxx',
+            'email'       => '[email]@rscc.biz.id',
+            'akses'       => 'Semua unit',
+        ];
+    }
+
+    public static function riwayatMasuk(): array
+    {
+        return [
+            ['waktu' => '02 Nov 2026 · 08:47', 'perangkat' => 'Chrome · Windows', 'berhasil' => true],
+            ['waktu' => '30 Okt 2026 · 14:52', 'perangkat' => 'Chrome · Windows', 'berhasil' => true],
+            ['waktu' => '30 Okt 2026 · 14:50', 'perangkat' => 'Chrome · Windows', 'berhasil' => false, 'alasan' => 'Captcha salah'],
+            ['waktu' => '29 Okt 2026 · 07:58', 'perangkat' => 'Chrome · Android',  'berhasil' => true],
+        ];
+    }
+
+    /** Pesan di Inbox. Catatan untuk IT: ganti dengan tabel pesan/notifikasi. */
+    public static function pesan(): array
+    {
+        return [
+            [
+                'id' => 1, 'dari' => 'IT RSCC', 'inisial' => 'IT', 'kategori' => 'Pengumuman',
+                'judul' => 'Pemeliharaan server EMR', 'waktu' => '02 Nov · 09:15', 'dibaca' => false,
+                'ringkas' => 'EMR tidak dapat diakses Sabtu, 7 Nov 2026 pukul 22.00–24.00.',
+                'isi' => "Yth. seluruh pengguna EMR,\n\nAkan dilakukan pemeliharaan server pada Sabtu, 7 November 2026 pukul 22.00–24.00 WIB. Selama waktu tersebut EMR tidak dapat diakses.\n\nMohon simpan pekerjaan sebelum pukul 21.45.\n\nTerima kasih,\nIT RSCC",
+            ],
+            [
+                'id' => 2, 'dari' => 'Unit Rekam Medis', 'inisial' => 'RM', 'kategori' => 'Tugas',
+                'judul' => '3 BRM rawat jalan belum lengkap', 'waktu' => '02 Nov · 08:30', 'dibaca' => false,
+                'ringkas' => 'Mohon dilengkapi sebelum pukul 16.00 hari ini.',
+                'isi' => "Terdapat 3 berkas rekam medis rawat jalan hari ini yang belum lengkap.\n\nDaftarnya bisa dilihat di menu Rawat Jalan, tab \"BRM belum terisi\". Mohon dilengkapi sebelum pukul 16.00.\n\nUnit Rekam Medis",
+            ],
+            [
+                'id' => 3, 'dari' => 'Komite Mutu', 'inisial' => 'KM', 'kategori' => 'Pengumuman',
+                'judul' => 'Pengisian bundles PPI bulan November', 'waktu' => '01 Nov · 13:05', 'dibaca' => false,
+                'ringkas' => 'Checklist PPI kini tersedia di menu Mutu pada ruang kerja pasien.',
+                'isi' => "Mulai November, checklist bundles PPI (IP, CAUTI, IDO, VAP, IADP) diisi langsung di EMR melalui menu Mutu pada ruang kerja pasien.\n\nKomite Mutu",
+            ],
+            [
+                'id' => 4, 'dari' => 'IT RSCC', 'inisial' => 'IT', 'kategori' => 'Info',
+                'judul' => 'Akun Anda berhasil dibuat', 'waktu' => '28 Okt · 10:00', 'dibaca' => true,
+                'ringkas' => 'Selamat datang di EMR RSCC.',
+                'isi' => "Selamat datang di EMR RSCC.\n\nGunakan nomor HP yang terdaftar untuk masuk. Segera ganti password di menu Pengaturan.\n\nIT RSCC",
+            ],
+        ];
+    }
+
         /**
      * Data kunjungan per unit (data contoh, 12 baris).
      * Catatan untuk IT: ganti dengan query kunjungan per unit, dengan nama kunci yang sama.

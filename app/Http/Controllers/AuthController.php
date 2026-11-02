@@ -21,6 +21,12 @@ class AuthController extends Controller
 
         // TODO (IT RSCC): cek nomor HP, password, dan captcha ke database.
         // Untuk sekarang (tampilan saja) langsung masuk ke Beranda.
-        return redirect()->route('beranda');
+        $tujuan = [
+            'beranda' => 'beranda',
+            'igd'     => 'kunjungan.igd',
+            'rajal'   => 'kunjungan.rajal',
+        ][session('pengaturan.halaman_awal', 'beranda')];
+
+        return redirect()->route($tujuan);
     }
 }
