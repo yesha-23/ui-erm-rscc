@@ -26,6 +26,7 @@
     <div class="rs-content">
         <x-topbar />
         <main class="rs-main">
+            <x-flash />
             @yield('content')
         </main>
     </div>

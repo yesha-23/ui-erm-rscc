@@ -967,6 +967,251 @@
     color: var(--rs-text-3);
 }
 
+/* ---------- Notifikasi & menu pengguna ---------- */
+.rs-flash {
+    border-radius: var(--rs-radius);
+}
+
+.rs-user-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 8px 4px 4px;
+    border: 0;
+    border-radius: var(--rs-radius);
+    background: transparent;
+    color: var(--rs-text);
+    font: inherit;
+}
+
+.rs-user-btn:hover {
+    background: var(--rs-hover);
+}
+
+.rs-dropdown {
+    --bs-dropdown-border-color: var(--rs-border);
+    --bs-dropdown-link-active-bg: var(--rs-primary-soft);
+    --bs-dropdown-link-active-color: var(--rs-primary-dark);
+    min-width: 220px;
+    padding: 6px;
+    border-radius: var(--rs-radius);
+    box-shadow: 0 12px 24px rgba(16, 24, 40, .12);
+}
+
+.rs-dropdown .dropdown-item {
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+}
+
+/* ---------- Profil ---------- */
+.rs-avatar-xl {
+    width: 88px;
+    height: 88px;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.rs-dl dt {
+    margin-bottom: 2px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--rs-text-3);
+}
+
+.rs-dl dd {
+    margin: 0;
+    font-size: 15px;
+}
+
+.rs-signature {
+    height: 96px;
+    border: 1px dashed var(--rs-border-input);
+    border-radius: 12px;
+    background: #F9FAFB;
+    color: var(--rs-text-muted);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rs-table-compact tbody td,
+.rs-table-compact thead th {
+    padding: 10px 24px;
+}
+
+.rs-table-compact {
+    min-width: 480px;
+}
+
+/* ---------- Inbox ---------- */
+.rs-inbox {
+    display: flex;
+    min-height: 520px;
+    overflow: hidden;
+}
+
+.rs-inbox-list {
+    flex: 0 0 380px;
+    max-width: 100%;
+    border-right: 1px solid var(--rs-border);
+}
+
+.rs-inbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--rs-hover);
+    color: var(--rs-text);
+    text-decoration: none;
+}
+
+.rs-inbox-item:hover {
+    background: var(--rs-hover);
+    color: var(--rs-text);
+}
+
+.rs-inbox-item.active {
+    background: var(--rs-primary-soft);
+}
+
+.rs-inbox-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.rs-inbox-from {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rs-text-2);
+}
+
+.rs-inbox-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.rs-inbox-item.unread .rs-inbox-title,
+.rs-inbox-item.unread .rs-inbox-from {
+    font-weight: 800;
+    color: var(--rs-text);
+}
+
+.rs-inbox-snippet {
+    font-size: 13px;
+    color: var(--rs-text-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rs-dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    margin-top: 6px;
+    border-radius: 999px;
+    background: var(--rs-primary);
+}
+
+.rs-inbox-detail {
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    padding: 24px 28px;
+}
+
+.rs-inbox-body {
+    max-width: 680px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--rs-text-2);
+}
+
+/* ---------- Pengaturan ---------- */
+.rs-narrow {
+    max-width: 1000px;
+}
+
+.rs-segmented .btn {
+    min-width: 120px;
+}
+
+.btn-check:checked+.btn-outline-secondary {
+    background: var(--rs-primary-soft);
+    border-color: var(--rs-primary);
+    color: var(--rs-primary-dark);
+}
+
+.rs-switch {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 0;
+    padding: 12px 0 12px 0;
+    border-top: 1px solid var(--rs-hover);
+}
+
+.rs-switch:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.rs-switch .form-check-input {
+    flex: none;
+    float: none;
+    width: 2.6em;
+    height: 1.4em;
+    margin: 2px 0 0;
+}
+
+.form-check-input:checked {
+    background-color: var(--rs-primary);
+    border-color: var(--rs-primary);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 4px var(--rs-primary-soft);
+    border-color: var(--rs-primary);
+}
+
+.rs-strength-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.rs-strength-bar span {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--rs-border);
+}
+
+.rs-strength[data-skor="0"] .isi,
+.rs-strength[data-skor="1"] .isi {
+    background: var(--rs-danger);
+}
+
+.rs-strength[data-skor="2"] .isi {
+    background: #DC6803;
+}
+
+.rs-strength[data-skor="3"] .isi {
+    background: var(--rs-primary);
+}
+
+.rs-strength[data-skor="4"] .isi {
+    background: var(--rs-success);
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {

@@ -117,3 +117,30 @@ export function initGrafik() {
         });
     });
 }
+
+/* ---------- Pengukur kekuatan password ---------- */
+export function initPasswordStrength() {
+    const LABEL = ['Terlalu lemah', 'Lemah', 'Sedang', 'Kuat', 'Sangat kuat'];
+    const PETUNJUK = 'Minimal 8 karakter, gabungan huruf dan angka.';
+
+    document.querySelectorAll('[data-rs-strength-for]').forEach((meter) => {
+        const input = document.getElementById(meter.dataset.rsStrengthFor);
+        if (!input) return;
+
+        const batang = meter.querySelectorAll('.rs-strength-bar span');
+        const teks = meter.querySelector('.rs-strength-text');
+
+        input.addEventListener('input', () => {
+            const v = input.value;
+            let skor = 0;
+            if (v.length >= 8) skor++;
+            if (/[a-z]/.test(v) && /[A-Z]/.test(v)) skor++;
+            if (/\d/.test(v)) skor++;
+            if (/[^A-Za-z0-9]/.test(v)) skor++;
+
+            meter.dataset.skor = v ? String(skor) : '';
+            batang.forEach((b, i) => b.classList.toggle('isi', Boolean(v) && i < skor));
+            teks.textContent = v ? `Kekuatan: ${LABEL[skor]}` : PETUNJUK;
+        });
+    });
+}

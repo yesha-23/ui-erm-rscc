@@ -5,6 +5,7 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\KunjunganController;
 use App\Http\Controllers\RekamMedisController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AkunController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -24,3 +25,10 @@ Route::prefix('kunjungan')->name('kunjungan.')
     });
 
 Route::get('/rekam-medis/{noReg}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
+Route::prefix('akun')->name('akun.')->controller(AkunController::class)->group(function () {
+    Route::get('/profil', 'profil')->name('profil');
+    Route::get('/inbox/{id?}', 'inbox')->whereNumber('id')->name('inbox');
+    Route::get('/pengaturan', 'pengaturan')->name('pengaturan');
+    Route::post('/pengaturan/password', 'simpanPassword')->name('password');
+    Route::post('/pengaturan/tampilan', 'simpanTampilan')->name('tampilan');
+});
