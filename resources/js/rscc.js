@@ -199,3 +199,84 @@ export function initFokusSaatBuka() {
         });
     });
 }
+
+/* ---------- Permintaan lab / radiologi: pilih, cari, ringkasan ---------- */
+export function initPilihPemeriksaan() {
+    const form = document.querySelector('[data-rs-pemeriksaan]');
+    if (!form) return;
+
+    const pilihan = [...form.querySelectorAll('input[name="items[]"]')];
+    const daftar = form.querySelector('[data-rs-ringkasan]');
+    const kosong = form.querySelector('[data-rs-ringkasan-kosong]');
+    const jumlah = form.querySelectorAll('[data-rs-jumlah]');
+    const cari = form.querySelector('[data-rs-cari-pemeriksaan]');
+    const tidakAda = form.querySelector('[data-rs-cari-kosong]');
+
+    // Satu baris di ringkasan: nama, catatan persiapan, tombol hapus
+    const buatItem = (cb) => {
+        const li = document.createElement('li');
+        li.className = 'rs-ringkasan-item';
+
+        const teks = document.createElement('span');
+        teks.textContent = cb.dataset.nama;
+
+        if (cb.dataset.catatan) {
+            const catatan = document.createElement('small');
+            const ikon = document.createElement('i');
+            ikon.className = 'bi bi-exclamation-triangle me-1';
+            ikon.setAttribute('aria-hidden', 'true');
+            catatan.append(ikon, cb.dataset.catatan);
+            teks.append(catatan);
+        }
+
+        const hapus = document.createElement('button');
+        hapus.type = 'button';
+        hapus.className = 'rs-ringkasan-hapus';
+        hapus.setAttribute('aria-label', `Hapus ${cb.dataset.nama}`);
+        hapus.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
+        hapus.addEventListener('click', () => {
+            cb.checked = false;
+            perbarui();
+            cb.focus(); // fokus kembali ke pilihan yang baru dihapus
+        });
+
+        li.append(teks, hapus);
+        return li;
+    };
+
+    function perbarui() {
+        const dipilih = pilihan.filter((cb) => cb.checked);
+        daftar.replaceChildren(...dipilih.map(buatItem));
+        daftar.hidden = dipilih.length === 0;
+        kosong.hidden = dipilih.length > 0;
+        jumlah.forEach((el) => { el.textContent = dipilih.length; });
+    }
+
+    pilihan.forEach((cb) => cb.addEventListener('change', perbarui));
+
+    // Enter di kotak cari jangan mengirim form
+    cari?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') e.preventDefault();
+    });
+
+    // Saring pemeriksaan; kelompok yang kosong ikut disembunyikan
+    cari?.addEventListener('input', () => {
+        const q = cari.value.trim().toLowerCase();
+        let total = 0;
+
+        form.querySelectorAll('[data-rs-grup]').forEach((grup) => {
+            let n = 0;
+            grup.querySelectorAll('[data-rs-item]').forEach((item) => {
+                const cocok = item.dataset.rsItem.includes(q);
+                item.hidden = !cocok;
+                if (cocok) n++;
+            });
+            grup.hidden = n === 0;
+            total += n;
+        });
+
+        tidakAda.hidden = total > 0;
+    });
+
+    perbarui(); // tampilkan pilihan lama (setelah validasi gagal)
+}
