@@ -153,7 +153,8 @@
             <button type="submit" form="form-dokumen" name="aksi" value="draf" class="btn btn-outline-secondary">
                 <i class="bi bi-save me-1" aria-hidden="true"></i>Simpan draf
             </button>
-            <a href="#" class="btn btn-outline-secondary">
+            <a href="{{ route('rekam-medis.dokumen.cetak', [$pasien['no_reg'], $jenis, $dokumen['slug'], 'draf' => 1]) }}"
+               target="_blank" rel="noopener" class="btn btn-outline-secondary">
                 <i class="bi bi-eye me-1" aria-hidden="true"></i>Pratinjau cetak
             </a>
             <button type="submit" form="form-dokumen" name="aksi" value="final" class="btn btn-primary">

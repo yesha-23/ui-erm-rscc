@@ -195,4 +195,111 @@ class DataContoh
             'diagnosa_kerja' => 'Obs. febris H6, susp. demam tifoid',
         ];
     }
+
+    /**
+     * Isi contoh dokumen untuk pratinjau cetak.
+     * IT RSCC: ganti dengan data draf/final yang tersimpan di database.
+     */
+    public static function isiDokumen(array $dokumen, array $pasien): array
+    {
+        $hari  = now()->locale('id');
+        $tgl   = fn ($c) => $c->translatedFormat('d F Y');
+        $kode  = collect(explode('-', $dokumen['slug']))->map(fn ($s) => strtoupper($s[0]))->join('');
+        $dokter = [['Dokter pemeriksa', $pasien['dpjp_nama'], 'SIP. [No. SIP]']];
+
+        $isi = match ($dokumen['form']) {
+            'sakit' => [
+                'pembuka'   => 'Yang bertanda tangan di bawah ini, dokter ' . config('rscc.nama') . ', menerangkan bahwa:',
+                'pengantar' => 'Berdasarkan hasil pemeriksaan, pasien tersebut perlu beristirahat karena sakit:',
+                'rincian'   => [
+                    'Diagnosa'       => $pasien['diagnosa_kerja'],
+                    'Lama istirahat' => '3 (tiga) hari',
+                    'Terhitung'      => $tgl($hari) . ' s.d. ' . $tgl($hari->copy()->addDays(2)),
+                ],
+                'penutup'       => 'Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.',
+                'penandatangan' => $dokter,
+            ],
+            'sehat' => [
+                'pembuka'   => 'Yang bertanda tangan di bawah ini, dokter ' . config('rscc.nama') . ', menerangkan bahwa:',
+                'pengantar' => 'Telah dilakukan pemeriksaan kesehatan dengan hasil sebagai berikut:',
+                'rincian'   => [
+                    'Tinggi / berat badan' => '165 cm / 60 kg',
+                    'Tekanan darah'        => '120/80 mmHg',
+                    'Buta warna'           => 'Tidak',
+                    'Kesimpulan'           => 'SEHAT',
+                    'Keperluan'            => 'Melamar pekerjaan',
+                ],
+                'penutup'       => 'Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.',
+                'penandatangan' => $dokter,
+            ],
+            'rujukan' => [
+                'kepada'    => ['Yth. Dokter Spesialis Penyakit Dalam', '[Nama RS / faskes tujuan]', 'di Tempat'],
+                'pembuka'   => 'Dengan hormat, mohon pemeriksaan dan penanganan lebih lanjut terhadap pasien:',
+                'pengantar' => 'Dengan keterangan sebagai berikut:',
+                'rincian'   => [
+                    'Poli / spesialis tujuan' => 'Penyakit Dalam',
+                    'Diagnosa'                => $pasien['diagnosa_kerja'],
+                    'Alasan dirujuk'          => 'Memerlukan pemeriksaan dan penanganan lanjutan',
+                    'Terapi yang diberikan'   => 'Parasetamol infus 1 g, Omeprazole inj 40 mg',
+                ],
+                'penutup'       => 'Atas kerja sama dan bantuannya kami ucapkan terima kasih.',
+                'penandatangan' => $dokter,
+            ],
+            'persetujuan' => [
+                'pembuka'   => 'Saya yang bertanda tangan di bawah ini, selaku pasien / wali pasien:',
+                'pengantar' => 'Menyatakan telah menerima penjelasan dan memahami hal-hal berikut:',
+                'rincian'   => [
+                    'Dokumen'                 => $dokumen['nama'],
+                    'Dokter yang menjelaskan' => $pasien['dpjp_nama'],
+                    'Penjelasan diterima'     => 'Diagnosis, tujuan tindakan, risiko dan komplikasi, alternatif, serta prognosis',
+                    'Keputusan'               => 'SETUJU',
+                ],
+                'penutup'       => 'Pernyataan ini saya buat dengan penuh kesadaran dan tanpa paksaan dari pihak mana pun.',
+                'penandatangan' => [
+                    ['Yang menyatakan', $pasien['nama']],
+                    ['Saksi', '[Nama Saksi]'],
+                    ['Petugas yang menjelaskan', '[Nama Petugas]'],
+                ],
+            ],
+            default => [
+                'pembuka'       => 'Dengan ini menerangkan bahwa:',
+                'pengantar'     => null,
+                'rincian'       => ['Keterangan' => '[Isi keterangan sesuai dokumen]'],
+                'penutup'       => 'Demikian dokumen ini dibuat untuk dipergunakan sebagaimana mestinya.',
+                'penandatangan' => $dokter,
+            ],
+        };
+
+        return $isi + ['nomor' => sprintf('017/%s/RSCC/%s', $kode, $hari->format('m/Y'))];
+    }
+
+    /** Isi contoh resume medis. IT RSCC: ganti dengan query asesmen, CPPT, resep, dll. */
+    public static function resumeMedis(array $pasien): array
+    {
+        return [
+            'Keluhan utama'             => 'Demam 6 hari, mual, nyeri ulu hati.',
+            'Riwayat penyakit sekarang' => 'Demam naik-turun terutama sore/malam, nafsu makan menurun, BAB belum 2 hari.',
+            'Pemeriksaan fisik'         => 'KU sedang, compos mentis. TD 120/70 mmHg, N 102 x/mnt, RR 22 x/mnt, S 40,1 °C, SpO₂ 98 %. Abdomen: nyeri tekan epigastrium.',
+            'Pemeriksaan penunjang'     => 'Trombosit 145.000/µl (↓), Neutrofil 73,9 % (↑), Widal S. typhi H 1/80.',
+            'Diagnosa utama'            => $pasien['diagnosa_kerja'],
+            'Diagnosa sekunder'         => 'Dehidrasi ringan–sedang',
+            'Tindakan'                  => 'Pemasangan infus, pengambilan sampel darah',
+            'Terapi'                    => 'Parasetamol infus 1 g, Omeprazole inj 40 mg, Ceftriaxon inj 1 g',
+            'Kondisi saat keluar'       => 'Membaik, dipindahkan ke rawat inap',
+            'Instruksi tindak lanjut'   => 'Rawat inap di bawah DPJP Penyakit Dalam',
+        ];
+    }
+
+    /** Dokumen yang sudah dibuat pada kunjungan ini (untuk halaman Cetak). */
+    public static function dokumenTersimpan(): array
+    {
+        return [
+            ['nama' => 'General Consent', 'jenis' => 'persetujuan', 'slug' => 'general-consent',
+             'waktu' => '02 Nov 2026, 08:55', 'oleh' => '[Nama Petugas]', 'final' => true],
+            ['nama' => 'Surat Sakit', 'jenis' => 'surat', 'slug' => 'surat-sakit',
+             'waktu' => '02 Nov 2026, 10:30', 'oleh' => 'dr. [Nama Dokter]', 'final' => true],
+            ['nama' => 'Surat Rujukan Keluar', 'jenis' => 'surat', 'slug' => 'surat-rujukan-keluar',
+             'waktu' => '02 Nov 2026, 11:02', 'oleh' => 'dr. [Nama Dokter]', 'final' => false],
+        ];
+    }
 }

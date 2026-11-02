@@ -1,5 +1,10 @@
 @props(['kolom', 'cek' => [], 'rows'])
 
+@php
+    // Kolom dengan tampilan khusus (selain ini = teks biasa dari $r[field])
+    $tipeKhusus = ['pasien', 'daftar', 'unit', 'kelas', 'ruang', 'kelengkapan'];
+@endphp
+
 <div class="rs-card p-0 overflow-hidden">
     @if ($rows->isEmpty())
         {{-- Keadaan kosong --}}
@@ -10,8 +15,9 @@
             <a href="{{ url()->current() }}" class="btn btn-outline-secondary btn-sm">Hapus semua filter</a>
         </div>
     @else
+        {{-- Tablet: tabel digulir di dalam kotak ini. HP: tiap baris jadi kartu (CSS .rs-table-kartu) --}}
         <div class="table-responsive">
-            <table class="table rs-table mb-0">
+            <table class="table rs-table rs-table-kartu mb-0">
                 <thead>
                     <tr>
                         @foreach ($kolom as $k)
@@ -28,7 +34,14 @@
                         @endphp
                         <tr>
                             @foreach ($kolom as $k)
-                                <td>
+                                @php
+                                    $utama  = $k['tipe'] === 'pasien';
+                                    $kosong = ! in_array($k['tipe'], $tipeKhusus, true) && blank($r[$k['field']] ?? null);
+                                @endphp
+
+                                {{-- Kolom pasien = judul kartu (tanpa label). Kolom kosong disembunyikan di HP. --}}
+                                <td @class(['rs-td-utama' => $utama, 'rs-td-kosong' => $kosong])
+                                    @unless ($utama) data-label="{{ $k['label'] }}" @endunless>
                                     @switch($k['tipe'])
                                         @case('pasien')
                                             <div class="d-flex align-items-start gap-2">
@@ -46,28 +59,36 @@
                                             @break
 
                                         @case('daftar')
-                                            <div class="fw-semibold">{{ $r['jam'] }}</div>
-                                            <div class="small rs-text-muted">{{ $r['tgl'] }}</div>
+                                            <div>
+                                                <div class="fw-semibold">{{ $r['jam'] }}</div>
+                                                <div class="small rs-text-muted">{{ $r['tgl'] }}</div>
+                                            </div>
                                             @break
 
                                         @case('unit')
-                                            <div>{{ $r['unit_tujuan'] }}</div>
-                                            <div class="d-flex flex-wrap gap-1 mt-1">
-                                                <x-badge :jenis="$jkn ? 'jkn' : 'nonjkn'">{{ $r['penjamin'] }}</x-badge>
-                                                <x-badge :jenis="$r['sudah_datang'] ? 'datang' : 'belum'">
-                                                    {{ $r['sudah_datang'] ? 'Sudah datang' : 'Belum datang' }}
-                                                </x-badge>
+                                            <div>
+                                                <div>{{ $r['unit_tujuan'] }}</div>
+                                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                                    <x-badge :jenis="$jkn ? 'jkn' : 'nonjkn'">{{ $r['penjamin'] }}</x-badge>
+                                                    <x-badge :jenis="$r['sudah_datang'] ? 'datang' : 'belum'">
+                                                        {{ $r['sudah_datang'] ? 'Sudah datang' : 'Belum datang' }}
+                                                    </x-badge>
+                                                </div>
                                             </div>
                                             @break
 
                                         @case('kelas')
-                                            <div class="fw-semibold">{{ $r['kelas'] }}</div>
-                                            <x-badge :jenis="$jkn ? 'jkn' : 'nonjkn'" class="mt-1">{{ $r['penjamin'] }}</x-badge>
+                                            <div>
+                                                <div class="fw-semibold">{{ $r['kelas'] }}</div>
+                                                <x-badge :jenis="$jkn ? 'jkn' : 'nonjkn'" class="mt-1">{{ $r['penjamin'] }}</x-badge>
+                                            </div>
                                             @break
 
                                         @case('ruang')
-                                            <div>{{ $r['ruang'] }}</div>
-                                            <div class="small rs-text-muted">{{ $r['bed'] }}</div>
+                                            <div>
+                                                <div>{{ $r['ruang'] }}</div>
+                                                <div class="small rs-text-muted">{{ $r['bed'] }}</div>
+                                            </div>
                                             @break
 
                                         @case('kelengkapan')
@@ -79,22 +100,26 @@
                                             @break
 
                                         @default
-                                            {{ filled($r[$k['field']]) ? $r[$k['field']] : '—' }}
+                                            <span>{{ $kosong ? '—' : $r[$k['field']] }}</span>
                                     @endswitch
                                 </td>
                             @endforeach
 
-                            <td class="text-end text-nowrap">
-                                <a href="{{ route('rekam-medis.show', $r['no_reg']) }}" class="btn btn-primary btn-sm">Buka</a>
+                            {{-- Aksi: di HP pindah ke pojok kanan atas kartu --}}
+                            <td class="rs-td-aksi text-end text-nowrap">
+                                <a href="{{ route('rekam-medis.show', $r['no_reg']) }}" class="btn btn-primary btn-sm"
+                                   aria-label="Buka rekam medis {{ $r['nama'] }}">Buka</a>
                                 <div class="dropdown d-inline-block">
+                                    {{-- strategy fixed: menu tidak terpotong oleh kotak tabel yang bisa digulir --}}
                                     <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="dropdown"
+                                            data-bs-popper-config='{"strategy":"fixed"}'
                                             aria-expanded="false" aria-label="Aksi lain untuk {{ $r['nama'] }}">
                                         <i class="bi bi-three-dots" aria-hidden="true"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-clock-history me-2"></i>Riwayat kunjungan</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2"></i>Cetak SEP</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-tag me-2"></i>Cetak label pasien</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-clock-history me-2" aria-hidden="true"></i>Riwayat kunjungan</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2" aria-hidden="true"></i>Cetak SEP</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-tag me-2" aria-hidden="true"></i>Cetak label pasien</a></li>
                                     </ul>
                                 </div>
                             </td>
