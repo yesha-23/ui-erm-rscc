@@ -2,24 +2,19 @@
 @section('title', 'Kunjungan ' . $judul)
 
 @section('content')
-    <h1 class="h3 fw-bold mb-1">Kunjungan {{ $judul }}</h1>
-    <p class="text-secondary mb-4">Halaman sementara — dikerjakan oleh Anggota {{ $pj }}.</p>
-
-    <div class="rs-card">
-        @foreach ($rows as $r)
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 py-2 border-bottom">
-                <div>
-                    <div class="fw-bold">{{ $r['nama'] }}</div>
-                    <div class="small text-secondary">RM {{ $r['no_rm'] }} · Reg {{ $r['no_reg'] }}</div>
-                </div>
-                <div class="d-flex gap-2 align-items-center">
-                    <x-badge :jenis="$r['penjamin'] === 'JKN' ? 'jkn' : 'nonjkn'">{{ $r['penjamin'] }}</x-badge>
-                    <x-badge :jenis="$r['sudah_datang'] ? 'datang' : 'belum'">
-                        {{ $r['sudah_datang'] ? 'Sudah datang' : 'Belum datang' }}
-                    </x-badge>
-                    <a href="{{ route('rekam-medis.show', $r['no_reg']) }}" class="btn btn-primary btn-sm">Rekam Medis</a>
-                </div>
-            </div>
-        @endforeach
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+        <div>
+            <h1 class="h3 fw-bold mb-1">Kunjungan {{ $judul }}</h1>
+            <p class="rs-text-muted mb-0">{{ $rows->total() }} kunjungan · {{ $rentang }}</p>
+        </div>
+        <button type="button" class="btn btn-outline-secondary">
+            <i class="bi bi-download me-1" aria-hidden="true"></i>Ekspor
+        </button>
     </div>
+
+    <x-filter-kunjungan :chips="$chips" :pilihan="$pilihan" :dari="$dari" :sampai="$sampai" />
+    <x-tab-status :tabs="$tabs" :aktif="$tabAktif" />
+    <x-tabel-kunjungan :kolom="$kolom" :cek="$cek" :rows="$rows" />
+
+    <p class="small rs-text-muted mt-3 mb-0">Nama dan nomor pada tabel adalah data contoh.</p>
 @endsection
