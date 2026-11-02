@@ -445,6 +445,233 @@
     font-size: 18px;
 }
 
+/* ---------- Filter daftar ---------- */
+.rs-filter {
+    padding: 12px;
+}
+
+.rs-filter-cari {
+    flex: 1 1 260px;
+}
+
+.rs-filter-tanggal {
+    width: 160px;
+}
+
+.rs-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.rs-chip:hover {
+    background: #DCE9F8;
+    color: var(--rs-primary-dark);
+}
+
+.rs-chip .bi {
+    font-size: 11px;
+}
+
+.rs-chip-reset {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rs-text-3);
+    text-decoration: none;
+}
+
+.rs-chip-reset:hover {
+    color: var(--rs-text);
+    text-decoration: underline;
+}
+
+/* ---------- Tab status ---------- */
+.rs-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rs-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid var(--rs-border-input);
+    border-radius: 999px;
+    background: var(--rs-surface);
+    color: var(--rs-text-2);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.rs-tab:hover {
+    background: var(--rs-hover);
+    color: var(--rs-text);
+}
+
+.rs-tab.active {
+    background: var(--rs-text);
+    border-color: var(--rs-text);
+    color: #FFFFFF;
+}
+
+.rs-tab-count {
+    min-width: 22px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--rs-hover);
+    color: var(--rs-text-2);
+    font-size: 12px;
+    text-align: center;
+}
+
+.rs-tab.active .rs-tab-count {
+    background: rgba(255, 255, 255, .2);
+    color: #FFFFFF;
+}
+
+/* ---------- Tabel ---------- */
+.rs-table {
+    --bs-table-bg: transparent;
+    min-width: 960px;
+    font-size: 14px;
+}
+
+.rs-table thead th {
+    padding: 12px 16px;
+    background: #F9FAFB;
+    border-bottom: 1px solid var(--rs-border);
+    color: var(--rs-text-3);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.rs-table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--rs-hover);
+    vertical-align: top;
+}
+
+.rs-table tbody tr:hover td {
+    background: #FCFCFD;
+}
+
+.rs-avatar-pasien {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+}
+
+.rs-link-pasien {
+    font-weight: 700;
+    color: var(--rs-text);
+    text-decoration: none;
+}
+
+.rs-link-pasien:hover {
+    color: var(--rs-primary-dark);
+    text-decoration: underline;
+}
+
+.rs-sep {
+    color: var(--rs-success-text);
+    font-weight: 600;
+}
+
+.rs-cek-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rs-cek {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.rs-cek-ok {
+    color: var(--rs-success-text);
+}
+
+.rs-cek-belum {
+    color: var(--rs-danger-text);
+}
+
+.rs-table-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--rs-border);
+}
+
+.rs-table-foot nav {
+    margin-left: auto;
+}
+
+.rs-table-foot .pagination {
+    margin: 0;
+}
+
+.rs-table-foot nav>div:first-child {
+    display: none;
+}
+
+/* sembunyikan teks bawaan "Showing ..." */
+
+.pagination {
+    --bs-pagination-color: var(--rs-text-2);
+    --bs-pagination-border-color: var(--rs-border-input);
+    --bs-pagination-active-bg: var(--rs-primary);
+    --bs-pagination-active-border-color: var(--rs-primary);
+    --bs-pagination-hover-bg: var(--rs-hover);
+    --bs-pagination-focus-box-shadow: 0 0 0 4px var(--rs-primary-soft);
+}
+
+/* ---------- Keadaan kosong ---------- */
+.rs-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.rs-empty-icon {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+    font-size: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* ---------- Login ---------- */
 .rs-login-hero {
     background: var(--rs-primary-soft);
@@ -471,5 +698,9 @@
 
     .rs-main {
         padding: 20px 16px;
+    }
+
+    .rs-filter-tanggal {
+        width: 100%;
     }
 }
