@@ -9,6 +9,7 @@ use App\Http\Controllers\AkunController;
 use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\CetakController;
 use App\Http\Controllers\PermintaanController;
+use App\Http\Controllers\BerkasController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -47,6 +48,8 @@ Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->group(function () {
     Route::post('permintaan/{jenis}', [PermintaanController::class, 'kirim'])
         ->whereIn('jenis', ['lab', 'radiologi'])
         ->name('permintaan.kirim');
+    Route::get('berkas', [BerkasController::class, 'index'])->name('berkas');
+    Route::post('berkas', [BerkasController::class, 'simpan'])->name('berkas.simpan');
 });
 
 Route::prefix('akun')->name('akun.')->controller(AkunController::class)->group(function () {

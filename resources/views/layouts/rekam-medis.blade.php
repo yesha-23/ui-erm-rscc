@@ -11,6 +11,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
+    @stack('modal')
 <body class="rs-body-app">
 <div class="rs-app">
     {{-- Sidebar utama otomatis mode ikon (class rs-sidebar-mini di <html>) --}}

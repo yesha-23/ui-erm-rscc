@@ -313,4 +313,20 @@ class DataContoh
              'prioritas' => 'cito', 'status' => 'hasil', 'oleh' => 'dr. [Nama Dokter]'],
         ];
     }
+
+    /** Berkas digital yang sudah ada pada pasien ini. IT RSCC: ganti dengan query tabel berkas. */
+    public static function berkasDigital(): array
+    {
+        return [
+            ['nama' => 'Hasil-lab-klinik-perujuk.pdf', 'jenis' => 'penunjang-luar', 'tipe' => 'pdf',
+             'ukuran' => '412 KB', 'waktu' => '02 Nov 2026, 08:58', 'oleh' => '[Nama Petugas]',
+             'keterangan' => 'Hasil lab dari klinik perujuk, 31 Okt 2026'],
+            ['nama' => 'Surat-rujukan-puskesmas.jpg', 'jenis' => 'rujukan', 'tipe' => 'gambar',
+             'ukuran' => '1,2 MB', 'waktu' => '02 Nov 2026, 08:52', 'oleh' => '[Nama Petugas]',
+             'keterangan' => null],
+            ['nama' => 'Kartu-penjamin.jpg', 'jenis' => 'identitas', 'tipe' => 'gambar',
+             'ukuran' => '236 KB', 'waktu' => '02 Nov 2026, 08:51', 'oleh' => '[Nama Petugas]',
+             'keterangan' => null],
+        ];
+    }
 }

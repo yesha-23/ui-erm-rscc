@@ -15,7 +15,7 @@
         ]],
         ['judul' => 'Penunjang', 'ikon' => 'bi-eyedropper', 'items' => [
             ['key' => 'permintaan', 'label' => 'Permintaan lab / radiologi','href' => route('rekam-medis.permintaan', $noReg)],
-            ['key' => 'berkas',     'label' => 'Berkas digital',             'href' => '#'],
+            ['key' => 'berkas',     'label' => 'Berkas digital', 'href' => route('rekam-medis.berkas', $noReg)],
         ]],
         ['judul' => 'Farmasi', 'ikon' => 'bi-capsule', 'items' => [
             ['key' => 'resep', 'label' => 'E-Resep', 'href' => '#'],
