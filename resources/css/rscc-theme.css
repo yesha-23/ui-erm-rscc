@@ -125,6 +125,19 @@
     padding: 28px 32px;
 }
 
+/* App shell (layar besar): hanya konten yang di-scroll, sidebar diam */
+@media (min-width: 992px) {
+    .rs-app {
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .rs-content {
+        height: 100vh;
+        overflow-y: auto;
+    }
+}
+
 /* ---------- Topbar ---------- */
 .rs-topbar {
     position: sticky;
@@ -172,24 +185,39 @@
     --bs-offcanvas-bg: var(--rs-surface);
     display: flex;
     flex-direction: column;
+    padding: 18px 14px;
+}
+
+.rs-sidebar-head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rs-sidebar-menu {
+    display: flex;
+    flex-direction: column;
     gap: 2px;
-    padding: 20px 16px;
 }
 
 @media (min-width: 992px) {
-
-    /* sidebar tetap di tempat saat halaman di-scroll */
     .rs-sidebar-inner {
-        position: sticky;
-        top: 0;
         height: 100vh;
+        overflow: hidden;
+    }
+
+    .rs-sidebar-menu {
+        flex: 1 1 auto;
+        min-height: 0;
         overflow-y: auto;
+        overscroll-behavior: contain;
+        /* guliran tidak "bocor" ke halaman */
+        scrollbar-width: thin;
     }
 }
 
 @media (max-width: 991.98px) {
-
-    /* di layar kecil sidebar menjadi panel offcanvas */
     .rs-sidebar {
         display: contents;
     }
@@ -199,17 +227,11 @@
     }
 }
 
-.rs-sidebar-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
 .rs-brand {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 4px 8px 16px;
+    padding: 4px 8px 14px;
     color: var(--rs-text);
     text-decoration: none;
 }
@@ -230,7 +252,7 @@
 }
 
 .rs-menu-label {
-    margin: 14px 0 4px;
+    margin: 12px 0 4px;
     padding: 0 12px;
     font-size: 11px;
     font-weight: 700;
@@ -243,7 +265,7 @@
     align-items: center;
     gap: 12px;
     width: 100%;
-    min-height: 44px;
+    min-height: 40px;
     padding: 0 12px;
     border: 0;
     border-radius: var(--rs-radius);
@@ -300,7 +322,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 36px;
+    min-height: 34px;
     padding: 0 10px;
     border-radius: 8px;
     color: var(--rs-text-2);
@@ -342,8 +364,9 @@
 }
 
 .rs-sidebar-foot {
+    flex: none;
     margin-top: auto;
-    padding-top: 14px;
+    padding-top: 12px;
     border-top: 1px solid var(--rs-border);
     display: flex;
     flex-direction: column;
@@ -361,6 +384,11 @@
         align-items: center;
     }
 
+    .rs-sidebar-mini .rs-sidebar-menu,
+    .rs-sidebar-mini .rs-sidebar-foot {
+        align-items: center;
+    }
+
     .rs-sidebar-mini .rs-menu-text,
     .rs-sidebar-mini .rs-menu-label,
     .rs-sidebar-mini .rs-submenu,
@@ -375,7 +403,7 @@
     }
 
     .rs-sidebar-mini .rs-brand {
-        padding: 4px 0 16px;
+        padding: 4px 0 14px;
     }
 
     .rs-sidebar-mini .rs-sidebar-toggle .bi {
@@ -437,8 +465,6 @@
     width: 40px;
     height: 40px;
     border-radius: var(--rs-radius);
-    background: var(--rs-primary-soft);
-    color: var(--rs-primary-dark);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -673,12 +699,130 @@
 }
 
 /* ---------- Login ---------- */
+.rs-login {
+    display: flex;
+    min-height: 100vh;
+    background: var(--rs-surface);
+}
+
 .rs-login-hero {
-    background: var(--rs-primary-soft);
+    position: relative;
+    flex: 1 1 55%;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40px 48px;
+    overflow: hidden;
+    background: #0F2A4A;
+    /* tampil sebentar sebelum foto selesai dimuat */
+    color: #FFFFFF;
+}
+
+.rs-login-photo,
+.rs-login-photo img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.rs-login-photo img {
+    object-fit: cover;
+    object-position: 60% 30%;
+    /* papan nama RS tetap terlihat */
+}
+
+/* Gradasi gelap hanya di bagian bawah, untuk keterbacaan teks */
+.rs-login-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+            rgba(15, 42, 74, 0) 35%,
+            rgba(15, 42, 74, .55) 60%,
+            rgba(15, 42, 74, .92) 100%);
+}
+
+.rs-login-brand,
+.rs-login-caption {
+    position: relative;
+    z-index: 1;
+}
+
+.rs-login-brand {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 8px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .92);
+    color: var(--rs-text);
+}
+
+.rs-login-brand span {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.rs-login-brand small {
+    font-size: 12px;
+    color: var(--rs-text-3);
+}
+
+.rs-login-title {
+    margin-bottom: 12px;
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    color: #FFFFFF;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+}
+
+.rs-login-lead {
+    max-width: 520px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, .9);
+}
+
+.rs-chip-glass {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .16);
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+}
+
+.rs-login-copy {
+    display: block;
+    margin-top: 28px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, .75);
+}
+
+.rs-login-panel {
+    flex: 1 1 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
 }
 
 .rs-login-form {
     max-width: 400px;
+}
+
+.rs-btn-lg {
+    min-height: 50px;
+    font-size: 16px;
 }
 
 .rs-captcha {
@@ -688,6 +832,128 @@
     background: var(--rs-hover);
     font-weight: 800;
     letter-spacing: .15em;
+}
+
+/* ---------- Chip statis (label) ---------- */
+.rs-chip-static {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #D4E2F4;
+    border-radius: 999px;
+    background: var(--rs-surface);
+    color: var(--rs-primary-dark);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rs-chip-hijau {
+    border-color: #CDEBDC;
+    color: var(--rs-success-text);
+}
+
+/* ---------- Beranda ---------- */
+.rs-stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.02em;
+}
+
+.rs-stat-biru {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+}
+
+.rs-stat-hijau {
+    background: var(--rs-success-soft);
+    color: var(--rs-success-text);
+}
+
+.rs-stat-oranye {
+    background: var(--rs-warning-soft);
+    color: var(--rs-warning);
+}
+
+.rs-chart-unit {
+    position: relative;
+    height: 470px;
+}
+
+.rs-task-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rs-task {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    color: var(--rs-text);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.rs-task:hover {
+    background: var(--rs-hover);
+    color: var(--rs-text);
+}
+
+.rs-task-icon {
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border-radius: var(--rs-radius);
+    background: var(--rs-warning-soft);
+    color: var(--rs-warning);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rs-task-count {
+    margin-left: auto;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--rs-warning-text);
+}
+
+.rs-shortcut {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    height: 100%;
+    padding: 14px;
+    border: 1px solid var(--rs-border);
+    border-radius: 12px;
+    background: #FCFCFD;
+    color: var(--rs-text);
+    text-decoration: none;
+}
+
+.rs-shortcut:hover {
+    border-color: var(--rs-primary);
+    background: var(--rs-primary-soft);
+    color: var(--rs-text);
+}
+
+.rs-shortcut .bi {
+    margin-bottom: 6px;
+    font-size: 20px;
+    color: var(--rs-primary-dark);
+}
+
+.rs-shortcut small {
+    color: var(--rs-text-3);
 }
 
 /* ---------- Layar HP ---------- */
@@ -702,5 +968,14 @@
 
     .rs-filter-tanggal {
         width: 100%;
+    }
+
+    .rs-chart-unit {
+        height: 400px;
+    }
+
+    .rs-login-panel {
+        align-items: flex-start;
+        padding: 32px 16px;
     }
 }

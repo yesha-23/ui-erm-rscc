@@ -5,6 +5,7 @@
 <div class="rs-sidebar">
     <nav id="sidebarUtama" class="offcanvas-lg offcanvas-start rs-sidebar-inner" tabindex="-1" aria-label="Menu utama">
 
+        {{-- Bagian atas: tetap di tempat --}}
         <div class="rs-sidebar-head">
             <a class="rs-brand" href="{{ route('beranda') }}">
                 <img src="{{ asset('images/logo-rscc.png') }}" alt="Logo RSCC" width="40" height="34" class="rs-logo">
@@ -14,57 +15,58 @@
                     data-bs-target="#sidebarUtama" aria-label="Tutup menu"></button>
         </div>
 
-        <a href="{{ route('beranda') }}" title="Beranda"
-           @class(['rs-menu-item', 'active' => request()->routeIs('beranda')])>
-            <i class="bi bi-house" aria-hidden="true"></i><span class="rs-menu-text">Beranda</span>
-        </a>
+        {{-- Bagian tengah: satu-satunya yang boleh digulir bila layar pendek --}}
+        <div class="rs-sidebar-menu">
+            <a href="{{ route('beranda') }}" title="Beranda"
+               @class(['rs-menu-item', 'active' => request()->routeIs('beranda')])>
+                <i class="bi bi-house" aria-hidden="true"></i><span class="rs-menu-text">Beranda</span>
+            </a>
 
-        <p class="rs-menu-label">PELAYANAN</p>
+            <p class="rs-menu-label">PELAYANAN</p>
 
-        @foreach ($menu as $item)
-            @php
-                $aktif = request()->routeIs($item['route']);
-            @endphp
-
-            @if (! isset($item['sub']))
-                {{-- Menu biasa --}}
-                <a href="{{ route($item['route']) }}" title="{{ $item['label'] }}"
-                   @class(['rs-menu-item', 'active' => $aktif])>
-                    <i class="bi {{ $item['icon'] }}" aria-hidden="true"></i>
-                    <span class="rs-menu-text">{{ $item['label'] }}</span>
-                </a>
-            @else
-                {{-- Menu dengan sub-menu --}}
+            @foreach ($menu as $item)
                 @php
-                    $idSub = 'sub-' . \Illuminate\Support\Str::slug($item['label']);
-                    $nilaiAktif = request()->route($item['param']) ?? $item['sub'][0]['value'];
+                    $aktif = request()->routeIs($item['route']);
                 @endphp
 
-                <button type="button" title="{{ $item['label'] }}"
-                        @class(['rs-menu-item', 'rs-menu-parent', 'is-current' => $aktif, 'collapsed' => ! $aktif])
-                        data-bs-toggle="collapse" data-bs-target="#{{ $idSub }}"
-                        aria-expanded="{{ $aktif ? 'true' : 'false' }}" aria-controls="{{ $idSub }}">
-                    <i class="bi {{ $item['icon'] }}" aria-hidden="true"></i>
-                    <span class="rs-menu-text">{{ $item['label'] }}</span>
-                    <i class="bi bi-chevron-down rs-chevron rs-menu-text" aria-hidden="true"></i>
-                </button>
+                @if (! isset($item['sub']))
+                    <a href="{{ route($item['route']) }}" title="{{ $item['label'] }}"
+                       @class(['rs-menu-item', 'active' => $aktif])>
+                        <i class="bi {{ $item['icon'] }}" aria-hidden="true"></i>
+                        <span class="rs-menu-text">{{ $item['label'] }}</span>
+                    </a>
+                @else
+                    @php
+                        $idSub = 'sub-' . \Illuminate\Support\Str::slug($item['label']);
+                        $nilaiAktif = request()->route($item['param']) ?? $item['sub'][0]['value'];
+                    @endphp
 
-                <div id="{{ $idSub }}" @class(['collapse', 'show' => $aktif])>
-                    <div class="rs-submenu">
-                        @foreach ($item['sub'] as $sub)
-                            <a href="{{ route($item['route'], [$item['param'] => $sub['value']]) }}"
-                               @class(['rs-submenu-item', 'active' => $aktif && $nilaiAktif === $sub['value']])>
-                                {{ $sub['label'] }}
-                                <span class="rs-count">{{ $sub['jumlah'] }}</span>
-                            </a>
-                        @endforeach
+                    <button type="button" title="{{ $item['label'] }}"
+                            @class(['rs-menu-item', 'rs-menu-parent', 'is-current' => $aktif, 'collapsed' => ! $aktif])
+                            data-bs-toggle="collapse" data-bs-target="#{{ $idSub }}"
+                            aria-expanded="{{ $aktif ? 'true' : 'false' }}" aria-controls="{{ $idSub }}">
+                        <i class="bi {{ $item['icon'] }}" aria-hidden="true"></i>
+                        <span class="rs-menu-text">{{ $item['label'] }}</span>
+                        <i class="bi bi-chevron-down rs-chevron rs-menu-text" aria-hidden="true"></i>
+                    </button>
+
+                    <div id="{{ $idSub }}" @class(['collapse', 'show' => $aktif])>
+                        <div class="rs-submenu">
+                            @foreach ($item['sub'] as $sub)
+                                <a href="{{ route($item['route'], [$item['param'] => $sub['value']]) }}"
+                                   @class(['rs-submenu-item', 'active' => $aktif && $nilaiAktif === $sub['value']])>
+                                    {{ $sub['label'] }}
+                                    <span class="rs-count">{{ $sub['jumlah'] }}</span>
+                                </a>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
-            @endif
-        @endforeach
+                @endif
+            @endforeach
+        </div>
 
+        {{-- Bagian bawah: tetap di tempat --}}
         <div class="rs-sidebar-foot">
-            {{-- Halaman Inbox & Pengaturan dibuat nanti; sementara masih '#' --}}
             <a href="#" class="rs-menu-item" title="Inbox">
                 <i class="bi bi-inbox" aria-hidden="true"></i>
                 <span class="rs-menu-text">Inbox</span>
