@@ -168,21 +168,6 @@
     max-width: 460px;
 }
 
-.rs-search-icon {
-    background: var(--rs-hover);
-    border-right: 0;
-    color: var(--rs-text-muted);
-}
-
-.rs-search-input {
-    background: var(--rs-hover);
-    border-left: 0;
-}
-
-.rs-search-input:focus {
-    background: var(--rs-surface);
-}
-
 /* ---------- Sidebar utama ---------- */
 .rs-sidebar {
     flex: 0 0 248px;
@@ -1212,6 +1197,363 @@
     background: var(--rs-success);
 }
 
+/* ---------- Ruang kerja pasien (Rekam Medis) ---------- */
+.rs-pasien-header {
+    flex: none;
+    padding: 14px 28px;
+    background: var(--rs-surface);
+    border-bottom: 1px solid var(--rs-border);
+}
+
+.rs-crumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: var(--rs-text-3);
+}
+
+.rs-crumb a {
+    color: var(--rs-text-3);
+    text-decoration: none;
+}
+
+.rs-crumb a:hover {
+    color: var(--rs-primary-dark);
+    text-decoration: underline;
+}
+
+.rs-crumb [aria-current] {
+    color: var(--rs-text);
+    font-weight: 600;
+}
+
+.rs-avatar-lg {
+    width: 44px;
+    height: 44px;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.rs-rm-menu {
+    position: relative;
+    background: var(--rs-surface);
+    border-bottom: 1px solid var(--rs-border);
+}
+
+.rs-rm-main {
+    position: relative;
+    padding: 22px 26px 36px;
+}
+
+@media (min-width: 992px) {
+    .rs-content.rs-rm {
+        overflow: hidden;
+    }
+
+    .rs-rm-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+    }
+
+    .rs-rm-menu {
+        flex: 0 0 270px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        border-bottom: 0;
+        border-right: 1px solid var(--rs-border);
+    }
+
+    .rs-rm-main {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-y: auto;
+    }
+}
+
+.rs-rmmenu-item:hover {
+    background: var(--rs-hover);
+    color: var(--rs-text);
+}
+
+.rs-rmmenu-item.active {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-weight: 700;
+}
+
+.rs-rmmenu-item.is-soon {
+    color: var(--rs-text-muted);
+}
+
+/* ---------- Dokumen formal ---------- */
+.rs-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: var(--rs-primary-dark);
+}
+
+.rs-doc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    color: var(--rs-text-2);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.rs-doc-item:hover {
+    background: var(--rs-hover);
+    color: var(--rs-text);
+}
+
+.rs-doc-item.active {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-weight: 700;
+}
+
+.rs-doc-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--rs-text-2);
+}
+
+.rs-output {
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 12px;
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+    font-weight: 700;
+}
+
+.rs-check-box {
+    padding: 12px 12px 12px 2.25rem;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: #FCFCFD;
+}
+
+.rs-check-box.is-invalid {
+    border-color: var(--rs-danger);
+}
+
+/* ---------- Kotak cari (komponen x-search) ---------- */
+.rs-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    margin: 0;
+    padding: 0 12px;
+    border: 1px solid var(--rs-border-input);
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+    color: var(--rs-text-muted);
+    cursor: text;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.rs-search:hover {
+    border-color: #B8C0CC;
+}
+
+.rs-search:focus-within {
+    background: var(--rs-surface);
+    border-color: var(--rs-primary);
+    box-shadow: 0 0 0 4px var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    /* ikon ikut menyala */
+}
+
+.rs-search input {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    border: 0;
+    outline: 0;
+    /* fokus ditandai oleh kotak luar */
+    background: transparent;
+    color: var(--rs-text);
+    font: inherit;
+    font-size: 14px;
+}
+
+.rs-search input::placeholder {
+    color: var(--rs-text-muted);
+}
+
+.rs-search-sm {
+    min-height: 36px;
+}
+
+.rs-search-sm input {
+    height: 34px;
+    font-size: 13px;
+}
+
+/* ---------- Menu rekam medis (versi jelas) ---------- */
+.rs-rmmenu {
+    padding: 16px 12px 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.rs-rmmenu-title {
+    margin: 0 0 10px;
+    padding: 0 4px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--rs-text);
+}
+
+.rs-rmmenu-group {
+    padding: 10px 0;
+    border-top: 1px solid var(--rs-hover);
+}
+
+.rs-rmmenu-group:first-of-type {
+    border-top: 0;
+}
+
+.rs-rmmenu-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 4px;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--rs-text);
+}
+
+.rs-rmmenu-label .bi {
+    font-size: 15px;
+    color: var(--rs-primary-dark);
+}
+
+.rs-rmmenu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 36px;
+    padding: 0 10px 0 31px;
+    /* menjorok sejajar teks judul kelompok */
+    border-radius: 8px;
+    color: var(--rs-text-2);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.rs-rmmenu-item:hover {
+    background: var(--rs-hover);
+    color: var(--rs-text);
+}
+
+.rs-rmmenu-item.active {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-weight: 700;
+}
+
+.rs-rmmenu-item.is-soon {
+    color: var(--rs-text-muted);
+}
+
+.rs-rmmenu-count {
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.rs-soon {
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--rs-hover);
+    color: var(--rs-text-muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+/* ---------- Pemilih dokumen ---------- */
+.rs-doc-tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+}
+
+.rs-doc-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    color: var(--rs-text-3);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.rs-doc-tab:hover {
+    color: var(--rs-text);
+}
+
+.rs-doc-tab.active {
+    background: var(--rs-surface);
+    color: var(--rs-text);
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .12);
+}
+
+.rs-doc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* ---------- Bar aksi form (selebar area konten) ---------- */
+.rs-action-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 24px -26px -36px;
+    padding: 12px 26px;
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid var(--rs-border);
+    box-shadow: 0 -6px 16px rgba(16, 24, 40, .06);
+}
+
+.rs-action-bar-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-left: auto;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {
@@ -1233,5 +1575,26 @@
     .rs-login-panel {
         align-items: flex-start;
         padding: 32px 16px;
+    }
+
+    .rs-pasien-header {
+        padding: 12px 16px;
+    }
+
+    .rs-rm-main {
+        padding: 18px 16px 28px;
+    }
+
+    .rs-action-bar {
+        margin: 20px -16px -28px;
+        padding: 12px 16px;
+    }
+
+    .rs-action-bar-buttons {
+        width: 100%;
+    }
+
+    .rs-action-bar-buttons .btn {
+        flex: 1 1 auto;
     }
 }

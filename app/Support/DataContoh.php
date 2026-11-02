@@ -175,4 +175,24 @@ class DataContoh
 
         return $hasil;
     }
+
+    /** Data satu pasien untuk ruang kerja Rekam Medis. Catatan untuk IT: ganti dengan query pasien + kunjungan. */
+    public static function pasien(string $noReg): array
+    {
+        $daftar = self::kunjungan('igd');
+        $row = collect($daftar)->firstWhere('no_reg', $noReg) ?? $daftar[0];
+
+        return $row + [
+            'jk'             => 'Laki-laki',
+            'umur'           => '21 th',
+            'tgl_lahir'      => '[tgl lahir]',
+            'alamat'         => '[alamat pasien]',
+            'alergi'         => '[isi alergi]',
+            'unit'           => 'IGD',
+            'unit_route'     => 'kunjungan.igd',
+            'datang'         => '02 Nov 2026, 08:50',
+            'dpjp_nama'      => 'dr. [Nama Dokter]',
+            'diagnosa_kerja' => 'Obs. febris H6, susp. demam tifoid',
+        ];
+    }
 }
