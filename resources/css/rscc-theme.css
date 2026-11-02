@@ -126,7 +126,18 @@
 }
 
 /* App shell (layar besar): hanya konten yang di-scroll, sidebar diam */
+.rs-content {
+    position: relative;
+    /* elemen tersembunyi (visually-hidden) tetap di dalam area konten */
+}
+
 @media (min-width: 992px) {
+    .rs-body-app {
+        height: 100vh;
+        overflow: hidden;
+        /* halaman Chrome tidak bisa di-scroll, hanya area konten */
+    }
+
     .rs-app {
         height: 100vh;
         overflow: hidden;

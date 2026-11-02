@@ -19,7 +19,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body>
+<body class="rs-body-app">>
 <div class="rs-app">
     <x-sidebar />
 
