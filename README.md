@@ -1,58 +1,157 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# UI EMR RSCC
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Redesign tampilan **Electronic Medical Record Rumah Sakit Condong Catur** dengan Laravel.
+Repo ini berisi **tampilan dan alur**. Database dan logika dilanjutkan oleh tim IT RSCC.
 
-## About Laravel
+> Semua data di aplikasi ini adalah **data contoh**, bukan data pasien asli.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Teknologi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Bagian | Yang dipakai |
+|---|---|
+| Framework | Laravel (PHP 8.3), Blade components |
+| Tampilan | Bootstrap 5, Bootstrap Icons, tema `resources/css/rscc-theme.css` |
+| Build aset | Vite (`npm run dev`) |
+| Data sementara | `app/Support/DataContoh.php` |
+| Lingkungan lokal | Laragon (PHP 8.3, MySQL, phpMyAdmin) |
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Cara menjalankan
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Clone repo ke folder proyek (yang menjadi Document Root Laragon):
+   ```bash
+   git clone https://github.com/yesha-23/ui-erm-rscc.git
+   cd ui-erm-rscc
+   ```
+2. Pasang dependensi:
+   ```bash
+   composer install
+   npm install
+   ```
+3. Siapkan `.env`:
+   ```bash
+   copy .env.example .env
+   php artisan key:generate
+   ```
+   Lalu isi bagian berikut:
+   ```env
+   APP_NAME="EMR RSCC"
+   APP_URL=http://ui-erm-rscc.test
+   APP_LOCALE=id
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=emr_rscc
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+4. Buat database `emr_rscc` di phpMyAdmin, lalu:
+   ```bash
+   php artisan migrate
+   ```
+5. Jalankan Vite (biarkan terminal ini tetap terbuka):
+   ```bash
+   npm run dev
+   ```
+6. Buka **http://ui-erm-rscc.test**, atau jalankan `php artisan serve` lalu buka http://127.0.0.1:8000
 
-## Agentic Development
+> Pastikan `php -v` menunjukkan **8.3**. Kalau muncul error *"requires PHP >= 8.3"*,
+> terminal masih memakai PHP lain (misalnya XAMPP). Perbaiki PATH Windows atau pakai Terminal Laragon.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
 
-```bash
-composer require laravel/boost --dev
+## Struktur folder
 
-php artisan boost:install
+```
+app/Http/Controllers/   Auth, Beranda, Kunjungan, RekamMedis
+app/Support/            DataContoh.php  ← sumber data sementara
+public/images/          logo-rscc.png
+resources/css/          app.css, rscc-theme.css, print.css
+resources/js/           app.js, rscc.js
+resources/views/
+  layouts/              app, guest, rekam-medis
+  components/           sidebar, topbar, badge, stat-card, tabel-kunjungan, ...
+  auth/                 login
+  kunjungan/            daftar kunjungan per unit
+  rekam-medis/          ruang kerja pasien (asesmen, resep, surat, ...)
+  akun/                 profil, inbox, pengaturan
+routes/web.php          daftar halaman
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Daftar semua halaman: `php artisan route:list`
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Aturan kerja tim
 
-## Code of Conduct
+### Branch
+| Anggota | Branch tetap | Tanggung jawab |
+|---|---|---|
+| A — Yesha | `yesha-emr` | Tema, layout, sidebar, template tabel, Login, Beranda, daftar Rajal/Rehab/HD, akun, dokumen formal & cetak |
+| B — [nama teman] | `[nama]-emr` | JS bersama, daftar IGD/Ranap/OK, ruang kerja pasien & halaman klinis Rekam Medis |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Alur harian
+```bash
+# 1. Ambil perubahan terbaru
+git checkout main
+git pull
 
-## Security Vulnerabilities
+# 2. Kembali ke branch sendiri dan gabungkan main
+git checkout yesha-emr
+git merge main
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 3. Koding, lalu simpan
+git add .
+git commit -m "Jelaskan apa yang diubah"
+git push
+```
+4. Di GitHub buka **Pull Request** `yesha-emr → main`, minta anggota lain review, lalu merge.
 
-## License
+### Aturan kode
+- Warna, jarak, dan radius **hanya** dari variabel CSS di `rscc-theme.css`. Jangan menulis `style="..."` langsung.
+- Class buatan sendiri diberi awalan `rs-` (contoh: `rs-card`, `rs-badge-jkn`).
+- Bagian tampilan yang dipakai lebih dari sekali dijadikan **Blade component**.
+- Status selalu ditulis dengan **ikon + teks**, bukan warna saja.
+- Uji di lebar layar 1366 px dan 375 px (HP) sebelum membuat pull request.
+- **Dilarang commit:** `.env`, data pasien asli, screenshot sistem lama.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Format pesan commit
+```
+Tambah template tabel kunjungan
+Perbaiki warna badge NON JKN
+Desain ulang halaman login sesuai mockup
+```
+
+---
+
+## Catatan untuk IT RSCC
+
+1. **Data:** semua halaman mengambil data dari `app/Support/DataContoh.php`.
+   Ganti isi tiap fungsi dengan query database (Eloquent/Query Builder) dengan **bentuk array yang sama**. View tidak perlu diubah.
+2. **Login:** belum memeriksa akun. Lihat `TODO` di `AuthController@login`.
+3. **Captcha:** masih placeholder `[KODE]` di `auth/login.blade.php`.
+4. **Form Rekam Medis:** yang didesain ulang secara detail adalah kerangka ruang kerja pasien, Asesmen Gawat Darurat,
+   E-Resep, CPPT/SBAR, template dokumen formal, dan template checklist.
+   Form lain bisa dipindahkan dari sistem lama; class Bootstrap-nya otomatis mengikuti tema baru.
+5. **Acuan desain:** kanvas mockup EMR RSCC (link dari tim magang).
+
+---
+
+## Status
+
+- [x] Setup Laravel + Bootstrap + tema RSCC
+- [x] Mockup 22 halaman
+- [ ] Layout final + sidebar dengan sub-menu
+- [ ] Daftar kunjungan semua unit
+- [ ] Ruang kerja pasien (Rekam Medis)
+- [ ] Dokumen formal & cetak
+- [ ] Tampilan HP
+- [ ] Serah terima ke IT
+
+---
+
+Dibuat oleh tim magang · Rumah Sakit Condong Catur · 2026

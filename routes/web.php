@@ -19,9 +19,8 @@ Route::prefix('kunjungan')->name('kunjungan.')
         Route::get('/hemodialisa', 'hemodialisa')->name('hd');
         Route::get('/rehab-medik', 'rehabMedik')->name('rm');
         Route::get('/rawat-jalan', 'rawatJalan')->name('rajal');
-        Route::get('/rawat-inap', 'rawatInap')->name('ranap');
-        Route::get('/ok', 'ok')->name('ok');
+        Route::get('/rawat-inap/{ruang?}', 'rawatInap')->whereIn('ruang', ['umum', 'kebidanan', 'icu', 'hcu'])->name('ranap');
+        Route::get('/ok/{jenis?}', 'ok')->whereIn('jenis', ['mayor', 'minor'])->name('ok');
     });
 
-Route::get('/rekam-medis/{noReg}', [RekamMedisController::class, 'show'])
-    ->name('rekam-medis.show');
+Route::get('/rekam-medis/{noReg}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
