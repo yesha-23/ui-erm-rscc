@@ -1,0 +1,389 @@
+/* =========================================================
+   Tampilan cetak A4 — hanya dipakai layouts/cetak.blade.php
+   ========================================================= */
+:root {
+    --ink: #101828;
+    --ink-2: #344054;
+    --muted: #667085;
+    --line: #D0D5DD;
+    --primary: #2B6CB0;
+    --primary-dark: #245A94;
+    --soft: #F2F6FB;
+}
+
+@page {
+    size: A4;
+    margin: 16mm 18mm 18mm;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+}
+
+body.rs-print-body {
+    background: #E9EDF2;
+    color: var(--ink);
+    font: 11pt/1.55 'Plus Jakarta Sans', Arial, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* ---------- Bar atas (hanya di layar) ---------- */
+.rs-print-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 2px 8px rgba(16, 24, 40, .06);
+    font-size: 14px;
+}
+
+.rs-print-toolbar .judul {
+    font-weight: 700;
+}
+
+.rs-print-toolbar .hint {
+    margin-right: auto;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.rs-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink-2);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.rs-btn:hover {
+    background: #F2F4F7;
+}
+
+.rs-btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.rs-btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.rs-btn:focus-visible {
+    outline: 3px solid rgba(43, 108, 176, .35);
+    outline-offset: 2px;
+}
+
+/* ---------- Kertas A4 di layar ---------- */
+.rs-sheet {
+    position: relative;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 24px auto 48px;
+    padding: 16mm 18mm 26mm;
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(16, 24, 40, .12);
+    overflow: hidden;
+}
+
+.rs-sheet>*:not(.rs-watermark) {
+    position: relative;
+    z-index: 1;
+}
+
+/* ---------- Kop surat ---------- */
+.rs-kop {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 3px double var(--ink);
+}
+
+.rs-kop img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+}
+
+.rs-kop-nama {
+    margin: 0;
+    color: var(--primary);
+    font-size: 16pt;
+    font-weight: 800;
+    letter-spacing: .02em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.rs-kop-alamat {
+    margin: 2px 0 0;
+    color: var(--ink-2);
+    font-size: 9pt;
+    line-height: 1.45;
+}
+
+/* ---------- Judul & isi ---------- */
+.rs-print-title {
+    margin: 0;
+    text-align: center;
+    font-size: 13pt;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.rs-print-number {
+    margin: 2px 0 18px;
+    text-align: center;
+    color: var(--ink-2);
+    font-size: 10pt;
+}
+
+.rs-sheet p {
+    margin: 0 0 10px;
+}
+
+/* Baris "Label : isi" */
+.rs-fields {
+    width: 100%;
+    margin: 0 0 12px;
+    border-collapse: collapse;
+}
+
+.rs-fields th {
+    width: 34%;
+    padding: 2px 8px 2px 0;
+    color: var(--ink-2);
+    font-weight: 500;
+    text-align: left;
+    vertical-align: top;
+}
+
+.rs-fields td {
+    padding: 2px 0;
+    vertical-align: top;
+}
+
+.rs-fields td::before {
+    content: ':\00a0\00a0';
+}
+
+.rs-fields-indent {
+    margin-left: 24px;
+    width: calc(100% - 24px);
+}
+
+/* Identitas resume (2 kolom) */
+.rs-ident {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 24px;
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 10.5pt;
+}
+
+.rs-ident div {
+    display: flex;
+    gap: 6px;
+}
+
+.rs-ident dt {
+    flex: 0 0 32mm;
+    color: var(--ink-2);
+    font-weight: 500;
+}
+
+.rs-ident dd {
+    margin: 0;
+    font-weight: 600;
+}
+
+.rs-ident .is-alert dd {
+    color: #B42318;
+}
+
+/* Tabel bergaris (resume) */
+.rs-section-table {
+    width: 100%;
+    margin-bottom: 14px;
+    border-collapse: collapse;
+    font-size: 10.5pt;
+}
+
+.rs-section-table th,
+.rs-section-table td {
+    padding: 6px 8px;
+    border: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+}
+
+.rs-section-table th {
+    width: 30%;
+    background: var(--soft);
+    font-weight: 700;
+}
+
+.rs-section-table tr {
+    break-inside: avoid;
+}
+
+/* ---------- Tanda tangan ---------- */
+.rs-sign {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10mm;
+    margin-top: 22px;
+    break-inside: avoid;
+}
+
+.rs-sign-end {
+    justify-content: flex-end;
+}
+
+.rs-sign-box {
+    flex: 0 0 54mm;
+    text-align: center;
+}
+
+.rs-sign-date {
+    min-height: 1.55em;
+}
+
+.rs-sign-role {
+    color: var(--ink-2);
+    font-size: 10pt;
+}
+
+.rs-sign-space {
+    height: 22mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 9pt;
+    font-style: italic;
+}
+
+.rs-sign-name {
+    display: inline-block;
+    min-width: 50mm;
+    padding-top: 4px;
+    border-top: 1px solid var(--ink);
+    font-weight: 700;
+}
+
+/* ---------- Kaki halaman ---------- */
+.rs-sheet-foot {
+    position: absolute;
+    left: 18mm;
+    right: 18mm;
+    bottom: 10mm;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 8pt;
+}
+
+/* ---------- Cap DRAF ---------- */
+.rs-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 0;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    color: rgba(180, 35, 24, .09);
+    font-size: 110pt;
+    font-weight: 800;
+    letter-spacing: .1em;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* ---------- Saat benar-benar dicetak ---------- */
+@media print {
+    body.rs-print-body {
+        background: #fff;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .rs-sheet {
+        width: auto;
+        min-height: 0;
+        margin: 0;
+        padding: 0 0 12mm;
+        box-shadow: none;
+        overflow: visible;
+    }
+
+    .rs-sheet-foot {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    /* muncul di tiap halaman */
+    .rs-watermark {
+        position: fixed;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+}
+
+/* ---------- Layar kecil (pratinjau di HP) ---------- */
+@media screen and (max-width: 860px) {
+    .rs-sheet {
+        width: auto;
+        min-height: 0;
+        margin: 12px;
+        padding: 20px 16px 56px;
+    }
+
+    .rs-print-toolbar .hint {
+        display: none;
+    }
+
+    .rs-print-toolbar .judul {
+        margin-right: auto;
+    }
+
+    .rs-ident {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1554,6 +1554,19 @@
     margin-left: auto;
 }
 
+/* ---------- Halaman Cetak ---------- */
+.rs-cetak-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-size: 22px;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {

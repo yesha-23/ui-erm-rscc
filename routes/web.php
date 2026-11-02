@@ -7,6 +7,7 @@ use App\Http\Controllers\RekamMedisController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\DokumenController;
+use App\Http\Controllers\CetakController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -34,6 +35,11 @@ Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->group(function () {
     Route::post('/dokumen/{jenis}/{slug}', [DokumenController::class, 'simpan'])
         ->whereIn('jenis', ['surat', 'persetujuan'])
         ->name('dokumen.simpan');
+    Route::get('cetak', [CetakController::class, 'index'])->name('cetak');
+    Route::get('cetak/resume-medis', [CetakController::class, 'resume'])->name('cetak.resume');
+    Route::get('dokumen/{jenis}/{slug}/cetak', [CetakController::class, 'dokumen'])
+        ->whereIn('jenis', ['surat', 'persetujuan'])
+        ->name('dokumen.cetak');
 });
 
 Route::prefix('akun')->name('akun.')->controller(AkunController::class)->group(function () {

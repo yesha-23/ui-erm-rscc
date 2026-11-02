@@ -28,7 +28,7 @@
              'href' => route('rekam-medis.dokumen', [$noReg, 'surat'])],
             ['key' => 'persetujuan', 'label' => 'Persetujuan',     'jumlah' => $jumlah['persetujuan'],
              'href' => route('rekam-medis.dokumen', [$noReg, 'persetujuan'])],
-            ['key' => 'cetak',       'label' => 'Cetak',           'href' => '#'],
+            ['key' => 'cetak',       'label' => 'Cetak',           'href' => route('rekam-medis.cetak', $noReg)],
         ]],
         ['judul' => 'Mutu', 'ikon' => 'bi-shield-check', 'items' => [
             ['key' => 'ppi', 'label' => 'PPI',               'href' => '#'],
