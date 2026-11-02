@@ -280,3 +280,141 @@ export function initPilihPemeriksaan() {
 
     perbarui(); // tampilkan pilihan lama (setelah validasi gagal)
 }
+
+/* ---------- Unggah berkas: tarik-lepas, pratinjau, validasi ---------- */
+export function initUnggahBerkas() {
+    const modalEl = document.querySelector('[data-rs-unggah]');
+    if (!modalEl) return;
+
+    const form = modalEl.querySelector('form');
+    const input = modalEl.querySelector('input[type="file"]');
+    const zona = modalEl.querySelector('[data-rs-dropzone]');
+    const daftar = modalEl.querySelector('[data-rs-daftar-berkas]');
+    const tombol = modalEl.querySelector('[data-rs-tombol-unggah]');
+    const jumlahEl = modalEl.querySelector('[data-rs-jumlah-berkas]');
+
+    const MAKS_UKURAN = 10 * 1024 * 1024; // 10 MB
+    const MAKS_JUMLAH = 10;
+    const TIPE_OK = ['application/pdf', 'image/jpeg', 'image/png'];
+
+    let berkas = [];
+
+    const formatUkuran = (byte) => byte < 1024 * 1024
+        ? `${Math.max(1, Math.round(byte / 1024))} KB`
+        : `${(byte / 1024 / 1024).toFixed(1).replace('.', ',')} MB`;
+
+    const masalah = (f) => {
+        if (!TIPE_OK.includes(f.type)) return 'Format tidak didukung';
+        if (f.size > MAKS_UKURAN) return 'Lebih dari 10 MB';
+        return null;
+    };
+
+    // Salin daftar berkas ke <input type="file"> supaya ikut terkirim saat submit
+    const sinkron = () => {
+        const dt = new DataTransfer();
+        berkas.forEach((f) => dt.items.add(f));
+        input.files = dt.files;
+    };
+
+    const buatBaris = (f, i) => {
+        const li = document.createElement('li');
+        const salah = masalah(f);
+        li.className = 'rs-berkas-baris' + (salah ? ' is-salah' : '');
+
+        // Thumbnail gambar / ikon PDF
+        let gambar;
+        if (f.type.startsWith('image/') && !salah) {
+            gambar = document.createElement('img');
+            gambar.className = 'rs-berkas-thumb';
+            gambar.alt = '';
+            gambar.src = URL.createObjectURL(f);
+            gambar.onload = () => URL.revokeObjectURL(gambar.src);
+        } else {
+            gambar = document.createElement('span');
+            gambar.className = 'rs-berkas-thumb rs-berkas-thumb-ikon';
+            gambar.innerHTML = '<i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>';
+        }
+
+        const teks = document.createElement('div');
+        teks.className = 'min-w-0 flex-grow-1';
+        const nama = document.createElement('div');
+        nama.className = 'rs-berkas-nama';
+        nama.textContent = f.name;
+        const info = document.createElement('div');
+        info.className = 'small ' + (salah ? 'text-danger fw-semibold' : 'rs-text-muted');
+        info.textContent = salah ? `${salah} · ${formatUkuran(f.size)}` : formatUkuran(f.size);
+        teks.append(nama, info);
+
+        const hapus = document.createElement('button');
+        hapus.type = 'button';
+        hapus.className = 'rs-ringkasan-hapus';
+        hapus.setAttribute('aria-label', `Batalkan ${f.name}`);
+        hapus.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
+        hapus.addEventListener('click', () => {
+            berkas.splice(i, 1);
+            sinkron();
+            tampilkan();
+            input.focus();
+        });
+
+        li.append(gambar, teks, hapus);
+        return li;
+    };
+
+    function tampilkan() {
+        daftar.replaceChildren(...berkas.map(buatBaris));
+        daftar.hidden = berkas.length === 0;
+
+        const semuaValid = berkas.length > 0 && berkas.every((f) => !masalah(f));
+        tombol.disabled = !semuaValid;
+        jumlahEl.textContent = berkas.length ? ` (${berkas.length})` : '';
+    }
+
+    function tambah(fileList) {
+        for (const f of [...fileList]) {
+            const sudahAda = berkas.some((b) => b.name === f.name && b.size === f.size);
+            if (!sudahAda && berkas.length < MAKS_JUMLAH) berkas.push(f);
+        }
+        sinkron();
+        tampilkan();
+    }
+
+    // Pilih lewat dialog komputer
+    input.addEventListener('change', () => tambah(input.files));
+
+    // Tarik & lepas
+    ['dragenter', 'dragover'].forEach((ev) => zona.addEventListener(ev, (e) => {
+        e.preventDefault();
+        zona.classList.add('is-drag');
+    }));
+    ['dragleave', 'dragend', 'drop'].forEach((ev) => zona.addEventListener(ev, () => {
+        zona.classList.remove('is-drag');
+    }));
+    zona.addEventListener('drop', (e) => {
+        e.preventDefault();
+        tambah(e.dataTransfer.files);
+    });
+
+    // Berkas yang dilepas di luar area jangan membuka berkas di tab browser
+    ['dragover', 'drop'].forEach((ev) => modalEl.addEventListener(ev, (e) => e.preventDefault()));
+
+    // Tutup popup → kosongkan pilihan
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        berkas = [];
+        sinkron();
+        tampilkan();
+    });
+
+    // Cegah klik ganda saat mengunggah
+    form.addEventListener('submit', () => {
+        tombol.disabled = true;
+        tombol.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Mengunggah…';
+    });
+
+    // Validasi server gagal → buka popup lagi
+    if (modalEl.hasAttribute('data-rs-buka-otomatis')) {
+        window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    }
+
+    tampilkan();
+}
