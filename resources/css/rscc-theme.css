@@ -1,0 +1,294 @@
+/* =========================================================
+   RSCC Theme — tampilan EMR RS Condong Catur
+   Semua warna/jarak diambil dari variabel di :root.
+   ========================================================= */
+
+:root {
+    /* Warna utama */
+    --rs-primary: #2B6CB0;
+    --rs-primary-dark: #1F5FA8;
+    --rs-primary-soft: #EAF2FC;
+    --rs-success: #157A4F;
+    --rs-success-text: #0F6B43;
+    --rs-success-soft: #E7F5EE;
+    --rs-danger: #C4320A;
+    --rs-danger-text: #B42318;
+    --rs-danger-soft: #FEF0EB;
+    --rs-warning: #B54708;
+    --rs-warning-text: #93370D;
+    --rs-warning-soft: #FFF4E5;
+
+    /* Teks, garis, latar */
+    --rs-text: #101828;
+    --rs-text-2: #344054;
+    --rs-text-3: #475467;
+    --rs-text-muted: #667085;
+    --rs-border: #E4E7EC;
+    --rs-border-input: #D0D5DD;
+    --rs-bg: #F7F8FA;
+    --rs-surface: #FFFFFF;
+    --rs-hover: #F2F4F7;
+
+    /* Bentuk */
+    --rs-radius: 10px;
+    --rs-radius-card: 14px;
+    --rs-font: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+    /* Sambungkan ke variabel Bootstrap */
+    --bs-body-font-family: var(--rs-font);
+    --bs-body-color: var(--rs-text);
+    --bs-body-bg: var(--rs-bg);
+    --bs-border-color: var(--rs-border);
+    --bs-primary: var(--rs-primary);
+    --bs-primary-rgb: 43, 108, 176;
+    --bs-link-color: var(--rs-primary-dark);
+    --bs-link-color-rgb: 31, 95, 168;
+}
+
+/* ---------- Tombol ---------- */
+.btn {
+    border-radius: var(--rs-radius);
+    font-weight: 600;
+    min-height: 40px;
+}
+
+.btn-sm {
+    min-height: 34px;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--rs-primary);
+    --bs-btn-border-color: var(--rs-primary);
+    --bs-btn-hover-bg: var(--rs-primary-dark);
+    --bs-btn-hover-border-color: var(--rs-primary-dark);
+    --bs-btn-active-bg: var(--rs-primary-dark);
+    --bs-btn-active-border-color: var(--rs-primary-dark);
+    font-weight: 700;
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: var(--rs-text-2);
+    --bs-btn-border-color: var(--rs-border-input);
+    --bs-btn-hover-bg: var(--rs-hover);
+    --bs-btn-hover-color: var(--rs-text);
+    --bs-btn-hover-border-color: var(--rs-border-input);
+}
+
+/* ---------- Input ---------- */
+.form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rs-text-2);
+}
+
+.form-control,
+.form-select {
+    border-color: var(--rs-border-input);
+    border-radius: var(--rs-radius);
+    min-height: 42px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--rs-primary);
+    box-shadow: 0 0 0 4px var(--rs-primary-soft);
+}
+
+/* ---------- Layout aplikasi ---------- */
+.rs-app {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100vh;
+}
+
+.rs-sidebar {
+    flex: 1 1 248px;
+    max-width: 280px;
+    background: var(--rs-surface);
+    border-right: 1px solid var(--rs-border);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rs-content {
+    flex: 999 1 560px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.rs-main {
+    flex: 1 1 auto;
+    padding: 28px 32px;
+}
+
+.rs-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 32px;
+    background: var(--rs-surface);
+    border-bottom: 1px solid var(--rs-border);
+}
+
+.rs-topbar-search {
+    flex: 1 1 280px;
+    max-width: 460px;
+}
+
+/* ---------- Sidebar ---------- */
+.rs-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 8px 20px;
+    color: var(--rs-text);
+    text-decoration: none;
+}
+
+.rs-brand span {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+}
+
+.rs-brand small {
+    font-size: 12px;
+    color: var(--rs-text-3);
+}
+
+.rs-logo {
+    object-fit: contain;
+}
+
+.rs-menu-label {
+    margin: 0;
+    padding: 0 12px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: var(--rs-text-muted);
+}
+
+.rs-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 44px;
+    padding: 0 12px;
+    border-radius: var(--rs-radius);
+    color: var(--rs-text-2);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.rs-menu-item:hover {
+    background: var(--rs-hover);
+    color: var(--rs-text);
+}
+
+.rs-menu-item.active {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-weight: 700;
+}
+
+/* ---------- Kartu, badge, avatar ---------- */
+.rs-card {
+    background: var(--rs-surface);
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius-card);
+    padding: 20px;
+}
+
+.rs-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.rs-badge-jkn {
+    background: var(--rs-success-soft);
+    color: var(--rs-success-text);
+}
+
+.rs-badge-nonjkn {
+    background: var(--rs-danger-soft);
+    color: var(--rs-danger-text);
+}
+
+.rs-badge-datang {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+}
+
+.rs-badge-belum {
+    background: var(--rs-warning-soft);
+    color: var(--rs-warning-text);
+}
+
+.rs-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: var(--rs-success-soft);
+    color: var(--rs-success-text);
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rs-stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--rs-radius);
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+/* ---------- Login ---------- */
+.rs-login-hero {
+    background: var(--rs-primary-soft);
+}
+
+.rs-login-form {
+    max-width: 400px;
+}
+
+.rs-captcha {
+    min-width: 110px;
+    border: 1px dashed var(--rs-border-input);
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+    font-weight: 800;
+    letter-spacing: .15em;
+}
+
+/* ---------- Layar HP ---------- */
+@media (max-width: 767.98px) {
+    .rs-sidebar {
+        max-width: none;
+        border-right: 0;
+        border-bottom: 1px solid var(--rs-border);
+    }
+
+    .rs-topbar {
+        padding: 12px 16px;
+    }
+
+    .rs-main {
+        padding: 20px 16px;
+    }
+}
