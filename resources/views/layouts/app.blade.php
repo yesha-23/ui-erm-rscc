@@ -8,6 +8,14 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        // Terapkan mode ikon sebelum halaman tampil, supaya sidebar tidak "berkedip"
+        try {
+            if (localStorage.getItem('rs-sidebar') === 'mini') {
+                document.documentElement.classList.add('rs-sidebar-mini');
+            }
+        } catch (e) {}
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>

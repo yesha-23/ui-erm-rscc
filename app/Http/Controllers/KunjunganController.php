@@ -19,6 +19,21 @@ class KunjunganController extends Controller
     public function hemodialisa() { return $this->tampil('Hemodialisa', 'A'); }
     public function rehabMedik()  { return $this->tampil('Rehabilitasi Medik', 'A'); }
     public function rawatJalan()  { return $this->tampil('Rawat Jalan', 'A'); }
-    public function rawatInap()   { return $this->tampil('Rawat Inap', 'B'); }
-    public function ok()          { return $this->tampil('Kamar Operasi', 'B'); }
+    
+    public function rawatInap(string $ruang = 'umum')
+    {
+        $nama = [
+            'umum'      => 'R. Inap Umum',
+            'kebidanan' => 'R. Inap Kebidanan',
+            'icu'       => 'ICU',
+            'hcu'       => 'HCU',
+        ][$ruang];
+
+        return $this->tampil("Rawat Inap · {$nama}", 'B');
+    }
+
+    public function ok(string $jenis = 'mayor')
+    {
+        return $this->tampil('Kamar Operasi · OK ' . ucfirst($jenis), 'B');
+    }
 }
