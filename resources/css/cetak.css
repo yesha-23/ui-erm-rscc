@@ -123,7 +123,7 @@ body.rs-print-body {
 .rs-kop {
     position: relative;
     display: grid;
-    grid-template-columns: 30mm 1fr;
+    grid-template-columns: 27mm 1fr;
     align-items: center;
     column-gap: 5mm;
     margin-bottom: 8mm;
@@ -144,7 +144,7 @@ body.rs-print-body {
 
 .rs-kop img {
     display: block;
-    width: 30mm;
+    width: 27mm;
     height: auto;
 }
 

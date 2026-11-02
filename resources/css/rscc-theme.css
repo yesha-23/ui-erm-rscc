@@ -1715,4 +1715,14 @@
     .rs-action-bar-buttons .btn {
         flex: 1 1 auto;
     }
+
+    /* Kolom yang isinya "—" tidak perlu tampil di kartu */
+    .rs-table-kartu .rs-td-kosong {
+        display: none;
+    }
+
+    /* Daftar kelengkapan di kartu: tanpa jarak bawaan */
+    .rs-table-kartu .rs-cek-list {
+        margin: 0;
+    }
 }
