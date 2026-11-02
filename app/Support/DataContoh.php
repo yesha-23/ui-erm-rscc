@@ -302,4 +302,15 @@ class DataContoh
              'waktu' => '02 Nov 2026, 11:02', 'oleh' => 'dr. [Nama Dokter]', 'final' => false],
         ];
     }
+
+    /** Permintaan penunjang yang sudah ada pada kunjungan ini. IT RSCC: ganti dengan query. */
+    public static function permintaanPenunjang(): array
+    {
+        return [
+            ['waktu' => '02 Nov 2026, 09:12', 'jenis' => 'radiologi', 'items' => ['Thorax PA'],
+             'prioritas' => 'rutin', 'status' => 'proses', 'oleh' => 'dr. [Nama Dokter]'],
+            ['waktu' => '02 Nov 2026, 09:05', 'jenis' => 'lab', 'items' => ['Darah rutin', 'Widal', 'NS1 Dengue'],
+             'prioritas' => 'cito', 'status' => 'hasil', 'oleh' => 'dr. [Nama Dokter]'],
+        ];
+    }
 }

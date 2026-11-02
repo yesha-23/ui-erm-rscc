@@ -14,7 +14,7 @@
             ['key' => 'cppt', 'label' => 'CPPT / SBAR', 'href' => '#'],
         ]],
         ['judul' => 'Penunjang', 'ikon' => 'bi-eyedropper', 'items' => [
-            ['key' => 'permintaan', 'label' => 'Permintaan lab / radiologi', 'href' => '#'],
+            ['key' => 'permintaan', 'label' => 'Permintaan lab / radiologi','href' => route('rekam-medis.permintaan', $noReg)],
             ['key' => 'berkas',     'label' => 'Berkas digital',             'href' => '#'],
         ]],
         ['judul' => 'Farmasi', 'ikon' => 'bi-capsule', 'items' => [
