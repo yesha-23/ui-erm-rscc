@@ -6,6 +6,7 @@ use App\Http\Controllers\KunjunganController;
 use App\Http\Controllers\RekamMedisController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AkunController;
+use App\Http\Controllers\DokumenController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -24,7 +25,17 @@ Route::prefix('kunjungan')->name('kunjungan.')
         Route::get('/ok/{jenis?}', 'ok')->whereIn('jenis', ['mayor', 'minor'])->name('ok');
     });
 
-Route::get('/rekam-medis/{noReg}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
+Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->group(function () {
+    Route::get('/', [RekamMedisController::class, 'show'])->name('show');
+
+    Route::get('/dokumen/{jenis?}/{slug?}', [DokumenController::class, 'index'])
+        ->whereIn('jenis', ['surat', 'persetujuan'])
+        ->name('dokumen');
+    Route::post('/dokumen/{jenis}/{slug}', [DokumenController::class, 'simpan'])
+        ->whereIn('jenis', ['surat', 'persetujuan'])
+        ->name('dokumen.simpan');
+});
+
 Route::prefix('akun')->name('akun.')->controller(AkunController::class)->group(function () {
     Route::get('/profil', 'profil')->name('profil');
     Route::get('/inbox/{id?}', 'inbox')->whereNumber('id')->name('inbox');

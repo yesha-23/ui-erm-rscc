@@ -1,5 +1,8 @@
 import * as bootstrap from 'bootstrap';
-import { initSidebar, initPasswordToggle, initFormLoading, initGrafik, initPasswordStrength } from './rscc';
+import {
+    initSidebar, initPasswordToggle, initFormLoading, initGrafik,
+    initPasswordStrength, initFilterDaftar, initHitungHari, initFokusSaatBuka,
+} from './rscc';
 
 window.bootstrap = bootstrap;
 
@@ -9,4 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFormLoading();
     initGrafik();
     initPasswordStrength();
+    initFilterDaftar();
+    initHitungHari();
+    initFokusSaatBuka();
 });

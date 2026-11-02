@@ -14,12 +14,7 @@
 
     {{-- Kotak cari pasien --}}
     <form class="rs-topbar-search" role="search">
-        <label for="cari-pasien" class="visually-hidden">Cari pasien</label>
-        <div class="input-group">
-            <span class="input-group-text rs-search-icon"><i class="bi bi-search" aria-hidden="true"></i></span>
-            <input id="cari-pasien" type="search" class="form-control rs-search-input"
-                   placeholder="Cari pasien (nama / No. RM)…">
-        </div>
+        <x-search label="Cari pasien" id="cari-pasien" placeholder="Cari pasien (nama / No. RM)…" />
     </form>
 
     {{-- Menu pengguna --}}

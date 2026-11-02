@@ -7,11 +7,8 @@
 
     {{-- Baris utama: cari, tanggal, tombol filter --}}
     <div class="d-flex flex-wrap align-items-center gap-2">
-        <div class="input-group rs-filter-cari">
-            <span class="input-group-text rs-search-icon"><i class="bi bi-search" aria-hidden="true"></i></span>
-            <input type="search" name="q" value="{{ request('q') }}" class="form-control rs-search-input"
-                   placeholder="Cari nama / No. RM" aria-label="Cari pasien">
-        </div>
+        <x-search label="Cari pasien" class="rs-filter-cari" name="q" :value="request('q')"
+            placeholder="Cari nama / No. RM" />
 
         <div class="d-flex align-items-center gap-2">
             <input type="date" name="dari" value="{{ $dari }}" class="form-control rs-filter-tanggal" aria-label="Dari tanggal">

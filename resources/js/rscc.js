@@ -144,3 +144,58 @@ export function initPasswordStrength() {
         });
     });
 }
+
+/* ---------- Saring daftar (mis. daftar dokumen) ---------- */
+export function initFilterDaftar() {
+    document.querySelectorAll('[data-rs-filter-list]').forEach((input) => {
+        const daftar = document.querySelector(input.dataset.rsFilterList);
+        if (!daftar) return;
+
+        const kosong = input.dataset.rsFilterEmpty ? document.querySelector(input.dataset.rsFilterEmpty) : null;
+        const item = daftar.querySelectorAll('[data-rs-filter-text]');
+
+        input.addEventListener('input', () => {
+            const kata = input.value.trim().toLowerCase();
+            let tampil = 0;
+            item.forEach((el) => {
+                const cocok = el.dataset.rsFilterText.includes(kata);
+                el.hidden = !cocok;
+                if (cocok) tampil++;
+            });
+            if (kosong) kosong.hidden = tampil > 0;
+        });
+    });
+}
+
+/* ---------- Hitung lama hari dari dua tanggal ---------- */
+export function initHitungHari() {
+    document.querySelectorAll('[data-rs-hitung-hari]').forEach((wadah) => {
+        const mulai = wadah.querySelector('[data-rs-mulai]');
+        const sampai = wadah.querySelector('[data-rs-sampai]');
+        const hasil = wadah.querySelector('[data-rs-lama]');
+        if (!mulai || !sampai || !hasil) return;
+
+        const hitung = () => {
+            if (!mulai.value || !sampai.value) {
+                hasil.textContent = '—';
+                return;
+            }
+            const hari = Math.round((new Date(sampai.value) - new Date(mulai.value)) / 86400000) + 1;
+            hasil.textContent = hari > 0 ? `${hari} hari` : 'Tanggal tidak valid';
+            hasil.classList.toggle('text-danger', hari <= 0);
+        };
+
+        mulai.addEventListener('change', hitung);
+        sampai.addEventListener('change', hitung);
+        hitung();
+    });
+}
+
+/* ---------- Saat panel dibuka, langsung fokus ke kotak isiannya ---------- */
+export function initFokusSaatBuka() {
+    document.querySelectorAll('[data-rs-focus-on-show]').forEach((panel) => {
+        panel.addEventListener('shown.bs.collapse', () => {
+            panel.querySelector('input')?.focus();
+        });
+    });
+}
