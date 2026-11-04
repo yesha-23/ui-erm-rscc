@@ -18,7 +18,7 @@ class MenuRekamMedis
             ['judul' => 'Asesmen & pemeriksaan', 'ikon' => 'bi-clipboard2-pulse', 'items' => [
                 ['key' => 'ringkasan', 'label' => 'Ringkasan pasien', 'href' => $r('show')],
                 ['key' => 'asesmen',   'label' => 'Asesmen awal',     'href' => $r('asesmen')],
-                ['key' => 'ttv',       'label' => 'Tanda vital',      'href' => '#'],
+                ['key' => 'ttv',       'label' => 'Tanda vital',      'href' => $r('ttv')],
             ]],
             ['judul' => 'Catatan terintegrasi', 'ikon' => 'bi-journal-text', 'items' => [
                 ['key' => 'cppt', 'label' => 'CPPT / SBAR', 'href' => $r('cppt')],

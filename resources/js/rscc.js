@@ -864,3 +864,82 @@ export function initCariMenu() {
         input.focus();
     });
 }
+
+/* ---------- Tanda vital: grafik tren dengan batas normal ---------- */
+export function initGrafikTtv() {
+    const kanvas = document.querySelector('[data-rs-ttv-grafik]');
+    if (!kanvas) return;
+
+    const data = JSON.parse(document.getElementById('data-ttv')?.textContent || '{}');
+    const css = getComputedStyle(document.documentElement);
+    const garisGrid = css.getPropertyValue('--rs-border').trim() || '#E4E7EC';
+
+    const SERI = {
+        suhu: ['suhu'],
+        nadi: ['nadi'],
+        td: ['td_sistolik', 'td_diastolik'],
+        napas: ['napas'],
+        spo2: ['spo2'],
+    };
+    const WARNA = ['#2B6CB0', '#157A4F'];
+    let grafik;
+
+    const gambar = (kunci) => {
+        const nama = SERI[kunci];
+        const acuan = data.seri[nama[0]];
+
+        const datasets = nama.map((n, i) => ({
+            label: data.seri[n].label,
+            data: data.seri[n].data,
+            borderColor: WARNA[i],
+            backgroundColor: WARNA[i],
+            tension: 0.3,
+            pointRadius: 4,
+            spanGaps: true,
+        }));
+
+        // Garis batas normal (putus-putus)
+        ['min', 'max'].forEach((b) => datasets.push({
+            label: b === 'min' ? 'Batas bawah normal' : 'Batas atas normal',
+            data: data.label.map(() => acuan[b]),
+            borderColor: '#98A2B3',
+            borderDash: [6, 4],
+            borderWidth: 1,
+            pointRadius: 0,
+            fill: false,
+        }));
+
+        grafik?.destroy();
+        grafik = new Chart(kanvas, {
+            type: 'line',
+            data: { labels: data.label, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, filter: (item) => !item.text.startsWith('Batas') },
+                    },
+                    tooltip: {
+                        filter: (item) => !item.dataset.label.startsWith('Batas'),
+                        callbacks: {
+                            label: (c) => ` ${c.dataset.label}: ${String(c.parsed.y).replace('.', ',')} ${acuan.unit}`,
+                        },
+                    },
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: garisGrid } },
+                },
+            },
+        });
+    };
+
+    document.querySelectorAll('input[name="grafik-ttv"]').forEach((r) => {
+        r.addEventListener('change', () => gambar(r.value));
+    });
+
+    gambar(document.querySelector('input[name="grafik-ttv"]:checked')?.value || 'suhu');
+}

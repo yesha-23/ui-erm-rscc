@@ -3087,6 +3087,71 @@
     color: var(--rs-primary-dark);
 }
 
+/* ---------- Tanda vital (Clara) ---------- */
+.rs-ttv-ringkas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.rs-ttv-kartu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 14px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: var(--rs-surface);
+}
+
+.rs-ttv-kartu.is-warn {
+    border-color: #F7B27A;
+    background: #FFF8F1;
+}
+
+.rs-ttv-kartu-label {
+    color: var(--rs-text-3);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.rs-ttv-kartu-nilai {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.rs-ttv-kartu-nilai small {
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rs-ttv-kartu-catatan {
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rs-ttv-kartu.is-warn .rs-ttv-kartu-catatan {
+    color: #B54708;
+}
+
+.rs-grafik-ttv {
+    position: relative;
+    height: 280px;
+}
+
+.rs-nilai-tinggi {
+    color: #B42318;
+    font-weight: 700;
+}
+
+.rs-nilai-rendah {
+    color: #B54708;
+    font-weight: 700;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {
@@ -3207,5 +3272,18 @@
 
     .rs-cek-pilih .rs-segmented-item {
         min-height: 38px;
+    }
+
+    .rs-ttv-ringkas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rs-grafik-ttv {
+        height: 220px;
+    }
+
+    .rs-segmented-inline {
+        display: flex;
+        overflow-x: auto;
     }
 }

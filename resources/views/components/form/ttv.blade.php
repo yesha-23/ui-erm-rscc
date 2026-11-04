@@ -1,16 +1,9 @@
-{{-- Tanda-tanda vital. Rentang normal = acuan dewasa; sesuaikan dengan SPO RS. --}}
+{{-- Tanda-tanda vital. Rentang normal diambil dari App\Support\RentangTtv (acuan dewasa; sesuaikan SPO RS). --}}
 @props(['isi' => []])
 
 @php
-    $kolom = [
-        ['name' => 'td_sistolik',  'label' => 'TD sistolik',  'unit' => 'mmHg',    'min' => 90, 'max' => 139,  'step' => '1'],
-        ['name' => 'td_diastolik', 'label' => 'TD diastolik', 'unit' => 'mmHg',    'min' => 60, 'max' => 89,   'step' => '1'],
-        ['name' => 'nadi',         'label' => 'Nadi',         'unit' => 'x/menit', 'min' => 60, 'max' => 100,  'step' => '1'],
-        ['name' => 'napas',        'label' => 'Napas',        'unit' => 'x/menit', 'min' => 12, 'max' => 20,   'step' => '1'],
-        ['name' => 'suhu',         'label' => 'Suhu',         'unit' => '°C',      'min' => 36, 'max' => 37.5, 'step' => '0.1'],
-        ['name' => 'spo2',         'label' => 'SpO₂',         'unit' => '%',       'min' => 95, 'max' => 100,  'step' => '1'],
-    ];
-    $angka = fn ($n) => str_replace('.', ',', (string) $n);
+    $kolom = \App\Support\RentangTtv::KOLOM;
+    $angka = fn ($n) => \App\Support\RentangTtv::angka($n);
 @endphp
 
 <div class="rs-ttv-grid">

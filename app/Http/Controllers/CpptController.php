@@ -143,7 +143,9 @@ class CpptController extends Controller
     /** TTV terakhir: dari Asesmen GD (bila sudah diisi), kalau belum pakai contoh. */
     private function ttvTerakhir(string $noReg): string
     {
-        $a = session("asesmen.$noReg.isi", []);
+         // Observasi terbaru dari halaman Tanda vital; kalau belum ada, dari Asesmen GD
+        $a = collect(session("ttv.$noReg", []))->sortByDesc('stempel')->first()
+            ?? session("asesmen.$noReg.isi", []);
 
         if (filled($a['td_sistolik'] ?? null)) {
             return sprintf(

@@ -552,4 +552,26 @@ class DataContoh
                'Karies gigi'),
         ];
     }
+
+        /**
+     * Observasi tanda vital pasien (CONTOH; tren membaik setelah terapi).
+     * stempel = 'Y-m-d H:i' untuk mengurutkan.
+     */
+    public static function observasiTtv(): array
+    {
+        $o = fn ($stempel, $s, $d, $nadi, $napas, $suhu, $spo2, $nyeri) => [
+            'stempel' => $stempel, 'td_sistolik' => $s, 'td_diastolik' => $d, 'nadi' => $nadi,
+            'napas' => $napas, 'suhu' => $suhu, 'spo2' => $spo2, 'nyeri' => $nyeri,
+            'kesadaran' => 'cm', 'oleh' => '[Nama Perawat]',
+        ];
+
+        return [
+            $o('2026-11-02 14:00', 118, 76, 86, 18, 37.4, 99, 2),
+            $o('2026-11-02 13:00', 120, 76, 88, 18, 37.6, 99, 2),
+            $o('2026-11-02 12:00', 118, 74, 90, 19, 38.0, 99, 3),
+            $o('2026-11-02 11:00', 116, 70, 94, 20, 38.6, 98, 3),
+            $o('2026-11-02 10:00', 118, 72, 98, 20, 39.2, 98, 4),
+            $o('2026-11-02 08:52', 120, 70, 102, 22, 40.1, 98, 5),
+        ];
+    }
 }
