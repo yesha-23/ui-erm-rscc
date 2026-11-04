@@ -15,17 +15,14 @@
 
         <div class="rs-filter-item" role="group" aria-labelledby="judul-tgl-daftar">
             <span class="form-label d-block" id="judul-tgl-daftar">Tanggal daftar</span>
-            <div class="rs-rentang-tanggal" data-rs-rentang-tanggal>
-                <div class="input-group rs-input-tanggal">
-                    <label class="input-group-text" for="f-dari">Dari</label>
-                    <input type="date" id="f-dari" name="dari" value="{{ $dari }}" max="{{ $sampai }}"
-                        class="form-control" data-rs-tgl-dari>
-                </div>
-                <div class="input-group rs-input-tanggal">
-                    <label class="input-group-text" for="f-sampai">Sampai</label>
-                    <input type="date" id="f-sampai" name="sampai" value="{{ $sampai }}" min="{{ $dari }}"
-                        class="form-control" data-rs-tgl-sampai>
-                </div>
+            {{-- Satu kotak menyatu: Dari │ tanggal │ Sampai │ tanggal --}}
+            <div class="input-group rs-rentang-tanggal" data-rs-rentang-tanggal>
+                <label class="input-group-text" for="f-dari">Dari</label>
+                <input type="date" id="f-dari" name="dari" value="{{ $dari }}" max="{{ $sampai }}"
+                    class="form-control" data-rs-tgl-dari>
+                <label class="input-group-text" for="f-sampai">Sampai</label>
+                <input type="date" id="f-sampai" name="sampai" value="{{ $sampai }}" min="{{ $dari }}"
+                    class="form-control" data-rs-tgl-sampai>
             </div>
         </div>
 

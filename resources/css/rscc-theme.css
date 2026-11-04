@@ -3656,3 +3656,61 @@
         display: none;
     }
 }
+
+/* ---------- Filter kunjungan: versi ramping (muat 1 baris di Rawat Jalan/Rehab) ---------- */
+.rs-filter-cari {
+    flex: 1 1 160px;
+}
+
+.rs-filter-pilih {
+    flex: 0 0 160px;
+}
+
+.rs-filter-pilih-lebar {
+    flex: 0 0 200px;
+}
+
+/* Tanggal: satu kotak menyatu */
+.rs-rentang-tanggal.input-group {
+    flex-wrap: nowrap;
+    width: auto;
+    gap: 0;
+}
+
+.rs-rentang-tanggal>.input-group-text {
+    padding: 0 10px;
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rs-rentang-tanggal>.form-control {
+    flex: none;
+    width: 136px;
+}
+
+/* HP: kotak tanggal disusun 2 baris (Dari di atas, Sampai di bawah) */
+@media (max-width: 767.98px) {
+    .rs-rentang-tanggal.input-group {
+        display: grid;
+        grid-template-columns: 76px minmax(0, 1fr);
+        row-gap: 8px;
+        width: 100%;
+    }
+
+    .rs-rentang-tanggal>* {
+        margin-left: 0 !important;
+    }
+
+    .rs-rentang-tanggal>.input-group-text {
+        justify-content: center;
+        border-radius: var(--rs-radius) 0 0 var(--rs-radius) !important;
+    }
+
+    .rs-rentang-tanggal>.form-control {
+        width: auto;
+        border-left: 0;
+        border-radius: 0 var(--rs-radius) var(--rs-radius) 0 !important;
+    }
+}
