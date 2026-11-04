@@ -3469,19 +3469,19 @@
 }
 
 /* =========================================================
-   Daftar kunjungan — revisi 4 Nov (filter, No, No. Registrasi)
+   Daftar kunjungan — revisi 4 Nov (filter 1 baris, No, No. Registrasi)
    ========================================================= */
 
-/* Filter: 2 baris, semua isian berlabel */
+/* ---------- Filter: satu baris, turun baris sendiri kalau tidak cukup ---------- */
 .rs-filter {
-    padding: 16px;
+    padding: 14px 16px;
 }
 
 .rs-filter-baris {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    gap: 12px 16px;
+    gap: 12px;
 }
 
 .rs-filter-item {
@@ -3490,18 +3490,20 @@
 
 .rs-filter-item .form-label {
     margin-bottom: 6px;
+    white-space: nowrap;
 }
 
 .rs-filter-cari {
-    flex: 1 1 320px;
+    flex: 1 1 180px;
+    /* mengisi sisa ruang, minimal 180px */
 }
 
 .rs-filter-pilih {
-    flex: 0 1 200px;
+    flex: 0 0 170px;
 }
 
 .rs-filter-pilih-lebar {
-    flex: 0 1 280px;
+    flex: 0 0 220px;
 }
 
 .rs-filter-aksi {
@@ -3509,12 +3511,38 @@
     margin-left: auto;
 }
 
-.rs-input-tanggal .input-group-text {
-    min-width: 72px;
+.rs-btn-ikon {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
+    width: 42px;
+    padding: 0;
+    font-size: 17px;
 }
 
-/* Tabel: kolom nomor & no. registrasi */
+.rs-rentang-tanggal {
+    flex-wrap: nowrap;
+}
+
+.rs-input-tanggal .input-group-text {
+    justify-content: center;
+    padding: 0 10px;
+}
+
+.rs-input-tanggal .form-control {
+    width: 140px;
+}
+
+/* Desktop: bungkus "filter lain" dilebur supaya isinya sebaris dengan Cari & Tanggal */
+@media (min-width: 768px) {
+
+    .rs-filter-lain,
+    .rs-filter-lain-isi {
+        display: contents !important;
+    }
+}
+
+/* ---------- Tabel: nomor, no. registrasi, kolom pasien ---------- */
 .rs-table thead th.rs-th-nomor,
 .rs-table .rs-td-nomor {
     width: 52px;
@@ -3532,7 +3560,17 @@
     white-space: nowrap;
 }
 
-/* Status kelengkapan (dulu .rs-cek, diganti supaya tidak bentrok dengan checklist) */
+/* ---------- Kelengkapan ---------- */
+.rs-cek-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* dulu .rs-cek; diganti supaya tidak bentrok dengan checklist PPI/CP */
 .rs-status {
     display: inline-flex;
     align-items: center;
@@ -3573,19 +3611,44 @@
     .rs-table-kartu {
         min-width: 1080px;
     }
+
+    /* nama pasien tidak dipatah per kata ("Siti / Rahmawati") */
+    .rs-table .rs-td-utama {
+        min-width: 190px;
+    }
 }
 
+/* ---------- HP ---------- */
 @media (max-width: 767.98px) {
 
-    .rs-filter-cari,
     .rs-filter-item,
+    .rs-filter-cari,
     .rs-filter-pilih,
     .rs-filter-pilih-lebar {
         flex: 1 1 100%;
     }
 
+    .rs-rentang-tanggal {
+        flex-wrap: wrap;
+    }
+
     .rs-input-tanggal .input-group-text {
         width: 76px;
+    }
+
+    .rs-input-tanggal .form-control {
+        flex: 1;
+        width: auto;
+    }
+
+    .rs-filter-lain {
+        width: 100%;
+    }
+
+    .rs-filter-lain-isi {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
 
     /* Nomor urut tidak perlu di tampilan kartu */

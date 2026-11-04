@@ -5,7 +5,7 @@
         <input type="hidden" name="status" value="{{ request('status') }}">
     @endif
 
-    {{-- Baris 1: cari + tanggal daftar --}}
+    {{-- Satu baris. Layar sempit: turun baris otomatis. HP: filter selain cari & tanggal dilipat. --}}
     <div class="rs-filter-baris">
         <div class="rs-filter-item rs-filter-cari">
             <span class="form-label d-block" aria-hidden="true">Cari pasien</span>
@@ -28,74 +28,78 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- HP: filter lain dilipat supaya layar tidak penuh --}}
-    <div class="d-flex gap-2 mt-3 d-md-none">
-        <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-toggle="collapse"
-                data-bs-target="#filterLain" aria-expanded="false" aria-controls="filterLain">
-            <i class="bi bi-sliders me-1" aria-hidden="true"></i>Filter lain
-            @if ($jumlahFilter)
-                <span class="rs-badge-count ms-2">{{ $jumlahFilter }}</span>
-            @endif
-        </button>
-        <button type="submit" class="btn btn-primary flex-fill">Terapkan</button>
-    </div>
-
-    {{-- Baris 2: status bayar + filter khusus unit (desktop selalu terlihat) --}}
-    <div class="collapse d-md-block" id="filterLain">
-        <div class="rs-filter-baris mt-3">
-            <div class="rs-filter-item rs-filter-pilih">
-                <label for="f-bayar" class="form-label">Status bayar</label>
-                <select id="f-bayar" name="bayar" class="form-select">
-                    @foreach ($pilihan['bayar'] as $kunci => $label)
-                        <option value="{{ $kunci }}" @selected(($nilai['bayar'] ?? 'belum') === $kunci)>{{ $label }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            @if ($pilihan['unit'])
-                <div class="rs-filter-item rs-filter-pilih rs-filter-pilih-lebar">
-                    <label for="f-unit" class="form-label">Unit tujuan</label>
-                    <select id="f-unit" name="unit" class="form-select">
-                        <option value="">Semua unit</option>
-                        @foreach ($pilihan['unit'] as $opsi)
-                            <option value="{{ $opsi }}" @selected(($nilai['unit'] ?? '') === $opsi)>{{ $opsi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            @endif
-
-            @if ($pilihan['bangsal'])
+        {{-- Desktop: isi bagian ini ikut berjajar di baris yang sama (CSS display: contents) --}}
+        <div class="collapse rs-filter-lain" id="filterLain">
+            <div class="rs-filter-lain-isi">
                 <div class="rs-filter-item rs-filter-pilih">
-                    <label for="f-bangsal" class="form-label">Ruang</label>
-                    <select id="f-bangsal" name="bangsal" class="form-select">
-                        <option value="">Semua ruang</option>
-                        @foreach ($pilihan['bangsal'] as $opsi)
-                            <option value="{{ $opsi }}" @selected(($nilai['bangsal'] ?? '') === $opsi)>{{ $opsi }}</option>
+                    <label for="f-bayar" class="form-label">Status bayar</label>
+                    <select id="f-bayar" name="bayar" class="form-select">
+                        @foreach ($pilihan['bayar'] as $kunci => $label)
+                            <option value="{{ $kunci }}" @selected(($nilai['bayar'] ?? 'belum') === $kunci)>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
-            @endif
 
-            @if ($pilihan['ppa'])
-                <div class="rs-filter-item rs-filter-pilih rs-filter-pilih-lebar">
-                    <label for="f-ppa" class="form-label">Dokter / PPA</label>
-                    <select id="f-ppa" name="ppa" class="form-select">
-                        <option value="">Semua dokter/PPA</option>
-                        @foreach ($pilihan['ppa'] as $opsi)
-                            <option value="{{ $opsi }}" @selected(($nilai['ppa'] ?? '') === $opsi)>{{ $opsi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            @endif
+                @if ($pilihan['unit'])
+                    <div class="rs-filter-item rs-filter-pilih rs-filter-pilih-lebar">
+                        <label for="f-unit" class="form-label">Unit tujuan</label>
+                        <select id="f-unit" name="unit" class="form-select">
+                            <option value="">Semua unit</option>
+                            @foreach ($pilihan['unit'] as $opsi)
+                                <option value="{{ $opsi }}" @selected(($nilai['unit'] ?? '') === $opsi)>{{ $opsi }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
 
-            <div class="rs-filter-aksi d-none d-md-flex">
-                <a href="{{ url()->current() }}" class="btn btn-outline-secondary">Reset</a>
-                <button type="submit" class="btn btn-primary">Terapkan</button>
+                @if ($pilihan['bangsal'])
+                    <div class="rs-filter-item rs-filter-pilih">
+                        <label for="f-bangsal" class="form-label">Ruang</label>
+                        <select id="f-bangsal" name="bangsal" class="form-select">
+                            <option value="">Semua ruang</option>
+                            @foreach ($pilihan['bangsal'] as $opsi)
+                                <option value="{{ $opsi }}" @selected(($nilai['bangsal'] ?? '') === $opsi)>{{ $opsi }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+
+                @if ($pilihan['ppa'])
+                    <div class="rs-filter-item rs-filter-pilih rs-filter-pilih-lebar">
+                        <label for="f-ppa" class="form-label">Dokter / PPA</label>
+                        <select id="f-ppa" name="ppa" class="form-select">
+                            <option value="">Semua dokter/PPA</option>
+                            @foreach ($pilihan['ppa'] as $opsi)
+                                <option value="{{ $opsi }}" @selected(($nilai['ppa'] ?? '') === $opsi)>{{ $opsi }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+
+                <a href="{{ url()->current() }}" class="rs-chip-reset d-md-none">Reset semua filter</a>
             </div>
+        </div>
 
-            <a href="{{ url()->current() }}" class="rs-chip-reset d-md-none">Reset semua filter</a>
+        {{-- Tombol desktop --}}
+        <div class="rs-filter-aksi d-none d-md-flex">
+            <a href="{{ url()->current() }}" class="btn btn-outline-secondary rs-btn-ikon"
+               title="Reset filter" aria-label="Reset filter">
+                <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
+            </a>
+            <button type="submit" class="btn btn-primary">Terapkan</button>
+        </div>
+
+        {{-- Tombol HP --}}
+        <div class="d-flex gap-2 w-100 d-md-none">
+            <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-toggle="collapse"
+                    data-bs-target="#filterLain" aria-expanded="false" aria-controls="filterLain">
+                <i class="bi bi-sliders me-1" aria-hidden="true"></i>Filter lain
+                @if ($jumlahFilter)
+                    <span class="rs-badge-count ms-2">{{ $jumlahFilter }}</span>
+                @endif
+            </button>
+            <button type="submit" class="btn btn-primary flex-fill">Terapkan</button>
         </div>
     </div>
 </form>
