@@ -418,3 +418,176 @@ export function initUnggahBerkas() {
 
     tampilkan();
 }
+
+/* ---------- Asesmen awal GD: langkah, GCS, TTV, nyeri, fisik, risiko jatuh ---------- */
+export function initAsesmen() {
+    const form = document.querySelector('[data-rs-asesmen]');
+    if (!form) return;
+
+    /* --- Penanda "ada perubahan" + peringatan sebelum menutup halaman --- */
+    const status = document.querySelector('[data-rs-status-simpan]');
+    let berubah = false;
+
+    function tandai() {
+        if (berubah) return;
+        berubah = true;
+        status.innerHTML = '<i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>Ada perubahan yang belum disimpan';
+        status.classList.add('text-warning-emphasis', 'fw-semibold');
+    }
+    form.addEventListener('input', tandai);
+    form.addEventListener('change', tandai);
+    form.addEventListener('submit', () => { berubah = false; });
+    window.addEventListener('beforeunload', (e) => {
+        if (berubah) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    /* --- Langkah 1–4 --- */
+    const tab = [...document.querySelectorAll('[data-rs-langkah-tab]')];
+    const panel = [...form.querySelectorAll('[data-rs-langkah-panel]')];
+    const input = form.querySelector('[data-rs-langkah-input]');
+    const tPrev = document.querySelector('[data-rs-langkah-prev]');
+    const tNext = document.querySelector('[data-rs-langkah-next]');
+    const tFinal = document.querySelector('[data-rs-langkah-final]');
+    let sekarang = Number(form.dataset.rsLangkahAwal || 0);
+
+    function buka(i, fokus = false) {
+        sekarang = Math.max(0, Math.min(panel.length - 1, i));
+        panel.forEach((p, n) => { p.hidden = n !== sekarang; });
+        tab.forEach((t, n) => {
+            const aktif = n === sekarang;
+            t.classList.toggle('active', aktif);
+            t.classList.toggle('is-done', n < sekarang);
+            t.setAttribute('aria-selected', String(aktif));
+            t.tabIndex = aktif ? 0 : -1;
+        });
+        input.value = sekarang;
+
+        const terakhir = sekarang === panel.length - 1;
+        tPrev.disabled = sekarang === 0;
+        tNext.hidden = terakhir;
+        tFinal.hidden = !terakhir;
+
+        if (fokus) {
+            panel[sekarang].scrollIntoView({ block: 'start', behavior: 'smooth' });
+            panel[sekarang].querySelector('.rs-langkah-judul')?.focus({ preventScroll: true });
+        }
+    }
+
+    tab.forEach((t, n) => {
+        t.addEventListener('click', () => buka(n, true));
+        t.addEventListener('keydown', (e) => {
+            if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+            e.preventDefault();
+            const arah = e.key === 'ArrowRight' ? 1 : -1;
+            const n2 = (sekarang + arah + tab.length) % tab.length;
+            buka(n2);
+            tab[n2].focus();
+        });
+    });
+    tPrev.addEventListener('click', () => buka(sekarang - 1, true));
+    tNext.addEventListener('click', () => buka(sekarang + 1, true));
+    buka(sekarang);
+
+    /* --- GCS: total + tingkat kesadaran --- */
+    const gcs = form.querySelector('[data-rs-gcs]');
+    if (gcs) {
+        const pilih = [...gcs.querySelectorAll('[data-rs-gcs-nilai]')];
+        const total = gcs.querySelector('[data-rs-gcs-total]');
+        const kesadaran = gcs.querySelector('[data-rs-gcs-kesadaran]');
+        const hitung = () => {
+            if (pilih.some((s) => !s.value)) {
+                total.textContent = '–';
+                kesadaran.textContent = 'Lengkapi E, V, dan M';
+                gcs.classList.remove('is-warn');
+                return;
+            }
+            const n = pilih.reduce((jml, s) => jml + Number(s.value), 0);
+            total.textContent = n;
+            kesadaran.textContent =
+                n >= 14 ? 'Compos mentis' : n >= 12 ? 'Apatis' : n >= 10 ? 'Delirium'
+                    : n >= 7 ? 'Somnolen' : n >= 5 ? 'Sopor' : n === 4 ? 'Semi-koma' : 'Koma';
+            gcs.classList.toggle('is-warn', n < 14);
+        };
+        pilih.forEach((s) => s.addEventListener('change', hitung));
+        hitung();
+    }
+
+    /* --- Tanda vital: penanda di luar rentang normal --- */
+    form.querySelectorAll('[data-rs-ttv]').forEach((kotak) => {
+        const isian = kotak.querySelector('input');
+        const catatan = kotak.querySelector('.rs-ttv-catatan');
+        const teksAwal = catatan.textContent.trim();
+        const min = Number(kotak.dataset.min);
+        const max = Number(kotak.dataset.max);
+
+        const cek = () => {
+            const v = parseFloat(isian.value);
+            let teks = teksAwal;
+            let luar = false;
+            if (!Number.isNaN(v)) {
+                if (v < min) { teks = '↓ Di bawah normal'; luar = true; }
+                else if (v > max) { teks = '↑ Di atas normal'; luar = true; }
+                else { teks = '✓ Normal'; }
+            }
+            catatan.textContent = teks;
+            kotak.classList.toggle('is-warn', luar);
+        };
+        isian.addEventListener('input', cek);
+        cek();
+    });
+
+    /* --- Skala nyeri: label kategori --- */
+    const nyeri = form.querySelector('[data-rs-nyeri]');
+    if (nyeri) {
+        const label = nyeri.querySelector('[data-rs-nyeri-label]');
+        const perbarui = () => {
+            const v = Number(nyeri.querySelector('input[name="nyeri"]:checked')?.value ?? 0);
+            label.textContent = v === 0
+                ? 'Tidak nyeri'
+                : `Nyeri ${v <= 3 ? 'ringan' : v <= 6 ? 'sedang' : 'berat'} (${v}/10)`;
+        };
+        nyeri.addEventListener('change', perbarui);
+        perbarui();
+    }
+
+    /* --- Pemeriksaan fisik: hitung temuan + "Semua normal" --- */
+    const fisik = form.querySelector('[data-rs-fisik]');
+    if (fisik) {
+        const jumlah = fisik.querySelector('[data-rs-fisik-jumlah]');
+        const hitung = () => {
+            jumlah.textContent = fisik.querySelectorAll('input[value="temuan"]:checked').length;
+        };
+        fisik.querySelector('[data-rs-fisik-normal]').addEventListener('click', () => {
+            fisik.querySelectorAll('input[value="normal"]').forEach((r) => { r.checked = true; });
+            hitung();
+            tandai();
+        });
+        fisik.addEventListener('change', hitung);
+        hitung();
+    }
+
+    /* --- Risiko jatuh (Get Up and Go) --- */
+    const jatuh = form.querySelector('[data-rs-jatuh]');
+    if (jatuh) {
+        const hasil = jatuh.querySelector('[data-rs-jatuh-hasil]');
+        const nilai = () => {
+            const ya = jatuh.querySelectorAll('input[value="ya"]:checked').length;
+            const [teks, kelas] = ya === 0 ? ['Tidak berisiko', 'is-aman']
+                : ya === 1 ? ['Risiko rendah', 'is-sedang']
+                    : ['Risiko tinggi', 'is-tinggi'];
+            hasil.textContent = `Hasil: ${teks}`;
+            hasil.className = `rs-jatuh-hasil ${kelas}`;
+        };
+        jatuh.addEventListener('change', nilai);
+        nilai();
+    }
+
+    /* --- Jumlah diagnosis terpilih --- */
+    const dx = form.querySelector('[data-rs-diagnosa]');
+    if (dx) {
+        const n = dx.querySelector('[data-rs-diagnosa-jumlah]');
+        const hitung = () => { n.textContent = dx.querySelectorAll('input:checked').length; };
+        dx.addEventListener('change', hitung);
+        hitung();
+    }
+}

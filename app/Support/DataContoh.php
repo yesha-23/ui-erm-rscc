@@ -329,4 +329,80 @@ class DataContoh
              'keterangan' => null],
         ];
     }
+
+        /**
+     * Pilihan untuk Asesmen Awal Keperawatan Gawat Darurat (CONTOH).
+     * IT RSCC: sesuaikan dengan master data / SPO keperawatan RS.
+     */
+    public static function opsiAsesmenGd(): array
+    {
+        $kunci = fn (array $daftar) => collect($daftar)
+            ->mapWithKeys(fn ($nama) => [\Illuminate\Support\Str::slug($nama) => $nama])
+            ->all();
+
+        return [
+            'cara_datang' => [
+                'sendiri'  => 'Datang sendiri',
+                'keluarga' => 'Diantar keluarga',
+                'ambulans' => 'Ambulans',
+                'rujukan'  => 'Rujukan faskes lain',
+            ],
+            'triase' => [
+                'merah'  => 'Merah · P1',
+                'kuning' => 'Kuning · P2',
+                'hijau'  => 'Hijau · P3',
+                'hitam'  => 'Hitam · P0',
+            ],
+            'keadaan_umum' => ['baik' => 'Baik', 'sedang' => 'Sedang', 'lemah' => 'Lemah', 'buruk' => 'Buruk'],
+            'gcs_e' => [
+                4 => 'Membuka spontan', 3 => 'Dengan perintah suara',
+                2 => 'Dengan rangsang nyeri', 1 => 'Tidak membuka',
+            ],
+            'gcs_v' => [
+                5 => 'Orientasi baik', 4 => 'Bingung', 3 => 'Kata-kata tidak tepat',
+                2 => 'Suara tidak jelas', 1 => 'Tidak ada suara',
+            ],
+            'gcs_m' => [
+                6 => 'Mengikuti perintah', 5 => 'Melokalisir nyeri', 4 => 'Menarik dari nyeri',
+                3 => 'Fleksi abnormal', 2 => 'Ekstensi abnormal', 1 => 'Tidak ada gerakan',
+            ],
+            'nyeri_sifat' => $kunci(['Ditusuk', 'Terikat', 'Tumpul', 'Berdenyut', 'Terbakar']),
+            'nyeri_waktu' => $kunci(['Hilang timbul', 'Terus menerus', 'Jarang']),
+            'fisik' => [
+                'kepala'            => 'Kepala & wajah',
+                'leher'             => 'Leher',
+                'dada'              => 'Dada / paru',
+                'jantung'           => 'Jantung',
+                'abdomen'           => 'Abdomen',
+                'ekstremitas_atas'  => 'Ekstremitas atas',
+                'ekstremitas_bawah' => 'Ekstremitas bawah',
+                'kulit'             => 'Kulit',
+            ],
+            'risiko_jatuh' => [
+                'a' => 'Cara berjalan tidak seimbang / memakai alat bantu',
+                'b' => 'Menopang saat akan duduk (memegang kursi atau benda lain)',
+            ],
+            'diagnosa' => $kunci([
+                'Bersihan jalan napas tidak efektif', 'Pola napas tidak efektif',
+                'Perfusi jaringan tidak efektif', 'Hipertermia', 'Nyeri akut', 'Nyeri kronis',
+                'Kecemasan', 'Risiko infeksi', 'Diare', 'Kekurangan volume cairan',
+                'Gangguan pertukaran gas', 'Intoleransi aktivitas',
+            ]),
+            'intervensi' => [
+                'Nyeri' => $kunci([
+                    'Mengajarkan teknik relaksasi dan distraksi',
+                    'Mengontrol lingkungan (cahaya, kebisingan)',
+                ]),
+                'Risiko jatuh' => $kunci([
+                    'Pakaikan pita kuning di pergelangan tangan',
+                    'Edukasi pencegahan jatuh kepada pasien dan keluarga',
+                ]),
+                'Lainnya' => $kunci([
+                    'Kolaborasi dengan dokter untuk pemberian obat',
+                    'Kompres hangat',
+                    'Pantau tanda vital tiap jam',
+                ]),
+            ],
+        ];
+    }
 }

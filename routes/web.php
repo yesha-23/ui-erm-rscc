@@ -52,6 +52,7 @@ Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->group(function () {
     Route::get('berkas', [BerkasController::class, 'index'])->name('berkas');
     Route::post('berkas', [BerkasController::class, 'simpan'])->name('berkas.simpan');
     Route::get('asesmen', [AsesmenController::class, 'index'])->name('asesmen');
+    Route::post('asesmen', [AsesmenController::class, 'simpan'])->name('asesmen.simpan');
 });
 
 Route::prefix('akun')->name('akun.')->controller(AkunController::class)->group(function () {
