@@ -16,6 +16,7 @@ use App\Http\Controllers\ChecklistController;
 use App\Http\Controllers\ResepController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\TtvController;
+use App\Http\Middleware\CatatPasienTerakhir;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -34,7 +35,7 @@ Route::prefix('kunjungan')->name('kunjungan.')
         Route::get('/ok/{jenis?}', 'ok')->whereIn('jenis', ['mayor', 'minor'])->name('ok');
     });
 
-Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->group(function () {
+Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->middleware(CatatPasienTerakhir::class)->group(function () {
     Route::get('/', [RekamMedisController::class, 'show'])->name('show');
 
     Route::get('/dokumen/{jenis?}/{slug?}', [DokumenController::class, 'index'])
