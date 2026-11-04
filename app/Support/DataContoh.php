@@ -407,6 +407,19 @@ class DataContoh
         ];
     }
 
+    /** Sesi HD sebelumnya (CONTOH) — untuk "Salin resep" dan BB kering bawaan. IT: ambil sesi_hd terakhir yang final. */
+    public static function hdSesiSebelumnya(): array
+    {
+        return [
+            'tanggal'   => '02 Nov (HD ke-48)',
+            'bb_kering' => 58.0,
+            'resep'     => [
+                'jenis' => 'rutin', 'durasi' => 4.5, 'qb' => 200, 'qd' => 400, 'uf_goal' => 4.5,
+                'dialisat' => 'bikarbonat', 'heparin' => 'minimal', 'heparin_awal' => 1000, 'heparin_lanjut' => 500,
+            ],
+        ];
+    }
+
     /**
      * Isi contoh dokumen untuk pratinjau cetak.
      * IT RSCC: ganti dengan data draf/final yang tersimpan di database.

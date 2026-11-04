@@ -68,7 +68,7 @@ class KonfigurasiRekamMedis
     }
 
     /** Kelompok menu tambahan khusus unit (tampil setelah "Asesmen & pemeriksaan"). */
-    public static function grupKhusus(string $unit): array
+    public static function grupKhusus(string $unit, \Closure $r): array
     {
         $s = fn ($key, $label) => self::segera($key, $label);
 
@@ -81,10 +81,10 @@ class KonfigurasiRekamMedis
             ],
             'hd' => [
                 ['judul' => 'Sesi hemodialisa', 'ikon' => 'bi-droplet', 'items' => [
-                    $s('hd-pra', 'Pra-HD'),
-                    $s('hd-resep', 'Resep HD'),
-                    $s('hd-intra', 'Monitoring intra-HD'),
-                    $s('hd-pasca', 'Pasca-HD & evaluasi'),
+                    ['key' => 'hd-pra',   'label' => 'Pra-HD',              'href' => $r('hd', ['pra'])],
+                    ['key' => 'hd-resep', 'label' => 'Resep HD',            'href' => $r('hd', ['resep'])],
+                    ['key' => 'hd-intra', 'label' => 'Monitoring intra-HD', 'href' => $r('hd', ['intra'])],
+                    ['key' => 'hd-pasca', 'label' => 'Pasca-HD & evaluasi', 'href' => $r('hd', ['pasca'])],
                 ]],
             ],
             'ranap' => [
@@ -141,6 +141,11 @@ class KonfigurasiRekamMedis
             default => ['belum', 'Belum diisi'],
         };
 
+        $hd     = session("hd.$noReg", []);
+        $hdSt   = fn (string $k) => isset($hd[$k]) ? 'selesai' : 'belum';
+        $hdKet  = fn (string $k) => isset($hd[$k]) ? 'Tersimpan · ' . $hd[$k]['waktu'] : 'Belum diisi';
+        $jmlObs = count($hd['intra'] ?? []);
+
         return match ($unit) {
             'rajal' => [
                 $t('Tanda vital', 'selesai', 'Terakhir 14:00', $r('ttv')),
@@ -154,10 +159,11 @@ class KonfigurasiRekamMedis
                 $t('Jadwal sesi berikutnya', 'belum', 'Belum dijadwalkan'),
             ],
             'hd' => [
-                $t('Pra-HD', 'selesai', '07:15'),
-                $t('Resep HD', 'selesai', '07:20'),
-                $t('Monitoring intra-HD', 'draf', '2 observasi tercatat'),
-                $t('Pasca-HD & evaluasi', 'belum', 'Belum diisi'),
+                $t('Pra-HD', $hdSt('pra'), $hdKet('pra'), $r('hd', ['pra'])),
+                $t('Resep HD', $hdSt('resep'), $hdKet('resep'), $r('hd', ['resep'])),
+                $t('Monitoring intra-HD', $jmlObs ? 'draf' : 'belum',
+                   $jmlObs ? "$jmlObs observasi tercatat" : 'Belum ada observasi', $r('hd', ['intra'])),
+                $t('Pasca-HD & evaluasi', $hdSt('pasca'), $hdKet('pasca'), $r('hd', ['pasca'])),
             ],
             'ranap' => [
                 $t('Asesmen awal medis', 'selesai', 'Hari pertama rawat'),

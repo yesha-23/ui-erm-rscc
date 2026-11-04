@@ -22,7 +22,7 @@ class MenuRekamMedis
                 ...KonfigurasiRekamMedis::formUtama($unit, $r),
                 ['key' => 'ttv', 'label' => 'Tanda vital', 'href' => $r('ttv')],
             ]],
-            ...KonfigurasiRekamMedis::grupKhusus($unit),
+            ...KonfigurasiRekamMedis::grupKhusus($unit, $r),
             ['judul' => 'Catatan terintegrasi', 'ikon' => 'bi-journal-text', 'items' => [
                 ['key' => 'cppt', 'label' => 'CPPT / SBAR', 'href' => $r('cppt')],
             ]],

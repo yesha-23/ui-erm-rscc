@@ -4180,3 +4180,137 @@
     margin: 0;
     color: var(--rs-text-2);
 }
+
+/* =========================================================
+   Sesi hemodialisa (rs-hd-*)
+   ========================================================= */
+.rs-hd-ringkas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin: 0;
+}
+
+.rs-hd-ringkas>div {
+    padding: 10px 12px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: var(--rs-surface);
+}
+
+.rs-hd-ringkas dt {
+    color: var(--rs-text-3);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rs-hd-ringkas dd {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Tab tahap */
+.rs-hd-tabs {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.rs-hd-no {
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--rs-border);
+    color: var(--rs-text-2);
+    font-size: 11px;
+}
+
+.rs-doc-tab.active .rs-hd-no {
+    background: var(--rs-primary);
+    color: #FFFFFF;
+}
+
+.rs-hd-st {
+    font-size: 12px;
+}
+
+.rs-hd-st.is-selesai {
+    color: var(--rs-success);
+}
+
+.rs-hd-st.is-draf {
+    color: var(--rs-warning);
+}
+
+.rs-hd-st.is-belum {
+    color: var(--rs-border-input);
+}
+
+/* Grid isian */
+.rs-hd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px 16px;
+}
+
+.rs-hd-catatan {
+    grid-column: span 2;
+}
+
+/* Risiko jatuh */
+.rs-hd-morse {
+    margin: 0;
+    padding: 12px 0;
+    border-top: 1px solid var(--rs-hover);
+}
+
+.rs-hd-morse:first-of-type {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.rs-hd-morse legend {
+    float: none;
+    width: auto;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.rs-hd-skor {
+    margin-left: 4px;
+    padding: 0 6px;
+    border-radius: 6px;
+    background: var(--rs-hover);
+    font-size: 11px;
+}
+
+[data-rs-morse-hasil][data-kategori="aman"] {
+    background: var(--rs-success-soft);
+    color: var(--rs-success-text);
+}
+
+[data-rs-morse-hasil][data-kategori="rendah"] {
+    background: var(--rs-warning-soft);
+    color: var(--rs-warning-text);
+}
+
+[data-rs-morse-hasil][data-kategori="tinggi"] {
+    background: var(--rs-danger-soft);
+    color: var(--rs-danger-text);
+}
+
+/* URR di bawah target */
+.rs-output.is-kurang {
+    background: var(--rs-warning-soft);
+    color: var(--rs-warning-text);
+}
+
+@media (max-width: 767.98px) {
+    .rs-hd-catatan {
+        grid-column: auto;
+    }
+}

@@ -1233,3 +1233,81 @@ export function initFormPemeriksaan() {
         });
     });
 }
+
+/**
+ * Sesi hemodialisa: hitungan otomatis + salin resep sesi sebelumnya.
+ * - Kenaikan BB = BB pre − BB kering
+ * - Skor risiko jatuh Morse + kategori
+ * - UF aktual = BB pre − BB pasca
+ * - URR = (ureum pra − ureum pasca) ÷ ureum pra × 100%
+ */
+export function initSesiHd() {
+    const form = document.querySelector('[data-rs-hd-form]');
+    if (!form) return;
+
+    const angka = (nama) => {
+        const n = parseFloat(form.querySelector(`[data-rs-hd="${nama}"]`)?.value);
+        return Number.isFinite(n) ? n : null;
+    };
+    const fmt = (n, d = 1) => n.toLocaleString('id-ID', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+    const hitung = () => {
+        const idwg = form.querySelector('[data-rs-hd-idwg]');
+        if (idwg) {
+            const pre = angka('bb_pre');
+            const kering = angka('bb_kering');
+            idwg.textContent = pre !== null && kering !== null
+                ? `${pre - kering >= 0 ? '+' : ''}${fmt(pre - kering)} kg` : '—';
+        }
+
+        const uf = form.querySelector('[data-rs-hd-uf]');
+        if (uf) {
+            const pre = parseFloat(uf.dataset.bbPre);
+            const post = angka('bb_post');
+            uf.textContent = Number.isFinite(pre) && post !== null ? `${fmt(pre - post)} L` : '—';
+        }
+
+        const urr = form.querySelector('[data-rs-hd-urr]');
+        if (urr) {
+            const a = angka('ureum_pre');
+            const b = angka('ureum_post');
+            if (a && b !== null && b < a) {
+                const nilai = ((a - b) / a) * 100;
+                urr.textContent = `${fmt(nilai)} %`;
+                urr.classList.toggle('is-kurang', nilai < 65);
+            } else {
+                urr.textContent = '—';
+                urr.classList.remove('is-kurang');
+            }
+        }
+
+        const morse = form.querySelector('[data-rs-morse]');
+        if (morse) {
+            const skor = [...morse.querySelectorAll('input:checked')].reduce((t, el) => t + Number(el.value), 0);
+            const [teks, kategori] = skor >= 45 ? ['Risiko tinggi', 'tinggi']
+                : skor >= 25 ? ['Risiko rendah', 'rendah'] : ['Tidak berisiko', 'aman'];
+            const hasil = morse.querySelector('[data-rs-morse-hasil]');
+            hasil.textContent = `Skor ${skor} · ${teks}`;
+            hasil.dataset.kategori = kategori;
+        }
+    };
+
+    form.addEventListener('input', hitung);
+    form.addEventListener('change', hitung);
+    hitung();
+
+    const tombolSalin = document.querySelector('[data-rs-salin-resep]');
+    tombolSalin?.addEventListener('click', () => {
+        const data = JSON.parse(tombolSalin.dataset.rsSalinResep);
+        Object.entries(data).forEach(([nama, nilai]) => {
+            const el = form.elements[nama];
+            if (el) el.value = String(nilai); // radio (RadioNodeList) ikut tercentang
+        });
+        const info = document.querySelector('[data-rs-salin-info]');
+        if (info) {
+            info.textContent = 'Resep disalin dari sesi sebelumnya. Sesuaikan bila perlu, lalu simpan.';
+            info.hidden = false;
+        }
+        hitung();
+    });
+}
