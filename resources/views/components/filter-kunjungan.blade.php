@@ -10,10 +10,17 @@
         <x-search label="Cari pasien" class="rs-filter-cari" name="q" :value="request('q')"
             placeholder="Cari nama / No. RM" />
 
-        <div class="d-flex align-items-center gap-2">
-            <input type="date" name="dari" value="{{ $dari }}" class="form-control rs-filter-tanggal" aria-label="Dari tanggal">
-            <span class="rs-text-muted" aria-hidden="true">–</span>
-            <input type="date" name="sampai" value="{{ $sampai }}" class="form-control rs-filter-tanggal" aria-label="Sampai tanggal">
+        <div class="rs-rentang-tanggal" data-rs-rentang-tanggal>
+            <div class="input-group rs-input-tanggal">
+                <label class="input-group-text" for="f-dari">Tanggal mulai</label>
+                <input type="date" id="f-dari" name="dari" value="{{ $dari }}" max="{{ $sampai }}"
+                    class="form-control" data-rs-tgl-dari>
+            </div>
+            <div class="input-group rs-input-tanggal">
+                <label class="input-group-text" for="f-sampai">Tanggal selesai</label>
+                <input type="date" id="f-sampai" name="sampai" value="{{ $sampai }}" min="{{ $dari }}"
+                    class="form-control" data-rs-tgl-sampai>
+            </div>
         </div>
 
         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse"

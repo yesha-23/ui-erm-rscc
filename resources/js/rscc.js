@@ -943,3 +943,24 @@ export function initGrafikTtv() {
 
     gambar(document.querySelector('input[name="grafik-ttv"]:checked')?.value || 'suhu');
 }
+
+/* ---------- Rentang tanggal: tanggal selesai tidak boleh sebelum tanggal mulai ---------- */
+export function initRentangTanggal() {
+    document.querySelectorAll('[data-rs-rentang-tanggal]').forEach((wadah) => {
+        const dari = wadah.querySelector('[data-rs-tgl-dari]');
+        const sampai = wadah.querySelector('[data-rs-tgl-sampai]');
+        if (!dari || !sampai) return;
+
+        const sinkron = () => {
+            if (dari.value && sampai.value && sampai.value < dari.value) {
+                sampai.value = dari.value;
+            }
+            sampai.min = dari.value || '';
+            dari.max = sampai.value || '';
+        };
+
+        dari.addEventListener('change', sinkron);
+        sampai.addEventListener('change', sinkron);
+        sinkron();
+    });
+}

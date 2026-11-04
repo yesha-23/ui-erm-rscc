@@ -3152,6 +3152,179 @@
     font-weight: 700;
 }
 
+/* ---------- Beranda: pasien terakhir dibuka ---------- */
+.rs-terakhir {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rs-terakhir-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    color: var(--rs-text);
+    text-decoration: none;
+}
+
+.rs-terakhir-item:hover,
+.rs-terakhir-item:focus-visible {
+    background: var(--rs-hover);
+    color: var(--rs-text);
+}
+
+.rs-terakhir-nama {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.rs-terakhir-info {
+    display: block;
+    overflow: hidden;
+    color: var(--rs-text-muted);
+    font-size: 12.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rs-terakhir-kosong {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+    font-size: 13.5px;
+}
+
+.rs-terakhir-kosong .bi {
+    color: var(--rs-primary-dark);
+    font-size: 20px;
+}
+
+/* ---------- Ukuran isian seragam ---------- */
+.form-control,
+.form-select {
+    font-size: 14px;
+}
+
+/* ---------- Pengaturan ---------- */
+.rs-setelan {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 20px 32px;
+}
+
+.rs-setelan-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.rs-setelan-ikon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-size: 18px;
+}
+
+.rs-setelan-aksi {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.rs-setelan-daftar {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.rs-setelan-simpan {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* Kotak password + tombol mata = satu kotak utuh */
+.rs-input-password {
+    border-radius: var(--rs-radius);
+    transition: box-shadow .15s ease;
+}
+
+.rs-input-password>.form-control,
+.rs-input-password>[data-rs-toggle-password] {
+    border-color: var(--rs-border-input);
+    background: var(--rs-surface);
+}
+
+.rs-input-password>.form-control {
+    border-right: 0;
+}
+
+.rs-input-password>.form-control:focus {
+    box-shadow: none;
+}
+
+.rs-input-password>[data-rs-toggle-password] {
+    border-left: 0;
+    color: var(--rs-text-3);
+}
+
+.rs-input-password>[data-rs-toggle-password]:hover {
+    background: var(--rs-surface);
+    color: var(--rs-primary-dark);
+}
+
+.rs-input-password:focus-within {
+    box-shadow: 0 0 0 4px var(--rs-primary-soft);
+}
+
+.rs-input-password:focus-within>.form-control,
+.rs-input-password:focus-within>[data-rs-toggle-password] {
+    border-color: var(--rs-primary);
+}
+
+.rs-input-password>.form-control.is-invalid,
+.rs-input-password>.form-control.is-invalid~[data-rs-toggle-password] {
+    border-color: #D92D20;
+}
+
+/* ---------- Filter: rentang tanggal ---------- */
+.rs-rentang-tanggal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rs-input-tanggal {
+    flex-wrap: nowrap;
+    width: auto;
+}
+
+.rs-input-tanggal .input-group-text {
+    border-color: var(--rs-border-input);
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rs-input-tanggal .form-control {
+    flex: none;
+    width: 150px;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {
@@ -3285,5 +3458,29 @@
     .rs-segmented-inline {
         display: flex;
         overflow-x: auto;
+    }
+
+    .rs-setelan {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .rs-setelan-aksi .btn,
+    .rs-setelan-simpan .btn {
+        width: 100%;
+    }
+
+    .rs-rentang-tanggal,
+    .rs-input-tanggal {
+        width: 100%;
+    }
+
+    .rs-input-tanggal .input-group-text {
+        width: 118px;
+    }
+
+    .rs-input-tanggal .form-control {
+        flex: 1;
+        width: auto;
     }
 }

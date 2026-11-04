@@ -2,7 +2,7 @@ import * as bootstrap from 'bootstrap';
 import {
     initSidebar, initPasswordToggle, initFormLoading, initGrafik,
     initPasswordStrength, initFilterDaftar, initHitungHari, initFokusSaatBuka,
-    initPilihPemeriksaan, initUnggahBerkas,
+    initPilihPemeriksaan, initUnggahBerkas, initRentangTanggal,
     initAsesmen, initSisipTeks, initResep, initChecklist, initMenuRmCari, initCariMenu,
 } from './rscc';
 
@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFokusSaatBuka();
     initPilihPemeriksaan();
     initUnggahBerkas();
+    initRentangTanggal();
 
     // Clara
     initAsesmen();
