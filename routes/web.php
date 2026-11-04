@@ -11,6 +11,7 @@ use App\Http\Controllers\CetakController;
 use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\BerkasController;
 use App\Http\Controllers\AsesmenController;
+use App\Http\Controllers\CpptController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -53,6 +54,9 @@ Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->group(function () {
     Route::post('berkas', [BerkasController::class, 'simpan'])->name('berkas.simpan');
     Route::get('asesmen', [AsesmenController::class, 'index'])->name('asesmen');
     Route::post('asesmen', [AsesmenController::class, 'simpan'])->name('asesmen.simpan');
+    Route::get('cppt', [CpptController::class, 'index'])->name('cppt');
+    Route::post('cppt', [CpptController::class, 'simpan'])->name('cppt.simpan');
+    Route::post('cppt/{id}/verifikasi', [CpptController::class, 'verifikasi'])->name('cppt.verifikasi');
 });
 
 Route::prefix('akun')->name('akun.')->controller(AkunController::class)->group(function () {

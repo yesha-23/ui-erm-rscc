@@ -591,3 +591,19 @@ export function initAsesmen() {
         hitung();
     }
 }
+
+/* ---------- Tombol sisipkan teks ke kotak isian (mis. TTV terakhir di CPPT) ---------- */
+export function initSisipTeks() {
+    document.querySelectorAll('[data-rs-sisip]').forEach((tombol) => {
+        const tujuan = document.querySelector(tombol.dataset.rsSisip);
+        if (!tujuan) return;
+
+        tombol.addEventListener('click', () => {
+            const teks = tombol.dataset.rsTeks;
+            const lama = tujuan.value.trim();
+            tujuan.value = lama ? `${lama}\n${teks}` : teks;
+            tujuan.focus();
+            tujuan.setSelectionRange(tujuan.value.length, tujuan.value.length);
+        });
+    });
+}

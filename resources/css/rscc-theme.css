@@ -2529,6 +2529,125 @@
     color: #B42318;
 }
 
+/* ---------- CPPT / SBAR (Clara) ---------- */
+
+/* Tampilkan isian sesuai format terpilih */
+.rs-cppt-form:has(#format-soap:checked) [data-rs-format="sbar"],
+.rs-cppt-form:has(#format-sbar:checked) [data-rs-format="soap"] {
+    display: none;
+}
+
+.rs-segmented-inline {
+    display: inline-flex;
+}
+
+.rs-segmented-inline .rs-segmented-item {
+    flex: 0 0 auto;
+    padding: 0 14px;
+}
+
+.rs-soap-isian {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rs-soap-baris {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.rs-soap-huruf {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin-top: 26px;
+    border-radius: 8px;
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-weight: 800;
+}
+
+/* Badge profesi */
+.rs-profesi {
+    display: inline-flex;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.rs-profesi-dokter {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+}
+
+.rs-profesi-perawat {
+    background: #E7F6EE;
+    color: #0F6B43;
+}
+
+.rs-profesi-bidan {
+    background: #FDF2FA;
+    color: #C11574;
+}
+
+.rs-profesi-farmasi {
+    background: #F4F3FF;
+    color: #5925DC;
+}
+
+.rs-profesi-gizi {
+    background: #FFF4E5;
+    color: #93370D;
+}
+
+/* Isi SOAP / SBAR di tabel */
+.rs-format-tag {
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 0 6px;
+    border-radius: 4px;
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .06em;
+}
+
+.rs-soap-list {
+    margin: 0;
+    font-size: 13.5px;
+}
+
+.rs-soap-list div {
+    display: flex;
+    gap: 8px;
+}
+
+.rs-soap-list dt {
+    flex: none;
+    width: 14px;
+    color: var(--rs-text-muted);
+    font-weight: 800;
+}
+
+.rs-soap-list dd {
+    margin: 0;
+    white-space: pre-line;
+}
+
+.rs-table-cppt td:nth-child(2) {
+    min-width: 280px;
+}
+
+.rs-row-menunggu>td {
+    background: #FFFBF5;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {
@@ -2595,5 +2714,20 @@
     .rs-nyeri-angka {
         min-height: 38px;
         font-size: 13px;
+    }
+
+    .rs-soap-huruf {
+        width: 28px;
+        height: 28px;
+        margin-top: 24px;
+        font-size: 13px;
+    }
+
+    .rs-table-cppt .rs-td-utama {
+        padding-right: 0 !important;
+    }
+
+    .rs-table-cppt td:nth-child(2) {
+        min-width: 0;
     }
 }

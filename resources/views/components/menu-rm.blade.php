@@ -12,7 +12,7 @@
             ['key' => 'ttv',       'label' => 'Tanda vital',      'href' => '#'],
         ]],
         ['judul' => 'Catatan terintegrasi', 'ikon' => 'bi-journal-text', 'items' => [
-            ['key' => 'cppt', 'label' => 'CPPT / SBAR', 'href' => '#'],
+            ['key' => 'cppt', 'label' => 'CPPT / SBAR', 'href' => route('rekam-medis.cppt', $noReg)],
         ]],
         ['judul' => 'Penunjang', 'ikon' => 'bi-eyedropper', 'items' => [
             ['key' => 'permintaan', 'label' => 'Permintaan lab / radiologi','href' => route('rekam-medis.permintaan', $noReg)],

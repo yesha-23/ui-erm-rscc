@@ -405,4 +405,53 @@ class DataContoh
             ],
         ];
     }
+
+        /**
+     * Catatan CPPT / SBAR yang sudah ada pada kunjungan ini (CONTOH, terbaru di atas).
+     * IT RSCC: ganti dengan query tabel cppt.
+     */
+    public static function cppt(): array
+    {
+        return [
+            [
+                'id' => 'c3', 'waktu' => '02 Nov · 10:21', 'ppa' => 'dr. [Nama Dokter]', 'profesi' => 'dokter',
+                'format' => 'soap',
+                'isi' => [
+                    's' => 'Demam 6 hari, mual',
+                    'o' => 'S 40,1 °C, N 102 x/mnt',
+                    'a' => 'Obs. febris, susp. demam tifoid',
+                    'p' => 'Cek darah rutin, Widal; parasetamol infus',
+                ],
+                'instruksi' => 'Observasi TTV tiap 4 jam',
+                'perlu_verifikasi' => false,
+                'verifikasi' => ['oleh' => 'dr. [Nama Dokter]', 'waktu' => '02 Nov · 10:21'],
+            ],
+            [
+                'id' => 'c2', 'waktu' => '02 Nov · 09:05', 'ppa' => '[Nama Perawat]', 'profesi' => 'perawat',
+                'format' => 'soap',
+                'isi' => [
+                    's' => 'Pusing, lemas',
+                    'o' => 'TD 120/70 mmHg, RR 22 x/mnt',
+                    'a' => 'Hipertermia',
+                    'p' => 'Kompres hangat, edukasi minum',
+                ],
+                'instruksi' => 'Lapor dokter jika suhu > 39 °C',
+                'perlu_verifikasi' => true,
+                'verifikasi' => null,
+            ],
+            [
+                'id' => 'c1', 'waktu' => '02 Nov · 08:52', 'ppa' => '[Nama Perawat]', 'profesi' => 'perawat',
+                'format' => 'sbar',
+                'isi' => [
+                    's' => 'Pasien datang dengan demam 6 hari',
+                    'b' => 'Tidak ada riwayat penyakit kronis',
+                    'a' => 'Asesmen awal keperawatan IGD selesai; risiko jatuh: tidak berisiko',
+                    'r' => 'Mohon dokter jaga memeriksa pasien',
+                ],
+                'instruksi' => null,
+                'perlu_verifikasi' => true,
+                'verifikasi' => ['oleh' => 'dr. [Nama Dokter]', 'waktu' => '02 Nov · 09:15'],
+            ],
+        ];
+    }
 }
