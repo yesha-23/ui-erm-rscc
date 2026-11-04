@@ -2725,6 +2725,121 @@
     width: 84px;
 }
 
+/* ---------- Riwayat pemeriksaan (Clara) ---------- */
+.rs-timeline-hari {
+    margin-bottom: 20px;
+}
+
+.rs-timeline-hari:not(:has(.rs-timeline-item:not([hidden]))) {
+    display: none;
+}
+
+/* tanggal tanpa hasil cari */
+.rs-timeline-tanggal {
+    margin: 0 0 10px;
+    color: var(--rs-text-2);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.rs-timeline-list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0 0 0 48px;
+    list-style: none;
+}
+
+.rs-timeline-list::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 17px;
+    width: 2px;
+    background: var(--rs-border);
+}
+
+.rs-timeline-item {
+    position: relative;
+}
+
+.rs-timeline-ikon {
+    position: absolute;
+    top: 14px;
+    left: -48px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--rs-border);
+    border-radius: 50%;
+    background: var(--rs-surface);
+    color: var(--rs-text-3);
+    font-size: 16px;
+}
+
+.rs-jenis-kunjungan {
+    border-color: #B2CCEB;
+    color: var(--rs-primary-dark);
+}
+
+.rs-jenis-lab {
+    border-color: #B2DDFF;
+    color: #175CD3;
+}
+
+.rs-jenis-radiologi {
+    border-color: #D9D6FE;
+    color: #5925DC;
+}
+
+.rs-jenis-ekg {
+    border-color: #FECDCA;
+    color: #B42318;
+}
+
+.rs-jenis-cppt {
+    border-color: #ABEFC6;
+    color: #067647;
+}
+
+.rs-jenis-kontrol {
+    border-color: #FEDF89;
+    color: #93370D;
+}
+
+.rs-detail-hasil summary {
+    color: var(--rs-primary-dark);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.rs-detail-hasil[open] summary {
+    margin-bottom: 8px;
+}
+
+.rs-flag {
+    margin-left: 6px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.rs-flag-tinggi {
+    background: #FEF3F2;
+    color: #B42318;
+}
+
+.rs-flag-rendah {
+    background: #FFF4E5;
+    color: #93370D;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {
@@ -2821,5 +2936,20 @@
 
     .rs-table-tanpa-aksi .rs-td-utama {
         padding-right: 0 !important;
+    }
+
+    .rs-timeline-list {
+        padding-left: 40px;
+    }
+
+    .rs-timeline-list::before {
+        left: 13px;
+    }
+
+    .rs-timeline-ikon {
+        left: -40px;
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
     }
 }

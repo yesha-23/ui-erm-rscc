@@ -21,7 +21,7 @@
             ['key' => 'resep', 'label' => 'E-Resep', 'href' => route('rekam-medis.resep', $noReg)],
         ]],
         ['judul' => 'Riwayat', 'ikon' => 'bi-clock-history', 'items' => [
-            ['key' => 'riwayat', 'label' => 'Riwayat pemeriksaan', 'href' => '#'],
+            ['key' => 'riwayat', 'label' => 'Riwayat pemeriksaan', 'href' => route('rekam-medis.riwayat', $noReg)],
         ]],
         ['judul' => 'Dokumen', 'ikon' => 'bi-folder2-open', 'items' => [
             ['key' => 'surat',       'label' => 'Pembuatan surat', 'jumlah' => $jumlah['surat'],
