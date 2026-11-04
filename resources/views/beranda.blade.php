@@ -57,6 +57,7 @@
             </section>
         </div>
 
+        {{-- Kolom kanan: ikut setinggi grafik --}}
         <div class="col-xl-4 d-flex flex-column gap-3">
             {{-- Tugas hari ini --}}
             <section class="rs-card" aria-labelledby="judul-tugas">
@@ -77,20 +78,112 @@
                 </ul>
             </section>
 
-            {{-- Pintasan unit --}}
-            <section class="rs-card" aria-labelledby="judul-unit">
-                <h2 id="judul-unit" class="h6 fw-bold mb-3">Buka unit</h2>
-                <div class="row g-2">
-                    @foreach ($unit as $u)
-                        <div class="col-6">
-                            <a href="{{ route($u['route']) }}" class="rs-shortcut">
-                                <i class="bi {{ $u['icon'] }}" aria-hidden="true"></i>
-                                <span class="fw-bold">{{ $u['label'] }}</span>
-                                <small>{{ $u['ket'] }}</small>
-                            </a>
-                        </div>
-                    @endforeach
+            {{-- Terakhir dibuka: memanjang sampai sejajar bawah grafik --}}
+            <section class="rs-card flex-grow-1 d-flex flex-column" aria-labelledby="judul-pasien-terakhir">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <h2 id="judul-pasien-terakhir" class="h6 fw-bold mb-0">Terakhir dibuka</h2>
+                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none rs-kbd"
+                            data-bs-toggle="modal" data-bs-target="#cariMenu">
+                        Cari menu <kbd>Ctrl</kbd><kbd>K</kbd>
+                    </button>
                 </div>
+
+                @if (empty($pasienTerakhir))
+                    <div class="rs-terakhir-kosong flex-grow-1">
+                        <i class="bi bi-clock-history" aria-hidden="true"></i>
+                        <p class="mb-0">Pasien yang Anda buka akan muncul di sini, supaya bisa kembali dengan sekali klik.</p>
+                    </div>
+                @else
+                    <ul class="rs-terakhir list-unstyled mb-0">
+                        @foreach ($pasienTerakhir as $p)
+                            @php
+                                $inisial = collect(explode(' ', $p['nama']))->map(fn ($w) => mb_substr($w, 0, 1))->take(2)->implode('');
+                            @endphp
+                            <li>
+                                <a href="{{ route('rekam-medis.show', $p['no_reg']) }}" class="rs-terakhir-item">
+                                    <span class="rs-avatar rs-avatar-pasien" aria-hidden="true">{{ $inisial }}</span>
+                                    <span class="min-w-0 flex-grow-1">
+                                        <span class="rs-terakhir-nama">{{ $p['nama'] }}</span>
+                                        <span class="rs-terakhir-info">RM {{ $p['no_rm'] }} · {{ $p['unit'] }} · {{ $p['diagnosa_kerja'] }}</span>
+                                    </span>
+                                    <i class="bi bi-chevron-right rs-text-muted" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </section>
+        </div>
+
+        {{-- Perlu tindak lanjut (lebar penuh) --}}
+        <div class="col-12">
+            <section class="rs-card p-0 overflow-hidden" aria-labelledby="judul-tindak">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 px-3 pt-3 pb-2">
+                    <div>
+                        <h2 id="judul-tindak" class="h6 fw-bold mb-1">Perlu tindak lanjut</h2>
+                        <p class="small rs-text-muted mb-0">Pasien hari ini yang rekam medisnya belum lengkap</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="rs-status rs-status-proses">{{ $jumlahTindak }} pasien</span>
+                        <a href="{{ route('kunjungan.igd') }}" class="small fw-semibold text-decoration-none">Lihat semua →</a>
+                    </div>
+                </div>
+
+                @if ($tindakLanjut->isEmpty())
+                    <div class="rs-empty border-top">
+                        <p class="rs-text-muted mb-0"><i class="bi bi-check2-circle me-1" aria-hidden="true"></i>Semua rekam medis hari ini sudah lengkap.</p>
+                    </div>
+                @else
+                    <div class="table-responsive">
+                        <table class="table rs-table rs-table-kartu rs-table-ringkas mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Pasien</th>
+                                    <th scope="col">Datang</th>
+                                    <th scope="col">Dokter / perawat</th>
+                                    <th scope="col">Yang belum</th>
+                                    <th scope="col"><span class="visually-hidden">Aksi</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($tindakLanjut as $r)
+                                    @php
+                                        $inisial = collect(explode(' ', $r['nama']))->map(fn ($w) => mb_substr($w, 0, 1))->take(2)->implode('');
+                                    @endphp
+                                    <tr>
+                                        <td class="rs-td-utama">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="rs-avatar rs-avatar-pasien" aria-hidden="true">{{ $inisial }}</span>
+                                                <div>
+                                                    <div class="fw-semibold">{{ $r['nama'] }}</div>
+                                                    <div class="small rs-text-muted">RM {{ $r['no_rm'] }} · IGD</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Datang"><span>{{ $r['jam'] }}</span></td>
+                                        <td data-label="Dokter / perawat">
+                                            <div>
+                                                <div>{{ $r['dokter_isi'] ?: '—' }}</div>
+                                                <div class="small rs-text-muted">{{ $r['perawat'] ?: '—' }}</div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Yang belum">
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach ($r['masalah'] as $m)
+                                                    <span class="rs-status rs-status-proses">{{ $m }}</span>
+                                                @endforeach
+                                            </div>
+                                        </td>
+                                        <td class="rs-td-aksi text-end">
+                                            <a href="{{ route('rekam-medis.show', $r['no_reg']) }}" class="btn btn-primary btn-sm"
+                                               aria-label="Buka rekam medis {{ $r['nama'] }}">Buka</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </section>
         </div>
     </div>
