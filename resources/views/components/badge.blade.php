@@ -6,6 +6,7 @@
         'nonjkn'     => 'rs-badge-nonjkn',
         'datang'     => 'rs-badge-datang',
         'belum'      => 'rs-badge-belum',
+        'netral'     => 'rs-badge-netral',
         'sukses'     => 'rs-badge-jkn',
         'gagal'      => 'rs-badge-nonjkn',
         'info'       => 'rs-badge-datang',

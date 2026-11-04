@@ -622,23 +622,6 @@
     gap: 4px;
 }
 
-.rs-cek {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.rs-cek-ok {
-    color: var(--rs-success-text);
-}
-
-.rs-cek-belum {
-    color: var(--rs-danger-text);
-}
-
 .rs-table-foot {
     display: flex;
     flex-wrap: wrap;
@@ -3482,5 +3465,131 @@
     .rs-input-tanggal .form-control {
         flex: 1;
         width: auto;
+    }
+}
+
+/* =========================================================
+   Daftar kunjungan — revisi 4 Nov (filter, No, No. Registrasi)
+   ========================================================= */
+
+/* Filter: 2 baris, semua isian berlabel */
+.rs-filter {
+    padding: 16px;
+}
+
+.rs-filter-baris {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px 16px;
+}
+
+.rs-filter-item {
+    min-width: 0;
+}
+
+.rs-filter-item .form-label {
+    margin-bottom: 6px;
+}
+
+.rs-filter-cari {
+    flex: 1 1 320px;
+}
+
+.rs-filter-pilih {
+    flex: 0 1 200px;
+}
+
+.rs-filter-pilih-lebar {
+    flex: 0 1 280px;
+}
+
+.rs-filter-aksi {
+    gap: 8px;
+    margin-left: auto;
+}
+
+.rs-input-tanggal .input-group-text {
+    min-width: 72px;
+    justify-content: center;
+}
+
+/* Tabel: kolom nomor & no. registrasi */
+.rs-table thead th.rs-th-nomor,
+.rs-table .rs-td-nomor {
+    width: 52px;
+    text-align: right;
+}
+
+.rs-table .rs-td-nomor {
+    color: var(--rs-text-3);
+    font-variant-numeric: tabular-nums;
+}
+
+.rs-noreg {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* Status kelengkapan (dulu .rs-cek, diganti supaya tidak bentrok dengan checklist) */
+.rs-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.rs-status-ok {
+    color: var(--rs-success-text);
+}
+
+.rs-status-belum {
+    color: var(--rs-danger-text);
+}
+
+/* Badge info netral: rujukan/konsul, surat kontrol */
+.rs-info-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.rs-badge-netral {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--rs-border);
+    background: var(--rs-hover);
+    color: var(--rs-text-2);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+    .rs-table-kartu {
+        min-width: 1080px;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    .rs-filter-cari,
+    .rs-filter-item,
+    .rs-filter-pilih,
+    .rs-filter-pilih-lebar {
+        flex: 1 1 100%;
+    }
+
+    .rs-input-tanggal .input-group-text {
+        width: 76px;
+    }
+
+    /* Nomor urut tidak perlu di tampilan kartu */
+    .rs-table-kartu .rs-td-nomor {
+        display: none;
     }
 }

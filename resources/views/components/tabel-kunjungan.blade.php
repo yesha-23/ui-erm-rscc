@@ -1,8 +1,8 @@
-@props(['kolom', 'cek' => [], 'rows'])
+@props(['kolom', 'cek' => [], 'info' => [], 'rows'])
 
 @php
     // Kolom dengan tampilan khusus (selain ini = teks biasa dari $r[field])
-    $tipeKhusus = ['pasien', 'daftar', 'unit', 'kelas', 'ruang', 'kelengkapan'];
+    $tipeKhusus = ['nomor', 'noreg', 'pasien', 'daftar', 'unit', 'kelas', 'ruang', 'kelengkapan'];
 @endphp
 
 <div class="rs-card p-0 overflow-hidden">
@@ -11,8 +11,8 @@
         <div class="rs-empty">
             <span class="rs-empty-icon"><i class="bi bi-search" aria-hidden="true"></i></span>
             <h2 class="h6 fw-bold mb-1">Tidak ada kunjungan yang cocok</h2>
-            <p class="rs-text-muted mb-3">Coba ubah kata kunci, tanggal, atau filter.</p>
-            <a href="{{ url()->current() }}" class="btn btn-outline-secondary btn-sm">Hapus semua filter</a>
+            <p class="rs-text-muted mb-3">Coba ubah kata kunci, tanggal daftar, atau status bayar.</p>
+            <a href="{{ url()->current() }}" class="btn btn-outline-secondary btn-sm">Reset semua filter</a>
         </div>
     @else
         {{-- Tablet: tabel digulir di dalam kotak ini. HP: tiap baris jadi kartu (CSS .rs-table-kartu) --}}
@@ -21,7 +21,7 @@
                 <thead>
                     <tr>
                         @foreach ($kolom as $k)
-                            <th scope="col">{{ $k['label'] }}</th>
+                            <th scope="col" @class(['rs-th-nomor' => $k['tipe'] === 'nomor'])>{{ $k['label'] }}</th>
                         @endforeach
                         <th scope="col"><span class="visually-hidden">Aksi</span></th>
                     </tr>
@@ -29,8 +29,9 @@
                 <tbody>
                     @foreach ($rows as $r)
                         @php
+                            $nomor   = $rows->firstItem() + $loop->index; // lanjut di halaman berikutnya (9, 10, ...)
                             $inisial = collect(explode(' ', $r['nama']))->map(fn ($w) => mb_substr($w, 0, 1))->take(2)->implode('');
-                            $jkn = $r['penjamin'] === 'JKN';
+                            $jkn     = $r['penjamin'] === 'JKN';
                         @endphp
                         <tr>
                             @foreach ($kolom as $k)
@@ -39,21 +40,32 @@
                                     $kosong = ! in_array($k['tipe'], $tipeKhusus, true) && blank($r[$k['field']] ?? null);
                                 @endphp
 
-                                {{-- Kolom pasien = judul kartu (tanpa label). Kolom kosong disembunyikan di HP. --}}
-                                <td @class(['rs-td-utama' => $utama, 'rs-td-kosong' => $kosong])
+                                {{-- Kolom pasien = judul kartu (tanpa label). Kolom kosong & nomor disembunyikan di HP. --}}
+                                <td @class(['rs-td-utama' => $utama, 'rs-td-kosong' => $kosong, 'rs-td-nomor' => $k['tipe'] === 'nomor'])
                                     @unless ($utama) data-label="{{ $k['label'] }}" @endunless>
                                     @switch($k['tipe'])
+                                        @case('nomor')
+                                            {{ $nomor }}
+                                            @break
+
+                                        @case('noreg')
+                                            {{-- SEP ikut registrasi (1 kunjungan = 1 SEP). NON JKN tidak punya SEP. --}}
+                                            <div>
+                                                <div class="rs-noreg">{{ $r['no_reg'] }}</div>
+                                                @if ($r['no_sep'])
+                                                    <div class="small rs-sep">SEP {{ $r['no_sep'] }}</div>
+                                                @elseif ($jkn)
+                                                    <x-badge jenis="belum" class="mt-1">Belum cetak SEP</x-badge>
+                                                @endif
+                                            </div>
+                                            @break
+
                                         @case('pasien')
                                             <div class="d-flex align-items-start gap-2">
                                                 <span class="rs-avatar rs-avatar-pasien" aria-hidden="true">{{ $inisial }}</span>
                                                 <div>
                                                     <a href="{{ route('rekam-medis.show', $r['no_reg']) }}" class="rs-link-pasien">{{ $r['nama'] }}</a>
-                                                    <div class="small rs-text-muted">RM {{ $r['no_rm'] }} · Reg {{ $r['no_reg'] }}</div>
-                                                    @if ($r['no_sep'])
-                                                        <div class="small rs-sep">SEP {{ $r['no_sep'] }}</div>
-                                                    @elseif ($jkn)
-                                                        <x-badge jenis="belum" class="mt-1">Belum cetak SEP</x-badge>
-                                                    @endif
+                                                    <div class="small rs-text-muted">RM {{ $r['no_rm'] }}</div>
                                                 </div>
                                             </div>
                                             @break
@@ -92,11 +104,26 @@
                                             @break
 
                                         @case('kelengkapan')
-                                            <ul class="rs-cek-list">
-                                                @foreach ($cek as $field => $label)
-                                                    <li><x-status-cek :ok="$r[$field]" :label="$label" /></li>
-                                                @endforeach
-                                            </ul>
+                                            @php
+                                                // Info netral (rujukan, surat kontrol) hanya muncul kalau ada
+                                                $adaInfo = collect(array_keys($info))->filter(fn ($f) => ! empty($r[$f]));
+                                            @endphp
+                                            <div>
+                                                <ul class="rs-cek-list">
+                                                    @foreach ($cek as $field => $label)
+                                                        <li><x-status-cek :ok="$r[$field]" :label="$label" /></li>
+                                                    @endforeach
+                                                </ul>
+                                                @if ($adaInfo->isNotEmpty())
+                                                    <div class="rs-info-list">
+                                                        @foreach ($adaInfo as $field)
+                                                            <x-badge jenis="netral">
+                                                                <i class="bi {{ $info[$field][0] }}" aria-hidden="true"></i>{{ $info[$field][1] }}
+                                                            </x-badge>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
                                             @break
 
                                         @default

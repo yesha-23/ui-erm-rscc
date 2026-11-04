@@ -125,7 +125,7 @@
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <span class="rs-status rs-status-proses">{{ $jumlahTindak }} pasien</span>
-                        <a href="{{ route('kunjungan.igd') }}" class="small fw-semibold text-decoration-none">Lihat semua →</a>
+                        <a href="{{ route('kunjungan.igd', ['bayar' => 'semua']) }}" class="small fw-semibold text-decoration-none">Lihat semua →</a>
                     </div>
                 </div>
 
