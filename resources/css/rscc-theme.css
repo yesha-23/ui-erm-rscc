@@ -2840,6 +2840,169 @@
     color: #93370D;
 }
 
+/* ---------- Checklist PPI / CP / Psikologi (Clara) ---------- */
+
+/* Daftar butir: satu kotak, baris dipisah garis */
+.rs-cek {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    counter-reset: butir;
+}
+
+.rs-cek-baris {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 252px;
+    align-items: center;
+    gap: 10px 16px;
+    width: 100%;
+    margin: 0;
+    padding: 10px 14px;
+    border-top: 1px solid var(--rs-border);
+    background: var(--rs-surface);
+    text-align: left;
+    counter-increment: butir;
+    transition: background-color .15s ease, box-shadow .15s ease;
+}
+
+.rs-cek-baris:first-child {
+    border-top: 0;
+}
+
+.rs-cek-baris:hover {
+    background: #FAFBFC;
+}
+
+/* Garis warna di kiri sesuai jawaban (belum dijawab = tanpa garis) */
+.rs-cek-baris:has(input[value="ya"]:checked),
+.rs-cek-baris:has(input[value="baik"]:checked) {
+    box-shadow: inset 4px 0 0 #067647;
+}
+
+.rs-cek-baris:has(input[value="cukup"]:checked) {
+    box-shadow: inset 4px 0 0 #B54708;
+}
+
+.rs-cek-baris:has(input[value="tidak"]:checked),
+.rs-cek-baris:has(input[value="kurang"]:checked) {
+    box-shadow: inset 4px 0 0 #B42318;
+}
+
+.rs-cek-baris:has(input[value="na"]:checked) {
+    box-shadow: inset 4px 0 0 #98A2B3;
+}
+
+.rs-cek-baris.is-error {
+    background: #FEF3F2;
+    box-shadow: inset 4px 0 0 #D92D20;
+}
+
+/* Teks butir + nomor dalam lingkaran */
+.rs-cek-teks {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--rs-text);
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.rs-cek-teks::before {
+    content: counter(butir);
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Pilihan jawaban: 3 kotak sama lebar */
+.rs-cek-pilih {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    border-radius: 10px;
+    background: var(--rs-hover);
+}
+
+.rs-cek-pilih .rs-segmented-item {
+    min-width: 0;
+    min-height: 34px;
+    padding: 0 8px;
+    border-radius: 7px;
+    font-size: 13px;
+}
+
+.btn-check:checked+.rs-jawab-ya,
+.btn-check:checked+.rs-jawab-baik {
+    background: #067647;
+    color: #fff;
+    box-shadow: none;
+}
+
+.btn-check:checked+.rs-jawab-cukup {
+    background: #B54708;
+    color: #fff;
+    box-shadow: none;
+}
+
+.btn-check:checked+.rs-jawab-tidak,
+.btn-check:checked+.rs-jawab-kurang {
+    background: #B42318;
+    color: #fff;
+    box-shadow: none;
+}
+
+.btn-check:checked+.rs-jawab-na {
+    background: var(--rs-surface);
+    color: var(--rs-text-2);
+}
+
+/* Skor */
+.rs-skor-angka {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.rs-skor-bar {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--rs-hover);
+}
+
+.rs-skor-bar span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--rs-primary);
+    transition: width .2s ease;
+}
+
+.rs-skor-bar[data-tingkat="baik"] span {
+    background: #12B76A;
+}
+
+.rs-skor-bar[data-tingkat="cukup"] span {
+    background: #F79009;
+}
+
+.rs-skor-bar[data-tingkat="kurang"] span {
+    background: #D92D20;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {
@@ -2951,5 +3114,14 @@
         width: 28px;
         height: 28px;
         font-size: 13px;
+    }
+
+    .rs-cek-baris {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+
+    .rs-cek-pilih .rs-segmented-item {
+        min-height: 38px;
     }
 }

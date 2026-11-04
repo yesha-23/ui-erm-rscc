@@ -747,3 +747,45 @@ export function initResep() {
 
     perbarui();
 }
+
+/* ---------- Checklist PPI / CP / Psikologi: skor otomatis ---------- */
+export function initChecklist() {
+    const form = document.querySelector('[data-rs-checklist]');
+    if (!form) return;
+
+    const positif = form.dataset.positif;
+    const baris = [...form.querySelectorAll('.rs-cek-baris')];
+    const skor = form.querySelector('[data-rs-skor]');
+    const rinci = form.querySelector('[data-rs-skor-rinci]');
+    const bar = form.querySelector('[data-rs-skor-bar]');
+
+    const hitung = () => {
+        const jawab = baris.map((b) => b.querySelector('input:checked')?.value ?? null);
+        const terjawab = jawab.filter(Boolean);
+        const dinilai = terjawab.filter((v) => v !== 'na');
+        const baik = dinilai.filter((v) => v === positif).length;
+        const persen = dinilai.length ? Math.round((baik / dinilai.length) * 100) : null;
+
+        skor.textContent = persen === null ? '–' : `${persen}%`;
+        rinci.textContent = `${baik} dari ${dinilai.length} butir dinilai · ${baris.length - terjawab.length} belum dijawab`;
+        bar.style.width = `${persen ?? 0}%`;
+        bar.parentElement.dataset.tingkat =
+            persen === null ? '' : persen >= 85 ? 'baik' : persen >= 60 ? 'cukup' : 'kurang';
+
+        baris.forEach((b, i) => { if (jawab[i]) b.classList.remove('is-error'); });
+    };
+
+    form.addEventListener('change', hitung);
+
+    // Isi butir yang masih kosong dengan jawaban positif (tidak menimpa jawaban yang sudah ada)
+    document.querySelector('[data-rs-tandai-semua]')?.addEventListener('click', () => {
+        baris.forEach((b) => {
+            if (b.querySelector('input:checked')) return;
+            const r = b.querySelector(`input[value="${positif}"]`);
+            if (r) r.checked = true;
+        });
+        hitung();
+    });
+
+    hitung();
+}

@@ -31,8 +31,8 @@
             ['key' => 'cetak',       'label' => 'Cetak',           'href' => route('rekam-medis.cetak', $noReg)],
         ]],
         ['judul' => 'Mutu', 'ikon' => 'bi-shield-check', 'items' => [
-            ['key' => 'ppi', 'label' => 'PPI',               'href' => '#'],
-            ['key' => 'cp',  'label' => 'Clinical pathways', 'href' => '#'],
+            ['key' => 'ppi', 'label' => 'PPI', 'href' => route('rekam-medis.checklist', [$noReg, 'ppi'])],
+            ['key' => 'cp',  'label' => 'Clinical pathways', 'href' => route('rekam-medis.checklist', [$noReg, 'cp'])],
         ]],
     ];
 @endphp
