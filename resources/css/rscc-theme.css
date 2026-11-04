@@ -3003,6 +3003,90 @@
     background: #D92D20;
 }
 
+/* ---------- Cari menu Ctrl+K & pintasan di menu RM (Clara) ---------- */
+.rs-cari-menu {
+    --bs-modal-width: 600px;
+}
+
+@media (min-width: 576px) {
+    .rs-cari-menu .modal-dialog {
+        margin-top: 10vh;
+    }
+}
+
+.rs-cari-menu .modal-content {
+    border: 0;
+    border-radius: 16px;
+}
+
+.rs-cari-menu .modal-header {
+    padding: 12px;
+}
+
+.rs-cari-menu .modal-body {
+    max-height: 60vh;
+}
+
+.rs-cari-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 8px;
+    color: var(--rs-text);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.rs-cari-menu-item .bi {
+    color: var(--rs-text-muted);
+}
+
+.rs-cari-menu-item small {
+    max-width: 45%;
+    overflow: hidden;
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rs-cari-menu-item:hover,
+.rs-cari-menu-item.active {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+}
+
+.rs-kbd kbd {
+    margin: 0 1px;
+    padding: 1px 6px;
+    border: 1px solid var(--rs-border-input);
+    border-radius: 4px;
+    background: var(--rs-surface);
+    color: var(--rs-text-2);
+    font-size: 11px;
+    box-shadow: 0 1px 0 var(--rs-border-input);
+}
+
+.rs-rmmenu-pintasan {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin: 6px 0 8px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    text-align: left;
+}
+
+.rs-rmmenu-pintasan:hover {
+    color: var(--rs-primary-dark);
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {

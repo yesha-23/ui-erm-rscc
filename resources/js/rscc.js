@@ -789,3 +789,78 @@ export function initChecklist() {
 
     hitung();
 }
+
+/* ---------- Menu rekam medis: saring dengan kotak "Cari form" ---------- */
+export function initMenuRmCari() {
+    const menu = document.querySelector('[data-rs-rmmenu]');
+    const input = menu?.querySelector('[data-rs-rmmenu-cari]');
+    if (!input) return;
+
+    const kosong = menu.querySelector('[data-rs-rmmenu-kosong]');
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        let total = 0;
+        menu.querySelectorAll('.rs-rmmenu-group').forEach((grup) => {
+            let n = 0;
+            grup.querySelectorAll('.rs-rmmenu-item').forEach((a) => {
+                const cocok = a.textContent.toLowerCase().includes(q);
+                a.hidden = !cocok;
+                if (cocok) n++;
+            });
+            grup.hidden = n === 0;
+            total += n;
+        });
+        kosong.hidden = total > 0;
+    });
+}
+
+/* ---------- Cari menu (Ctrl+K / ⌘K) ---------- */
+export function initCariMenu() {
+    const modalEl = document.querySelector('[data-rs-cari-menu]');
+    if (!modalEl) return;
+
+    const modal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+    const input = modalEl.querySelector('[data-rs-cari-menu-input]');
+    const item = [...modalEl.querySelectorAll('[data-rs-cari-item]')];
+    const kosong = modalEl.querySelector('[data-rs-cari-menu-kosong]');
+    let aktif = 0;
+
+    const terlihat = () => item.filter((li) => !li.hidden);
+
+    const sorot = (i) => {
+        const daftar = terlihat();
+        item.forEach((li) => li.firstElementChild.classList.remove('active'));
+        if (!daftar.length) return;
+        aktif = (i + daftar.length) % daftar.length;
+        daftar[aktif].firstElementChild.classList.add('active');
+        daftar[aktif].scrollIntoView({ block: 'nearest' });
+    };
+
+    const saring = () => {
+        const kata = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+        item.forEach((li) => { li.hidden = !kata.every((k) => li.dataset.teks.includes(k)); });
+        kosong.hidden = terlihat().length > 0;
+        sorot(0);
+    };
+
+    input.addEventListener('input', saring);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); sorot(aktif + 1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); sorot(aktif - 1); }
+        else if (e.key === 'Enter') { e.preventDefault(); terlihat()[aktif]?.firstElementChild.click(); }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            modal.show();
+        }
+    });
+
+    modalEl.addEventListener('shown.bs.modal', () => {
+        input.value = '';
+        saring();
+        input.focus();
+    });
+}

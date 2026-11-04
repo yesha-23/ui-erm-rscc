@@ -12,6 +12,7 @@
     @stack('styles')
 </head>
     @stack('modal')
+<x-cari-menu :pasien="$pasien" />
 <body class="rs-body-app">
 <div class="rs-app">
     {{-- Sidebar utama otomatis mode ikon (class rs-sidebar-mini di <html>) --}}
