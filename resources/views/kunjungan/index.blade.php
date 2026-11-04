@@ -15,7 +15,7 @@
     <x-filter-kunjungan :pilihan="$pilihan" :nilai="$nilai" :jumlah-filter="$jumlahFilter"
         :dari="$dari" :sampai="$sampai" />
     <x-tab-status :tabs="$tabs" :aktif="$tabAktif" />
-    <x-tabel-kunjungan :kolom="$kolom" :cek="$cek" :info="$info" :rows="$rows" />
+    <x-tabel-kunjungan :kolom="$kolom" :cek="$cek" :info="$info" :rows="$rows" :unit="$unitKode" :sub="$sub" />
 
     <p class="small rs-text-muted mt-3 mb-0">Nama dan nomor pada tabel adalah data contoh.</p>
 @endsection

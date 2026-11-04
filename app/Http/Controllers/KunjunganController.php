@@ -114,6 +114,8 @@ class KunjunganController extends Controller
 
         return view('kunjungan.index', [
             'judul'        => $judul,
+            'unitKode'     => $unit,
+            'sub'          => $sub,
             'kolom'        => $konf['kolom'],
             'cek'          => $konf['cek'],
             'info'         => $konf['info'],

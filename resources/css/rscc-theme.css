@@ -3740,3 +3740,210 @@
         min-width: 0;
     }
 }
+
+/* =========================================================
+   Ringkasan pasien (rs-rk-*)
+   ========================================================= */
+.rs-rk-progres {
+    height: 6px;
+    background: var(--rs-hover);
+}
+
+.rs-rk-progres .progress-bar {
+    background: var(--rs-success);
+}
+
+.rs-rk-ikon {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-size: 16px;
+}
+
+.rs-rk-sorot {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+/* Perlu dikerjakan */
+.rs-rk-tugas {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.rs-rk-tugas-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+}
+
+.rs-rk-tugas-item.is-selesai {
+    background: #FCFCFD;
+}
+
+.rs-rk-tugas-ikon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.is-selesai .rs-rk-tugas-ikon {
+    background: var(--rs-success-soft);
+    color: var(--rs-success-text);
+}
+
+.is-draf .rs-rk-tugas-ikon {
+    background: var(--rs-warning-soft);
+    color: var(--rs-warning-text);
+}
+
+.is-belum .rs-rk-tugas-ikon {
+    background: var(--rs-danger-soft);
+    color: var(--rs-danger-text);
+}
+
+/* Daftar label : nilai */
+.rs-rk-dl {
+    display: grid;
+    grid-template-columns: minmax(110px, 38%) minmax(0, 1fr);
+    gap: 8px 12px;
+    margin: 0;
+    font-size: 14px;
+}
+
+.rs-rk-dl dt {
+    color: var(--rs-text-3);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rs-rk-dl dd {
+    margin: 0;
+}
+
+@media (min-width: 992px) {
+    .rs-rk-dl-lebar {
+        grid-template-columns: 140px minmax(0, 1fr) 140px minmax(0, 1fr);
+    }
+}
+
+/* Tanda vital */
+.rs-rk-ttv {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+}
+
+.rs-rk-ttv-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+}
+
+.rs-rk-ttv-label {
+    color: var(--rs-text-3);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rs-rk-ttv-nilai {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+}
+
+.rs-rk-ttv-nilai .bi {
+    font-size: 14px;
+}
+
+.rs-rk-ttv-satuan {
+    color: var(--rs-text-muted);
+    font-size: 12px;
+}
+
+.rs-rk-ttv-item.is-tinggi {
+    background: var(--rs-danger-soft);
+}
+
+.rs-rk-ttv-item.is-tinggi .rs-rk-ttv-nilai {
+    color: var(--rs-danger-text);
+}
+
+.rs-rk-ttv-item.is-rendah {
+    background: var(--rs-warning-soft);
+}
+
+.rs-rk-ttv-item.is-rendah .rs-rk-ttv-nilai {
+    color: var(--rs-warning-text);
+}
+
+/* Aktivitas terakhir */
+.rs-rk-aktivitas {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.rs-rk-aktivitas a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 4px;
+    border-top: 1px solid var(--rs-hover);
+    color: var(--rs-text);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.rs-rk-aktivitas li:first-child a {
+    border-top: 0;
+}
+
+.rs-rk-aktivitas a:hover {
+    background: var(--rs-hover);
+}
+
+.rs-rk-aktivitas .bi {
+    color: var(--rs-primary-dark);
+}
+
+.rs-rk-aktivitas-jam {
+    flex: none;
+    width: 44px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Status khusus (rahasia) */
+.rs-rk-rahasia {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px dashed var(--rs-border-input);
+    border-radius: var(--rs-radius);
+    background: #FCFCFD;
+}
+
+.rs-rk-rahasia>.bi {
+    color: var(--rs-text-3);
+    font-size: 20px;
+}

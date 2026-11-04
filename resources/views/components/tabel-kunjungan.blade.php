@@ -1,4 +1,4 @@
-@props(['kolom', 'cek' => [], 'info' => [], 'rows'])
+@props(['kolom', 'cek' => [], 'info' => [], 'rows', 'unit' => 'igd', 'sub' => null])
 
 @php
     // Kolom dengan tampilan khusus (selain ini = teks biasa dari $r[field])
@@ -64,7 +64,7 @@
                                             <div class="d-flex align-items-start gap-2">
                                                 <span class="rs-avatar rs-avatar-pasien" aria-hidden="true">{{ $inisial }}</span>
                                                 <div>
-                                                    <a href="{{ route('rekam-medis.show', $r['no_reg']) }}" class="rs-link-pasien">{{ $r['nama'] }}</a>
+                                                    <a href="{{ route('rekam-medis.show', [$r['no_reg'], 'unit' => $unit, 'sub' => $sub]) }}" class="rs-link-pasien">{{ $r['nama'] }}</a>
                                                     <div class="small rs-text-muted">RM {{ $r['no_rm'] }}</div>
                                                 </div>
                                             </div>
@@ -134,7 +134,7 @@
 
                             {{-- Aksi: di HP pindah ke pojok kanan atas kartu --}}
                             <td class="rs-td-aksi text-end text-nowrap">
-                                <a href="{{ route('rekam-medis.show', $r['no_reg']) }}" class="btn btn-primary btn-sm"
+                                <a href="{{ route('rekam-medis.show', [$r['no_reg'], 'unit' => $unit, 'sub' => $sub]) }}" class="btn btn-primary btn-sm"
                                    aria-label="Buka rekam medis {{ $r['nama'] }}">Buka</a>
                                 <div class="dropdown d-inline-block">
                                     {{-- strategy fixed: menu tidak terpotong oleh kotak tabel yang bisa digulir --}}

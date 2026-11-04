@@ -236,23 +236,141 @@ class DataContoh
         return $hasil;
     }
 
-    /** Data satu pasien untuk ruang kerja Rekam Medis. Catatan untuk IT: ganti dengan query pasien + kunjungan. */
+        /**
+     * Data satu pasien untuk ruang kerja Rekam Medis (mengikuti unit yang sedang dibuka).
+     * Catatan untuk IT: ganti dengan query pasien + kunjungan.
+     */
     public static function pasien(string $noReg): array
     {
-        $daftar = self::kunjungan('igd');
-        $row = collect($daftar)->firstWhere('no_reg', $noReg) ?? $daftar[0];
+        ['unit' => $unit, 'sub' => $sub] = KonfigurasiRekamMedis::unitAktif($noReg);
+
+        $daftar = self::kunjungan($unit, $sub);
+        $row    = collect($daftar)->firstWhere('no_reg', $noReg) ?? $daftar[0];
+        $info   = KonfigurasiRekamMedis::UNIT[$unit];
+
+        $perempuan = ['Siti Rahmawati', 'Dewi Lestari', 'Putri Maharani', 'Nur Aisyah',
+                      'Rina Kartika', 'Lina Marlina', 'Wulan Sari'];
 
         return $row + [
-            'jk'             => 'Laki-laki',
-            'umur'           => '21 th',
+            'jk'             => in_array($row['nama'], $perempuan, true) ? 'Perempuan' : 'Laki-laki',
+            'umur'           => (18 + (int) $row['no_rm'] % 50) . ' th',
             'tgl_lahir'      => '[tgl lahir]',
             'alamat'         => '[alamat pasien]',
+            'nik'            => '[NIK]',
+            'no_hp'          => '[No. HP]',
+            'no_bpjs'        => $row['penjamin'] === 'JKN' ? '[No. BPJS]' : '—',
             'alergi'         => '[isi alergi]',
-            'unit'           => 'IGD',
-            'unit_route'     => 'kunjungan.igd',
-            'datang'         => '02 Nov 2026, 08:50',
-            'dpjp_nama'      => 'dr. [Nama Dokter]',
-            'diagnosa_kerja' => 'Obs. febris H6, susp. demam tifoid',
+            'status_hiv'     => 'Negatif (data contoh)',
+            'unit'           => $info['label'] . ($sub ? ' · ' . KonfigurasiRekamMedis::SUB[$unit][$sub] : ''),
+            'unit_kode'      => $unit,
+            'unit_sub'       => $sub,
+            'unit_route'     => $info['route'],
+            'datang'         => $row['tgl'] . ', ' . $row['jam'],
+            'dpjp_nama'      => match ($unit) {
+                'ranap', 'ok' => $row['dpjp'],
+                'rajal'       => $row['ppa1'],
+                default       => $row['dokter_isi'],
+            },
+            'diagnosa_kerja' => in_array($unit, ['ranap', 'ok'], true)
+                ? ($row['diagnosa'] ?: 'Belum ada diagnosa')
+                : 'Obs. febris H6, susp. demam tifoid',
+        ];
+    }
+
+    /** Kartu khusus unit di Ringkasan (CONTOH). IT RSCC: ganti dengan data form unit masing-masing. */
+    public static function kartuUnit(array $p): array
+    {
+        $isi  = session("asesmen.{$p['no_reg']}.isi", []);
+        $opsi = self::opsiAsesmenGd();
+        $warnaTriase = ['merah' => 'gagal', 'kuning' => 'peringatan', 'hijau' => 'sukses', 'hitam' => 'info'];
+        $triase = $isi['triase'] ?? 'kuning';
+
+        $hariRawat = (int) abs(\Illuminate\Support\Carbon::parse($p['tanggal'])->startOfDay()
+            ->diffInDays(now()->startOfDay())) + 1;
+
+        return match ($p['unit_kode']) {
+            'rajal' => [
+                'judul' => 'Kunjungan poli', 'ikon' => 'bi-clipboard2-pulse',
+                'sorot' => [$p['sudah_datang'] ? 'Sudah datang' : 'Belum datang', $p['sudah_datang'] ? 'info' : 'peringatan'],
+                'progres' => null,
+                'baris' => [
+                    'Klinik'           => $p['unit_tujuan'],
+                    'Dokter'           => $p['ppa1'],
+                    'Jenis kunjungan'  => 'Kontrol ke-3',
+                    'Rujukan / konsul' => $p['rujukan'] ? 'Ada (rujukan FKTP)' : 'Tidak ada',
+                    'Surat kontrol'    => $p['kontrol'] ? 'Sudah dibuat' : 'Perlu dibuat',
+                ],
+            ],
+            'rm' => [
+                'judul' => 'Program terapi', 'ikon' => 'bi-person-walking',
+                'sorot' => ['Sesi 5 dari 8', 'info'],
+                'progres' => [5, 8],
+                'baris' => [
+                    'Layanan'         => $p['unit_tujuan'],
+                    'Terapis'         => $p['ppa1'],
+                    'Frekuensi'       => '2× seminggu',
+                    'Sesi berikutnya' => now()->addDays(3)->translatedFormat('l, d M Y') . ' · 09:00',
+                ],
+            ],
+            'hd' => [
+                'judul' => 'Sesi hemodialisa', 'ikon' => 'bi-droplet',
+                'sorot' => ['HD ke-49', 'info'],
+                'progres' => null,
+                'baris' => [
+                    'Jadwal rutin'      => '2× seminggu (Senin & Kamis)',
+                    'Akses vaskular'    => 'AV-fistula',
+                    'BB kering'         => '58,0 kg',
+                    'BB pre-HD'         => '63,6 kg (naik 5,6 kg)',
+                    'Resep HD terakhir' => 'QB 200 · QD 400 · UF 4,5 L · 4,5 jam',
+                ],
+            ],
+            'ranap' => [
+                'judul' => 'Perawatan', 'ikon' => 'bi-hospital',
+                'sorot' => ["Hari rawat ke-$hariRawat", 'info'],
+                'progres' => null,
+                'baris' => [
+                    'Ruang / bed'    => "{$p['ruang']} · {$p['bed']}",
+                    'Kelas'          => $p['kelas'],
+                    'Masuk dari'     => $p['unit_asal'],
+                    'Tanggal masuk'  => $p['tgl'],
+                    'Rencana pulang' => 'Belum ditentukan',
+                ],
+            ],
+            'ok' => [
+                'judul' => 'Jadwal operasi', 'ikon' => 'bi-scissors',
+                'sorot' => [($p['unit_sub'] === 'minor' ? 'OK Minor' : 'OK Mayor') . ' · 13:00', 'info'],
+                'progres' => null,
+                'baris' => [
+                    'Tindakan'              => 'Eksisi tumor (contoh)',
+                    'Operator'              => 'dr. Bima Saputra, Sp.B',
+                    'Anestesi'              => 'dr. Galih Wicaksono, Sp.An · anestesi umum',
+                    'Checklist keselamatan' => 'Sign in ✓ · Time out – · Sign out –',
+                    'Asal pasien'           => "{$p['ruang']} · {$p['bed']}",
+                ],
+            ],
+            default => [ // igd
+                'judul' => 'Triase & kedatangan', 'ikon' => 'bi-activity',
+                'sorot' => ['Triase ' . ($opsi['triase'][$triase] ?? 'Kuning · P2'), $warnaTriase[$triase] ?? 'peringatan'],
+                'progres' => null,
+                'baris' => [
+                    'Cara datang'  => $opsi['cara_datang'][$isi['cara_datang'] ?? 'keluarga'] ?? 'Diantar keluarga',
+                    'Waktu datang' => $p['datang'],
+                    'Tujuan'       => $p['unit_tujuan'],
+                    'Status'       => $p['close'] ? 'Sudah close' : 'Belum close',
+                ],
+            ],
+        };
+    }
+
+    /** Aktivitas terakhir pada kunjungan ini (CONTOH, terbaru di atas). 'route' = nama route rekam-medis.* */
+    public static function aktivitasTerakhir(): array
+    {
+        return [
+            ['jam' => '14:00', 'ikon' => 'bi-heart-pulse',  'teks' => 'Observasi tanda vital',                      'oleh' => '[Nama Perawat]',    'route' => 'ttv'],
+            ['jam' => '10:21', 'ikon' => 'bi-journal-text', 'teks' => 'CPPT dokter: obs. febris, susp. demam tifoid', 'oleh' => 'dr. [Nama Dokter]', 'route' => 'cppt'],
+            ['jam' => '10:05', 'ikon' => 'bi-droplet-half', 'teks' => 'Hasil lab: 3 nilai di luar batas normal',    'oleh' => 'Laboratorium',      'route' => 'riwayat'],
+            ['jam' => '09:40', 'ikon' => 'bi-image',        'teks' => 'Thorax PA: cor dan pulmo dalam batas normal', 'oleh' => 'Radiologi',         'route' => 'riwayat'],
+            ['jam' => '09:12', 'ikon' => 'bi-send',         'teks' => 'Permintaan radiologi dikirim',               'oleh' => 'dr. [Nama Dokter]', 'route' => 'permintaan'],
         ];
     }
 

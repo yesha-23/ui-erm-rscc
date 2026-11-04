@@ -3,13 +3,14 @@
 @php
     $inisial = collect(explode(' ', $pasien['nama']))->map(fn ($w) => mb_substr($w, 0, 1))->take(2)->implode('');
     $jkn = $pasien['penjamin'] === 'JKN';
+    $sub = $pasien['unit_sub'] ?? null;
 @endphp
 
 <header class="rs-pasien-header">
     <nav aria-label="Breadcrumb" class="rs-crumb">
         <a href="{{ route('beranda') }}">Beranda</a>
         <span aria-hidden="true">/</span>
-        <a href="{{ route($pasien['unit_route']) }}">{{ $pasien['unit'] }}</a>
+        <a href="{{ route($pasien['unit_route'], $sub ? [$sub] : []) }}">{{ $pasien['unit'] }}</a>
         <span aria-hidden="true">/</span>
         <a href="{{ route('rekam-medis.show', $pasien['no_reg']) }}">Rekam Medis</a>
         @if ($crumb)
@@ -38,8 +39,12 @@
                     data-bs-target="#menuRekamMedis" aria-expanded="false" aria-controls="menuRekamMedis">
                 <i class="bi bi-list-ul me-1" aria-hidden="true"></i>Menu
             </button>
-            <a href="#" class="btn btn-outline-secondary"><i class="bi bi-clock-history me-1" aria-hidden="true"></i>Riwayat</a>
-            <a href="#" class="btn btn-outline-secondary"><i class="bi bi-printer me-1" aria-hidden="true"></i>Cetak</a>
+            <a href="{{ route('rekam-medis.riwayat', $pasien['no_reg']) }}" class="btn btn-outline-secondary">
+                <i class="bi bi-clock-history me-1" aria-hidden="true"></i>Riwayat
+            </a>
+            <a href="{{ route('rekam-medis.cetak', $pasien['no_reg']) }}" class="btn btn-outline-secondary">
+                <i class="bi bi-printer me-1" aria-hidden="true"></i>Cetak
+            </a>
             <button type="button" class="btn btn-success"><i class="bi bi-check2 me-1" aria-hidden="true"></i>Submit Final</button>
         </div>
     </div>
