@@ -7,7 +7,8 @@
     $grup = [
         ['judul' => 'Asesmen & pemeriksaan', 'ikon' => 'bi-clipboard2-pulse', 'items' => [
             ['key' => 'ringkasan', 'label' => 'Ringkasan pasien', 'href' => route('rekam-medis.show', $noReg)],
-            ['key' => 'asesmen',   'label' => 'Asesmen awal',     'href' => '#'],
+            ['key' => 'asesmen',   'label' => 'Asesmen awal',
+             'href' => route('rekam-medis.asesmen', $noReg)],
             ['key' => 'ttv',       'label' => 'Tanda vital',      'href' => '#'],
         ]],
         ['judul' => 'Catatan terintegrasi', 'ikon' => 'bi-journal-text', 'items' => [
