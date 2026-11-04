@@ -58,7 +58,7 @@ class KonfigurasiRekamMedis
 
         return match ($unit) {
             'igd'   => [['key' => 'asesmen', 'label' => 'Asesmen awal gawat darurat', 'href' => $r('asesmen')]],
-            'rajal' => [$s('pemeriksaan', 'Pemeriksaan dokter (SOAP)')],
+            'rajal' => [['key' => 'pemeriksaan', 'label' => 'Pemeriksaan dokter (SOAP)', 'href' => $r('pemeriksaan')]],
             'rm'    => [$s('rm-dokter', 'Asesmen dokter rehab medik'), $s('rm-terapis', 'Program terapi (terapis)'),
                         $s('rm-uji', 'Uji fungsi')],
             'ranap' => [$s('ranap-medis', 'Asesmen awal medis'), $s('ranap-kep', 'Asesmen awal keperawatan'),
@@ -134,10 +134,17 @@ class KonfigurasiRekamMedis
             default => ['belum', 'Belum diisi'],
         };
 
+        $periksa = session("pemeriksaan.$noReg");
+        [$stPeriksa, $ketPeriksa] = match ($periksa['status'] ?? null) {
+            'final' => ['selesai', 'Disimpan final · ' . $periksa['waktu']],
+            'draf'  => ['draf', 'Draf · ' . $periksa['waktu']],
+            default => ['belum', 'Belum diisi'],
+        };
+
         return match ($unit) {
             'rajal' => [
                 $t('Tanda vital', 'selesai', 'Terakhir 14:00', $r('ttv')),
-                $t('Pemeriksaan dokter (SOAP)', 'belum', 'Belum diisi'),
+                $t('Pemeriksaan dokter (SOAP)', $stPeriksa, $ketPeriksa, $r('pemeriksaan')),
                 $t('E-Resep', 'belum', 'Belum ada resep', $r('resep')),
                 $t('Surat kontrol', 'belum', 'Perlu dibuat', $r('dokumen', ['surat'])),
             ],

@@ -17,6 +17,7 @@ use App\Http\Controllers\ResepController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\TtvController;
 use App\Http\Middleware\CatatPasienTerakhir;
+use App\Http\Controllers\PemeriksaanController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -59,6 +60,8 @@ Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->middleware(CatatPasi
     Route::post('berkas', [BerkasController::class, 'simpan'])->name('berkas.simpan');
     Route::get('asesmen', [AsesmenController::class, 'index'])->name('asesmen');
     Route::post('asesmen', [AsesmenController::class, 'simpan'])->name('asesmen.simpan');
+    Route::get('pemeriksaan', [PemeriksaanController::class, 'index'])->name('pemeriksaan');
+    Route::post('pemeriksaan', [PemeriksaanController::class, 'simpan'])->name('pemeriksaan.simpan');
     Route::get('ttv', [TtvController::class, 'index'])->name('ttv');
     Route::post('ttv', [TtvController::class, 'simpan'])->name('ttv.simpan');
     Route::get('cppt', [CpptController::class, 'index'])->name('cppt');

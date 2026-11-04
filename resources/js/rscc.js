@@ -1020,3 +1020,216 @@ export function initFilterOtomatis() {
         });
     });
 }
+
+/**
+ * Kotak cari ICD (combobox): ketik → pilih → jadi chip (input hidden name="icd10[]").
+ * Keyboard: ↑/↓ memilih, Enter menambah, Esc menutup.
+ * data-utama="1": chip pertama diberi tanda "Utama".
+ */
+export function initPilihIcd() {
+    document.querySelectorAll('[data-rs-icd]').forEach((kotak) => {
+        const nama = kotak.dataset.nama;
+        const katalog = JSON.parse(kotak.querySelector('[data-rs-icd-katalog]').textContent);
+        const semuaKode = Object.keys(katalog);
+        const cari = kotak.querySelector('[data-rs-icd-cari]');
+        const saran = kotak.querySelector('[data-rs-icd-daftar]');
+        const terpilih = kotak.querySelector('[data-rs-icd-terpilih]');
+        let hasil = [];
+        let aktif = -1;
+
+        const kodeTerpilih = () => [...terpilih.querySelectorAll('input')].map((i) => i.value);
+        const beriTahuBerubah = () => kotak.dispatchEvent(new Event('change', { bubbles: true }));
+
+        const tandaiUtama = () => {
+            if (kotak.dataset.utama !== '1') return;
+            terpilih.querySelectorAll('.rs-px-utama').forEach((el) => el.remove());
+            const pertama = terpilih.querySelector('li');
+            if (pertama) {
+                const tanda = document.createElement('span');
+                tanda.className = 'rs-px-utama';
+                tanda.textContent = 'Utama';
+                pertama.prepend(tanda);
+            }
+        };
+
+        const tambah = (kode) => {
+            if (!katalog[kode] || kodeTerpilih().includes(kode)) return;
+            const li = document.createElement('li');
+            li.className = 'rs-px-chip';
+            li.innerHTML = '<input type="hidden"><strong></strong><span></span>'
+                + '<button type="button" class="rs-px-chip-hapus" data-rs-icd-hapus>'
+                + '<i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+            const input = li.querySelector('input');
+            input.name = `${nama}[]`;
+            input.value = kode;
+            li.querySelector('strong').textContent = kode;
+            li.querySelector('span').textContent = katalog[kode];
+            li.querySelector('button').setAttribute('aria-label', `Hapus ${kode}`);
+            terpilih.append(li);
+            tandaiUtama();
+            beriTahuBerubah();
+        };
+
+        const tutup = () => {
+            saran.hidden = true;
+            cari.setAttribute('aria-expanded', 'false');
+            cari.removeAttribute('aria-activedescendant');
+            aktif = -1;
+        };
+
+        const tampilkan = () => {
+            const q = cari.value.trim().toLowerCase();
+            saran.replaceChildren();
+            if (!q) { tutup(); return; }
+
+            const dipilih = kodeTerpilih();
+            hasil = semuaKode
+                .filter((k) => !dipilih.includes(k)
+                    && (k.toLowerCase().includes(q) || katalog[k].toLowerCase().includes(q)))
+                .slice(0, 8);
+
+            if (!hasil.length) {
+                const kosong = document.createElement('li');
+                kosong.className = 'rs-px-saran-kosong';
+                kosong.textContent = 'Tidak ditemukan. Coba kata lain.';
+                saran.append(kosong);
+            }
+            hasil.forEach((k, i) => {
+                const li = document.createElement('li');
+                li.id = `${saran.id}-${i}`;
+                li.setAttribute('role', 'option');
+                li.setAttribute('aria-selected', 'false');
+                li.className = 'rs-px-saran-item';
+                li.dataset.kode = k;
+                li.innerHTML = '<strong></strong><span></span>';
+                li.querySelector('strong').textContent = k;
+                li.querySelector('span').textContent = katalog[k];
+                saran.append(li);
+            });
+            saran.hidden = false;
+            cari.setAttribute('aria-expanded', 'true');
+            aktif = -1;
+        };
+
+        const sorot = (i) => {
+            const opsi = saran.querySelectorAll('[role="option"]');
+            opsi.forEach((el, j) => el.setAttribute('aria-selected', String(j === i)));
+            aktif = i;
+            if (opsi[i]) {
+                cari.setAttribute('aria-activedescendant', opsi[i].id);
+                opsi[i].scrollIntoView({ block: 'nearest' });
+            }
+        };
+
+        const pilih = (kode) => {
+            tambah(kode);
+            cari.value = '';
+            tutup();
+            cari.focus();
+        };
+
+        cari.addEventListener('input', tampilkan);
+        cari.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' && hasil.length) {
+                e.preventDefault();
+                sorot(Math.min(aktif + 1, hasil.length - 1));
+            } else if (e.key === 'ArrowUp' && hasil.length) {
+                e.preventDefault();
+                sorot(Math.max(aktif - 1, 0));
+            } else if (e.key === 'Enter') {
+                e.preventDefault(); // jangan kirim form
+                if (aktif >= 0) pilih(hasil[aktif]);
+                else if (hasil.length === 1) pilih(hasil[0]);
+            } else if (e.key === 'Escape') {
+                tutup();
+            }
+        });
+        cari.addEventListener('blur', () => setTimeout(tutup, 120));
+
+        // mousedown (bukan click) supaya terpilih sebelum kotak cari kehilangan fokus
+        saran.addEventListener('mousedown', (e) => {
+            const li = e.target.closest('[data-kode]');
+            if (li) { e.preventDefault(); pilih(li.dataset.kode); }
+        });
+
+        terpilih.addEventListener('click', (e) => {
+            const tombol = e.target.closest('[data-rs-icd-hapus]');
+            if (!tombol) return;
+            tombol.closest('li').remove();
+            tandaiUtama();
+            beriTahuBerubah();
+            cari.focus();
+        });
+
+        kotak.rsTambah = tambah; // dipakai tombol "Salin"
+    });
+}
+
+/**
+ * Form Pemeriksaan rawat jalan:
+ * - isian tambahan sesuai tindak lanjut (tanggal kontrol / tujuan rujukan),
+ * - tombol isi cepat, tombol "Salin" dari kunjungan sebelumnya,
+ * - penanda "ada perubahan" + peringatan bila meninggalkan halaman sebelum menyimpan.
+ */
+export function initFormPemeriksaan() {
+    const form = document.querySelector('[data-rs-form-pemeriksaan]');
+    if (!form) return;
+
+    const status = document.querySelector('[data-rs-status-simpan]');
+    let berubah = false;
+
+    function tandaiBerubah() {
+        if (berubah) return;
+        berubah = true;
+        if (status) status.textContent = 'Ada perubahan yang belum disimpan';
+    }
+
+    const perbaruiTindakLanjut = () => {
+        const nilai = form.querySelector('input[name="tindak_lanjut"]:checked')?.value;
+        form.querySelectorAll('[data-rs-tampil-jika]').forEach((el) => {
+            el.hidden = el.dataset.rsTampilJika !== nilai;
+        });
+    };
+
+    form.addEventListener('input', tandaiBerubah);
+    form.addEventListener('change', (e) => {
+        tandaiBerubah();
+        if (e.target.name === 'tindak_lanjut') perbaruiTindakLanjut();
+    });
+    form.addEventListener('submit', () => { berubah = false; });
+    window.addEventListener('beforeunload', (e) => {
+        if (berubah) { e.preventDefault(); e.returnValue = ''; }
+    });
+    perbaruiTindakLanjut();
+
+    // Tombol isi cepat, mis. "Isi: dalam batas normal"
+    form.querySelectorAll('[data-rs-isi-teks]').forEach((tombol) => {
+        tombol.addEventListener('click', () => {
+            const sasaran = form.querySelector(tombol.dataset.rsTarget);
+            if (!sasaran) return;
+            const lama = sasaran.value.trim();
+            sasaran.value = lama ? `${lama}\n${tombol.dataset.rsIsiTeks}` : tombol.dataset.rsIsiTeks;
+            sasaran.focus();
+            tandaiBerubah();
+        });
+    });
+
+    // Salin dari kunjungan sebelumnya
+    const info = document.querySelector('[data-rs-salin-info]');
+    document.querySelectorAll('[data-rs-salin]').forEach((tombol) => {
+        tombol.addEventListener('click', () => {
+            const data = JSON.parse(tombol.dataset.rsSalin);
+            ['diagnosa', 'rencana'].forEach((nama) => {
+                if (form.elements[nama] && data[nama]) form.elements[nama].value = data[nama];
+            });
+            const kotakIcd = form.querySelector('[data-rs-icd][data-nama="icd10"]');
+            (data.icd10 || []).forEach((kode) => kotakIcd?.rsTambah?.(kode));
+            tandaiBerubah();
+            if (info) {
+                info.textContent = `Diagnosa, ICD-10, dan rencana disalin dari kunjungan ${data.tanggal}. Periksa kembali sebelum menyimpan.`;
+                info.hidden = false;
+            }
+            form.elements.diagnosa?.focus();
+        });
+    });
+}

@@ -271,9 +271,11 @@ class DataContoh
                 'rajal'       => $row['ppa1'],
                 default       => $row['dokter_isi'],
             },
-            'diagnosa_kerja' => in_array($unit, ['ranap', 'ok'], true)
-                ? ($row['diagnosa'] ?: 'Belum ada diagnosa')
-                : 'Obs. febris H6, susp. demam tifoid',
+            'diagnosa_kerja' => match ($unit) {
+                'ranap', 'ok' => $row['diagnosa'] ?: 'Belum ada diagnosa',
+                'rajal'       => session("pemeriksaan.$noReg.isi.diagnosa") ?: 'Belum ada diagnosa',
+                default       => 'Obs. febris H6, susp. demam tifoid',
+            },
         ];
     }
 
@@ -371,6 +373,37 @@ class DataContoh
             ['jam' => '10:05', 'ikon' => 'bi-droplet-half', 'teks' => 'Hasil lab: 3 nilai di luar batas normal',    'oleh' => 'Laboratorium',      'route' => 'riwayat'],
             ['jam' => '09:40', 'ikon' => 'bi-image',        'teks' => 'Thorax PA: cor dan pulmo dalam batas normal', 'oleh' => 'Radiologi',         'route' => 'riwayat'],
             ['jam' => '09:12', 'ikon' => 'bi-send',         'teks' => 'Permintaan radiologi dikirim',               'oleh' => 'dr. [Nama Dokter]', 'route' => 'permintaan'],
+        ];
+    }
+
+        /**
+     * Kunjungan rawat jalan sebelumnya (CONTOH, terbaru di atas) — panel kanan form Pemeriksaan.
+     * Catatan untuk IT: ganti dengan query pemeriksaan rawat jalan pasien yang sudah final.
+     */
+    public static function kunjunganSebelumnya(): array
+    {
+        return [
+            [
+                'tanggal' => '14 Agu 2026', 'klinik' => 'Klinik Penyakit Dalam', 'dokter' => 'dr. Arif Nugroho, Sp.PD',
+                's' => 'Kontrol. Nyeri ulu hati berkurang, mual (-)',
+                'o' => 'TD 130/80 mmHg, N 84 x/menit. Nyeri tekan epigastrium minimal',
+                'a' => 'Dispepsia fungsional, perbaikan', 'icd10' => ['K30', 'Z09.8'],
+                'p' => 'Omeprazole 20 mg 2×1 (14 hari). Kontrol 1 bulan.',
+            ],
+            [
+                'tanggal' => '10 Jul 2026', 'klinik' => 'Klinik Penyakit Dalam', 'dokter' => 'dr. Arif Nugroho, Sp.PD',
+                's' => 'Nyeri ulu hati 2 minggu, mual, kembung',
+                'o' => 'TD 128/82 mmHg. Nyeri tekan epigastrium',
+                'a' => 'Gastritis', 'icd10' => ['K29.7'],
+                'p' => 'Omeprazole 20 mg 2×1, antasida 3×1. Edukasi pola makan. Kontrol 1 bulan.',
+            ],
+            [
+                'tanggal' => '03 Mar 2026', 'klinik' => 'Klinik Gigi dan Mulut', 'dokter' => 'drg. Maya Sari, Sp.KG',
+                's' => 'Gigi geraham kiri bawah ngilu',
+                'o' => 'Karies media gigi 36',
+                'a' => 'Karies gigi', 'icd10' => ['K02.9'],
+                'p' => 'Tumpatan komposit gigi 36.',
+            ],
         ];
     }
 
