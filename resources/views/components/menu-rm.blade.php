@@ -1,45 +1,14 @@
 @props(['noReg', 'aktif' => ''])
 
-@php
-    $jumlah = \App\Support\KatalogDokumen::jumlah();
+@php $grup = \App\Support\MenuRekamMedis::grup($noReg); @endphp
 
-    // href '#' = halaman belum dibuat → tampil dengan label "Segera"
-    $grup = [
-        ['judul' => 'Asesmen & pemeriksaan', 'ikon' => 'bi-clipboard2-pulse', 'items' => [
-            ['key' => 'ringkasan', 'label' => 'Ringkasan pasien', 'href' => route('rekam-medis.show', $noReg)],
-            ['key' => 'asesmen',   'label' => 'Asesmen awal',     'href' => '#'],
-            ['key' => 'ttv',       'label' => 'Tanda vital',      'href' => '#'],
-        ]],
-        ['judul' => 'Catatan terintegrasi', 'ikon' => 'bi-journal-text', 'items' => [
-            ['key' => 'cppt', 'label' => 'CPPT / SBAR', 'href' => '#'],
-        ]],
-        ['judul' => 'Penunjang', 'ikon' => 'bi-eyedropper', 'items' => [
-            ['key' => 'permintaan', 'label' => 'Permintaan lab / radiologi','href' => route('rekam-medis.permintaan', $noReg)],
-            ['key' => 'berkas',     'label' => 'Berkas digital', 'href' => route('rekam-medis.berkas', $noReg)],
-        ]],
-        ['judul' => 'Farmasi', 'ikon' => 'bi-capsule', 'items' => [
-            ['key' => 'resep', 'label' => 'E-Resep', 'href' => '#'],
-        ]],
-        ['judul' => 'Riwayat', 'ikon' => 'bi-clock-history', 'items' => [
-            ['key' => 'riwayat', 'label' => 'Riwayat pemeriksaan', 'href' => '#'],
-        ]],
-        ['judul' => 'Dokumen', 'ikon' => 'bi-folder2-open', 'items' => [
-            ['key' => 'surat',       'label' => 'Pembuatan surat', 'jumlah' => $jumlah['surat'],
-             'href' => route('rekam-medis.dokumen', [$noReg, 'surat'])],
-            ['key' => 'persetujuan', 'label' => 'Persetujuan',     'jumlah' => $jumlah['persetujuan'],
-             'href' => route('rekam-medis.dokumen', [$noReg, 'persetujuan'])],
-            ['key' => 'cetak',       'label' => 'Cetak',           'href' => route('rekam-medis.cetak', $noReg)],
-        ]],
-        ['judul' => 'Mutu', 'ikon' => 'bi-shield-check', 'items' => [
-            ['key' => 'ppi', 'label' => 'PPI',               'href' => '#'],
-            ['key' => 'cp',  'label' => 'Clinical pathways', 'href' => '#'],
-        ]],
-    ];
-@endphp
-
-<nav class="rs-rmmenu" aria-label="Menu rekam medis">
+<nav class="rs-rmmenu" aria-label="Menu rekam medis" data-rs-rmmenu>
     <p class="rs-rmmenu-title">Menu rekam medis</p>
-    <x-search label="Cari form" size="sm" class="mb-2" placeholder="Cari form…" />
+    <x-search label="Cari form" size="sm" placeholder="Cari form…" autocomplete="off" data-rs-rmmenu-cari />
+    <button type="button" class="rs-rmmenu-pintasan" data-bs-toggle="modal" data-bs-target="#cariMenu">
+        <i class="bi bi-lightning-charge" aria-hidden="true"></i>Cari dari mana saja:
+        <span class="rs-kbd"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+    </button>
 
     @foreach ($grup as $g)
         <div class="rs-rmmenu-group">
@@ -62,4 +31,6 @@
             @endforeach
         </div>
     @endforeach
+
+    <p class="small rs-text-muted text-center py-3 mb-0" data-rs-rmmenu-kosong hidden>Form tidak ditemukan.</p>
 </nav>

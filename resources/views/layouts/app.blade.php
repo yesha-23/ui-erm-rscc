@@ -19,6 +19,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
+<x-cari-menu />
 <body class="rs-body-app">
 <div class="rs-app">
     <x-sidebar />

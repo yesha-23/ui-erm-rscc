@@ -418,3 +418,528 @@ export function initUnggahBerkas() {
 
     tampilkan();
 }
+
+/* ---------- Asesmen awal GD: langkah, GCS, TTV, nyeri, fisik, risiko jatuh ---------- */
+export function initAsesmen() {
+    const form = document.querySelector('[data-rs-asesmen]');
+    if (!form) return;
+
+    /* --- Penanda "ada perubahan" + peringatan sebelum menutup halaman --- */
+    const status = document.querySelector('[data-rs-status-simpan]');
+    let berubah = false;
+
+    function tandai() {
+        if (berubah) return;
+        berubah = true;
+        status.innerHTML = '<i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>Ada perubahan yang belum disimpan';
+        status.classList.add('text-warning-emphasis', 'fw-semibold');
+    }
+    form.addEventListener('input', tandai);
+    form.addEventListener('change', tandai);
+    form.addEventListener('submit', () => { berubah = false; });
+    window.addEventListener('beforeunload', (e) => {
+        if (berubah) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    /* --- Langkah 1–4 --- */
+    const tab = [...document.querySelectorAll('[data-rs-langkah-tab]')];
+    const panel = [...form.querySelectorAll('[data-rs-langkah-panel]')];
+    const input = form.querySelector('[data-rs-langkah-input]');
+    const tPrev = document.querySelector('[data-rs-langkah-prev]');
+    const tNext = document.querySelector('[data-rs-langkah-next]');
+    const tFinal = document.querySelector('[data-rs-langkah-final]');
+    let sekarang = Number(form.dataset.rsLangkahAwal || 0);
+
+    function buka(i, fokus = false) {
+        sekarang = Math.max(0, Math.min(panel.length - 1, i));
+        panel.forEach((p, n) => { p.hidden = n !== sekarang; });
+        tab.forEach((t, n) => {
+            const aktif = n === sekarang;
+            t.classList.toggle('active', aktif);
+            t.classList.toggle('is-done', n < sekarang);
+            t.setAttribute('aria-selected', String(aktif));
+            t.tabIndex = aktif ? 0 : -1;
+        });
+        input.value = sekarang;
+
+        const terakhir = sekarang === panel.length - 1;
+        tPrev.disabled = sekarang === 0;
+        tNext.hidden = terakhir;
+        tFinal.hidden = !terakhir;
+
+        if (fokus) {
+            panel[sekarang].scrollIntoView({ block: 'start', behavior: 'smooth' });
+            panel[sekarang].querySelector('.rs-langkah-judul')?.focus({ preventScroll: true });
+        }
+    }
+
+    tab.forEach((t, n) => {
+        t.addEventListener('click', () => buka(n, true));
+        t.addEventListener('keydown', (e) => {
+            if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+            e.preventDefault();
+            const arah = e.key === 'ArrowRight' ? 1 : -1;
+            const n2 = (sekarang + arah + tab.length) % tab.length;
+            buka(n2);
+            tab[n2].focus();
+        });
+    });
+    tPrev.addEventListener('click', () => buka(sekarang - 1, true));
+    tNext.addEventListener('click', () => buka(sekarang + 1, true));
+    buka(sekarang);
+
+    /* --- GCS: total + tingkat kesadaran --- */
+    const gcs = form.querySelector('[data-rs-gcs]');
+    if (gcs) {
+        const pilih = [...gcs.querySelectorAll('[data-rs-gcs-nilai]')];
+        const total = gcs.querySelector('[data-rs-gcs-total]');
+        const kesadaran = gcs.querySelector('[data-rs-gcs-kesadaran]');
+        const hitung = () => {
+            if (pilih.some((s) => !s.value)) {
+                total.textContent = '–';
+                kesadaran.textContent = 'Lengkapi E, V, dan M';
+                gcs.classList.remove('is-warn');
+                return;
+            }
+            const n = pilih.reduce((jml, s) => jml + Number(s.value), 0);
+            total.textContent = n;
+            kesadaran.textContent =
+                n >= 14 ? 'Compos mentis' : n >= 12 ? 'Apatis' : n >= 10 ? 'Delirium'
+                    : n >= 7 ? 'Somnolen' : n >= 5 ? 'Sopor' : n === 4 ? 'Semi-koma' : 'Koma';
+            gcs.classList.toggle('is-warn', n < 14);
+        };
+        pilih.forEach((s) => s.addEventListener('change', hitung));
+        hitung();
+    }
+
+    /* --- Tanda vital: penanda di luar rentang normal --- */
+    form.querySelectorAll('[data-rs-ttv]').forEach((kotak) => {
+        const isian = kotak.querySelector('input');
+        const catatan = kotak.querySelector('.rs-ttv-catatan');
+        const teksAwal = catatan.textContent.trim();
+        const min = Number(kotak.dataset.min);
+        const max = Number(kotak.dataset.max);
+
+        const cek = () => {
+            const v = parseFloat(isian.value);
+            let teks = teksAwal;
+            let luar = false;
+            if (!Number.isNaN(v)) {
+                if (v < min) { teks = '↓ Di bawah normal'; luar = true; }
+                else if (v > max) { teks = '↑ Di atas normal'; luar = true; }
+                else { teks = '✓ Normal'; }
+            }
+            catatan.textContent = teks;
+            kotak.classList.toggle('is-warn', luar);
+        };
+        isian.addEventListener('input', cek);
+        cek();
+    });
+
+    /* --- Skala nyeri: label kategori --- */
+    const nyeri = form.querySelector('[data-rs-nyeri]');
+    if (nyeri) {
+        const label = nyeri.querySelector('[data-rs-nyeri-label]');
+        const perbarui = () => {
+            const v = Number(nyeri.querySelector('input[name="nyeri"]:checked')?.value ?? 0);
+            label.textContent = v === 0
+                ? 'Tidak nyeri'
+                : `Nyeri ${v <= 3 ? 'ringan' : v <= 6 ? 'sedang' : 'berat'} (${v}/10)`;
+        };
+        nyeri.addEventListener('change', perbarui);
+        perbarui();
+    }
+
+    /* --- Pemeriksaan fisik: hitung temuan + "Semua normal" --- */
+    const fisik = form.querySelector('[data-rs-fisik]');
+    if (fisik) {
+        const jumlah = fisik.querySelector('[data-rs-fisik-jumlah]');
+        const hitung = () => {
+            jumlah.textContent = fisik.querySelectorAll('input[value="temuan"]:checked').length;
+        };
+        fisik.querySelector('[data-rs-fisik-normal]').addEventListener('click', () => {
+            fisik.querySelectorAll('input[value="normal"]').forEach((r) => { r.checked = true; });
+            hitung();
+            tandai();
+        });
+        fisik.addEventListener('change', hitung);
+        hitung();
+    }
+
+    /* --- Risiko jatuh (Get Up and Go) --- */
+    const jatuh = form.querySelector('[data-rs-jatuh]');
+    if (jatuh) {
+        const hasil = jatuh.querySelector('[data-rs-jatuh-hasil]');
+        const nilai = () => {
+            const ya = jatuh.querySelectorAll('input[value="ya"]:checked').length;
+            const [teks, kelas] = ya === 0 ? ['Tidak berisiko', 'is-aman']
+                : ya === 1 ? ['Risiko rendah', 'is-sedang']
+                    : ['Risiko tinggi', 'is-tinggi'];
+            hasil.textContent = `Hasil: ${teks}`;
+            hasil.className = `rs-jatuh-hasil ${kelas}`;
+        };
+        jatuh.addEventListener('change', nilai);
+        nilai();
+    }
+
+    /* --- Jumlah diagnosis terpilih --- */
+    const dx = form.querySelector('[data-rs-diagnosa]');
+    if (dx) {
+        const n = dx.querySelector('[data-rs-diagnosa-jumlah]');
+        const hitung = () => { n.textContent = dx.querySelectorAll('input:checked').length; };
+        dx.addEventListener('change', hitung);
+        hitung();
+    }
+}
+
+/* ---------- Tombol sisipkan teks ke kotak isian (mis. TTV terakhir di CPPT) ---------- */
+export function initSisipTeks() {
+    document.querySelectorAll('[data-rs-sisip]').forEach((tombol) => {
+        const tujuan = document.querySelector(tombol.dataset.rsSisip);
+        if (!tujuan) return;
+
+        tombol.addEventListener('click', () => {
+            const teks = tombol.dataset.rsTeks;
+            const lama = tujuan.value.trim();
+            tujuan.value = lama ? `${lama}\n${teks}` : teks;
+            tujuan.focus();
+            tujuan.setSelectionRange(tujuan.value.length, tujuan.value.length);
+        });
+    });
+}
+
+/* ---------- E-Resep: cari obat, tambah/hapus baris, salin resep ---------- */
+export function initResep() {
+    const form = document.querySelector('[data-rs-resep]');
+    if (!form) return;
+
+    const katalog = JSON.parse(document.getElementById('data-obat')?.textContent || '[]');
+    const tbody = form.querySelector('[data-rs-daftar-resep]');
+    const tabel = form.querySelector('[data-rs-tabel-resep]');
+    const kosong = form.querySelector('[data-rs-resep-kosong]');
+    const jumlah = document.querySelectorAll('[data-rs-jumlah-item]');
+    const tpl = document.getElementById('tpl-baris-resep');
+    const cari = document.querySelector('[data-rs-cari-obat]');
+    const hasil = document.querySelector('[data-rs-hasil-obat]');
+    let indeks = Number(form.dataset.rsIndeksAwal || 0);
+    let cocok = [];
+    let aktif = 0;
+
+    const perbarui = () => {
+        const n = tbody.querySelectorAll('[data-rs-baris-resep]').length;
+        tabel.hidden = n === 0;
+        kosong.hidden = n > 0;
+        jumlah.forEach((el) => { el.textContent = n; });
+    };
+
+    const barisAda = (kode) =>
+        [...tbody.querySelectorAll('[data-rs-baris-resep]')].find((tr) => tr.dataset.kode === kode);
+
+    // Tambah satu baris dari cetakan; kalau obat sudah ada, kembalikan baris yang ada
+    function tambahBaris(obat, nilai = {}) {
+        const ada = barisAda(obat.kode);
+        if (ada) return ada;
+
+        const wadah = document.createElement('tbody');
+        wadah.innerHTML = tpl.innerHTML.replaceAll('__I__', String(indeks++));
+        const tr = wadah.firstElementChild;
+
+        tr.dataset.kode = obat.kode;
+        tr.querySelector('[data-rs-obat-nama]').textContent = obat.nama;
+        tr.querySelector('[data-rs-obat-satuan]').textContent = obat.satuan;
+        tr.querySelector('[data-rs-hapus-baris]').setAttribute('aria-label', `Hapus ${obat.nama}`);
+
+        const isi = {
+            kode: obat.kode, nama: obat.nama, satuan: obat.satuan,
+            jumlah: '', signa: '', rute: 'oral', catatan: '', ...nilai,
+        };
+        Object.entries(isi).forEach(([kunci, v]) => {
+            const el = tr.querySelector(`[data-rs-f="${kunci}"]`);
+            if (el) el.value = v ?? '';
+        });
+
+        tbody.append(tr);
+        perbarui();
+        return tr;
+    }
+
+    function pilih(obat) {
+        const tr = tambahBaris(obat);
+        cari.value = '';
+        hasil.hidden = true;
+        tr.querySelector('[data-rs-f="jumlah"]').focus();
+    }
+
+    // Hapus baris
+    tbody.addEventListener('click', (e) => {
+        const tombol = e.target.closest('[data-rs-hapus-baris]');
+        if (!tombol) return;
+        tombol.closest('[data-rs-baris-resep]').remove();
+        perbarui();
+        cari?.focus();
+    });
+
+    // Hasil pencarian obat
+    const tampilkanHasil = () => {
+        const q = cari.value.trim().toLowerCase();
+        if (!q) { hasil.hidden = true; return; }
+
+        cocok = katalog.filter((o) => o.nama.toLowerCase().includes(q)).slice(0, 8);
+        aktif = 0;
+
+        if (!cocok.length) {
+            const li = document.createElement('li');
+            li.className = 'rs-obat-kosong';
+            li.textContent = 'Obat tidak ditemukan';
+            hasil.replaceChildren(li);
+        } else {
+            hasil.replaceChildren(...cocok.map((o, i) => {
+                const li = document.createElement('li');
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'rs-obat-opsi' + (i === 0 ? ' active' : '');
+                const nama = document.createElement('span');
+                nama.textContent = o.nama;
+                const info = document.createElement('small');
+                info.textContent = `${o.satuan} · ${o.jenis === 'alkes' ? 'alkes' : 'obat'}`;
+                b.append(nama, info);
+                b.addEventListener('click', () => pilih(o));
+                li.append(b);
+                return li;
+            }));
+        }
+        hasil.hidden = false;
+    };
+
+    cari?.addEventListener('input', tampilkanHasil);
+    cari?.addEventListener('keydown', (e) => {
+        const opsi = [...hasil.querySelectorAll('.rs-obat-opsi')];
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (cocok[aktif]) pilih(cocok[aktif]);
+            return;
+        }
+        if (e.key === 'Escape') { hasil.hidden = true; return; }
+        if (!opsi.length || (e.key !== 'ArrowDown' && e.key !== 'ArrowUp')) return;
+        e.preventDefault();
+        aktif = (aktif + (e.key === 'ArrowDown' ? 1 : -1) + opsi.length) % opsi.length;
+        opsi.forEach((b, i) => b.classList.toggle('active', i === aktif));
+        opsi[aktif].scrollIntoView({ block: 'nearest' });
+    });
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-rs-cari-obat-wadah]')) hasil.hidden = true;
+    });
+
+    // Salin resep sebelumnya
+    document.querySelector('[data-rs-salin-resep]')?.addEventListener('click', () => {
+        const data = JSON.parse(document.getElementById('data-resep-sebelumnya')?.textContent || '[]');
+        let n = 0;
+        data.forEach((item) => {
+            if (!barisAda(item.kode)) { tambahBaris(item, item); n++; }
+        });
+        const info = document.querySelector('[data-rs-salin-info]');
+        if (info) {
+            info.textContent = n
+                ? `${n} obat disalin. Periksa kembali dosis dan jumlah sebelum mengirim.`
+                : 'Semua obat dari resep sebelumnya sudah ada di daftar.';
+        }
+    });
+
+    perbarui();
+}
+
+/* ---------- Checklist PPI / CP / Psikologi: skor otomatis ---------- */
+export function initChecklist() {
+    const form = document.querySelector('[data-rs-checklist]');
+    if (!form) return;
+
+    const positif = form.dataset.positif;
+    const baris = [...form.querySelectorAll('.rs-cek-baris')];
+    const skor = form.querySelector('[data-rs-skor]');
+    const rinci = form.querySelector('[data-rs-skor-rinci]');
+    const bar = form.querySelector('[data-rs-skor-bar]');
+
+    const hitung = () => {
+        const jawab = baris.map((b) => b.querySelector('input:checked')?.value ?? null);
+        const terjawab = jawab.filter(Boolean);
+        const dinilai = terjawab.filter((v) => v !== 'na');
+        const baik = dinilai.filter((v) => v === positif).length;
+        const persen = dinilai.length ? Math.round((baik / dinilai.length) * 100) : null;
+
+        skor.textContent = persen === null ? '–' : `${persen}%`;
+        rinci.textContent = `${baik} dari ${dinilai.length} butir dinilai · ${baris.length - terjawab.length} belum dijawab`;
+        bar.style.width = `${persen ?? 0}%`;
+        bar.parentElement.dataset.tingkat =
+            persen === null ? '' : persen >= 85 ? 'baik' : persen >= 60 ? 'cukup' : 'kurang';
+
+        baris.forEach((b, i) => { if (jawab[i]) b.classList.remove('is-error'); });
+    };
+
+    form.addEventListener('change', hitung);
+
+    // Isi butir yang masih kosong dengan jawaban positif (tidak menimpa jawaban yang sudah ada)
+    document.querySelector('[data-rs-tandai-semua]')?.addEventListener('click', () => {
+        baris.forEach((b) => {
+            if (b.querySelector('input:checked')) return;
+            const r = b.querySelector(`input[value="${positif}"]`);
+            if (r) r.checked = true;
+        });
+        hitung();
+    });
+
+    hitung();
+}
+
+/* ---------- Menu rekam medis: saring dengan kotak "Cari form" ---------- */
+export function initMenuRmCari() {
+    const menu = document.querySelector('[data-rs-rmmenu]');
+    const input = menu?.querySelector('[data-rs-rmmenu-cari]');
+    if (!input) return;
+
+    const kosong = menu.querySelector('[data-rs-rmmenu-kosong]');
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        let total = 0;
+        menu.querySelectorAll('.rs-rmmenu-group').forEach((grup) => {
+            let n = 0;
+            grup.querySelectorAll('.rs-rmmenu-item').forEach((a) => {
+                const cocok = a.textContent.toLowerCase().includes(q);
+                a.hidden = !cocok;
+                if (cocok) n++;
+            });
+            grup.hidden = n === 0;
+            total += n;
+        });
+        kosong.hidden = total > 0;
+    });
+}
+
+/* ---------- Cari menu (Ctrl+K / ⌘K) ---------- */
+export function initCariMenu() {
+    const modalEl = document.querySelector('[data-rs-cari-menu]');
+    if (!modalEl) return;
+
+    const modal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+    const input = modalEl.querySelector('[data-rs-cari-menu-input]');
+    const item = [...modalEl.querySelectorAll('[data-rs-cari-item]')];
+    const kosong = modalEl.querySelector('[data-rs-cari-menu-kosong]');
+    let aktif = 0;
+
+    const terlihat = () => item.filter((li) => !li.hidden);
+
+    const sorot = (i) => {
+        const daftar = terlihat();
+        item.forEach((li) => li.firstElementChild.classList.remove('active'));
+        if (!daftar.length) return;
+        aktif = (i + daftar.length) % daftar.length;
+        daftar[aktif].firstElementChild.classList.add('active');
+        daftar[aktif].scrollIntoView({ block: 'nearest' });
+    };
+
+    const saring = () => {
+        const kata = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+        item.forEach((li) => { li.hidden = !kata.every((k) => li.dataset.teks.includes(k)); });
+        kosong.hidden = terlihat().length > 0;
+        sorot(0);
+    };
+
+    input.addEventListener('input', saring);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); sorot(aktif + 1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); sorot(aktif - 1); }
+        else if (e.key === 'Enter') { e.preventDefault(); terlihat()[aktif]?.firstElementChild.click(); }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            modal.show();
+        }
+    });
+
+    modalEl.addEventListener('shown.bs.modal', () => {
+        input.value = '';
+        saring();
+        input.focus();
+    });
+}
+
+/* ---------- Tanda vital: grafik tren dengan batas normal ---------- */
+export function initGrafikTtv() {
+    const kanvas = document.querySelector('[data-rs-ttv-grafik]');
+    if (!kanvas) return;
+
+    const data = JSON.parse(document.getElementById('data-ttv')?.textContent || '{}');
+    const css = getComputedStyle(document.documentElement);
+    const garisGrid = css.getPropertyValue('--rs-border').trim() || '#E4E7EC';
+
+    const SERI = {
+        suhu: ['suhu'],
+        nadi: ['nadi'],
+        td: ['td_sistolik', 'td_diastolik'],
+        napas: ['napas'],
+        spo2: ['spo2'],
+    };
+    const WARNA = ['#2B6CB0', '#157A4F'];
+    let grafik;
+
+    const gambar = (kunci) => {
+        const nama = SERI[kunci];
+        const acuan = data.seri[nama[0]];
+
+        const datasets = nama.map((n, i) => ({
+            label: data.seri[n].label,
+            data: data.seri[n].data,
+            borderColor: WARNA[i],
+            backgroundColor: WARNA[i],
+            tension: 0.3,
+            pointRadius: 4,
+            spanGaps: true,
+        }));
+
+        // Garis batas normal (putus-putus)
+        ['min', 'max'].forEach((b) => datasets.push({
+            label: b === 'min' ? 'Batas bawah normal' : 'Batas atas normal',
+            data: data.label.map(() => acuan[b]),
+            borderColor: '#98A2B3',
+            borderDash: [6, 4],
+            borderWidth: 1,
+            pointRadius: 0,
+            fill: false,
+        }));
+
+        grafik?.destroy();
+        grafik = new Chart(kanvas, {
+            type: 'line',
+            data: { labels: data.label, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, filter: (item) => !item.text.startsWith('Batas') },
+                    },
+                    tooltip: {
+                        filter: (item) => !item.dataset.label.startsWith('Batas'),
+                        callbacks: {
+                            label: (c) => ` ${c.dataset.label}: ${String(c.parsed.y).replace('.', ',')} ${acuan.unit}`,
+                        },
+                    },
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: garisGrid } },
+                },
+            },
+        });
+    };
+
+    document.querySelectorAll('input[name="grafik-ttv"]').forEach((r) => {
+        r.addEventListener('change', () => gambar(r.value));
+    });
+
+    gambar(document.querySelector('input[name="grafik-ttv"]:checked')?.value || 'suhu');
+}

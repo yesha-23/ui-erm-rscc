@@ -10,6 +10,12 @@ use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\CetakController;
 use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\BerkasController;
+use App\Http\Controllers\AsesmenController;
+use App\Http\Controllers\CpptController;
+use App\Http\Controllers\ChecklistController;
+use App\Http\Controllers\ResepController;
+use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\TtvController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -50,6 +56,24 @@ Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->group(function () {
         ->name('permintaan.kirim');
     Route::get('berkas', [BerkasController::class, 'index'])->name('berkas');
     Route::post('berkas', [BerkasController::class, 'simpan'])->name('berkas.simpan');
+    Route::get('asesmen', [AsesmenController::class, 'index'])->name('asesmen');
+    Route::post('asesmen', [AsesmenController::class, 'simpan'])->name('asesmen.simpan');
+    Route::get('ttv', [TtvController::class, 'index'])->name('ttv');
+    Route::post('ttv', [TtvController::class, 'simpan'])->name('ttv.simpan');
+    Route::get('cppt', [CpptController::class, 'index'])->name('cppt');
+    Route::post('cppt', [CpptController::class, 'simpan'])->name('cppt.simpan');
+    Route::post('cppt/{id}/verifikasi', [CpptController::class, 'verifikasi'])->name('cppt.verifikasi');
+    Route::get('resep', [ResepController::class, 'index'])->name('resep');
+    Route::post('resep', [ResepController::class, 'simpan'])->name('resep.simpan');
+
+    Route::get('riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+
+    Route::get('checklist/{kategori}/{slug?}', [ChecklistController::class, 'index'])
+        ->whereIn('kategori', ['ppi', 'cp', 'psikologi'])
+        ->name('checklist');
+    Route::post('checklist/{kategori}/{slug}', [ChecklistController::class, 'simpan'])
+        ->whereIn('kategori', ['ppi', 'cp', 'psikologi'])
+        ->name('checklist.simpan');
 });
 
 Route::prefix('akun')->name('akun.')->controller(AkunController::class)->group(function () {

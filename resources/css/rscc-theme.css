@@ -2126,6 +2126,1032 @@
     font-size: 20px;
 }
 
+/* =========================================================
+   Form klinis (Clara) — dipakai Asesmen, Tanda vital, CPPT, dll.
+   ========================================================= */
+
+/* Judul kelompok pilihan */
+.rs-pilihan-grup {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.rs-legend {
+    float: none;
+    width: auto;
+    margin: 0 0 8px;
+    padding: 0;
+    color: var(--rs-text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.rs-langkah-judul:focus {
+    outline: none;
+}
+
+/* Chip pilihan (label dari .btn-check) */
+.rs-pilihan {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rs-pilih {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--rs-border-input);
+    border-radius: 999px;
+    background: var(--rs-surface);
+    color: var(--rs-text-2);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+
+.rs-pilih:hover {
+    background: var(--rs-hover);
+}
+
+.btn-check:checked+.rs-pilih {
+    border-color: var(--rs-primary);
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-weight: 700;
+}
+
+.btn-check[type="checkbox"]:checked+.rs-pilih::before {
+    content: '\2713';
+}
+
+.btn-check:focus-visible+.rs-pilih {
+    border-color: var(--rs-primary);
+    box-shadow: 0 0 0 4px var(--rs-primary-soft);
+}
+
+/* Triase berwarna: titik warna + warna saat dipilih */
+.rs-pilih-merah::before,
+.rs-pilih-kuning::before,
+.rs-pilih-hijau::before,
+.rs-pilih-hitam::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.rs-pilih-merah::before {
+    background: #D92D20;
+}
+
+.rs-pilih-kuning::before {
+    background: #F79009;
+}
+
+.rs-pilih-hijau::before {
+    background: #12B76A;
+}
+
+.rs-pilih-hitam::before {
+    background: #101828;
+}
+
+.btn-check:checked+.rs-pilih-merah {
+    border-color: #D92D20;
+    background: #FEF3F2;
+    color: #B42318;
+}
+
+.btn-check:checked+.rs-pilih-kuning {
+    border-color: #F79009;
+    background: #FFFAEB;
+    color: #93370D;
+}
+
+.btn-check:checked+.rs-pilih-hijau {
+    border-color: #12B76A;
+    background: #ECFDF3;
+    color: #067647;
+}
+
+.btn-check:checked+.rs-pilih-hitam {
+    border-color: #101828;
+    background: #F2F4F7;
+    color: #101828;
+}
+
+/* Navigasi langkah */
+.rs-langkah-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding: 4px;
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+    overflow-x: auto;
+}
+
+.rs-langkah-tab {
+    flex: 1 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--rs-text-3);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.rs-langkah-tab:hover {
+    color: var(--rs-text);
+}
+
+.rs-langkah-tab.active {
+    background: var(--rs-surface);
+    color: var(--rs-text);
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .12);
+}
+
+.rs-langkah-tab:focus-visible {
+    outline: 3px solid var(--rs-primary-soft);
+}
+
+.rs-langkah-nomor {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #D0D5DD;
+    color: var(--rs-text-2);
+    font-size: 12px;
+}
+
+.rs-langkah-tab.active .rs-langkah-nomor {
+    background: var(--rs-primary);
+    color: #fff;
+}
+
+.rs-langkah-tab.is-done .rs-langkah-nomor {
+    background: #157A4F;
+    color: transparent;
+    position: relative;
+}
+
+.rs-langkah-tab.is-done .rs-langkah-nomor::after {
+    content: '\2713';
+    position: absolute;
+    color: #fff;
+}
+
+/* Tanda vital */
+.rs-ttv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.rs-ttv {
+    padding: 12px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: var(--rs-surface);
+    transition: border-color .15s ease, background-color .15s ease;
+}
+
+.rs-ttv.is-warn {
+    border-color: #F7B27A;
+    background: #FFF8F1;
+}
+
+.rs-ttv-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--rs-text-2);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rs-ttv-input {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.rs-ttv-input .form-control {
+    min-width: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.rs-ttv-unit {
+    flex: none;
+    color: var(--rs-text-muted);
+    font-size: 12px;
+}
+
+.rs-ttv-catatan {
+    margin-top: 6px;
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rs-ttv.is-warn .rs-ttv-catatan {
+    color: #B54708;
+}
+
+/* GCS */
+.rs-gcs-total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #E7F6EE;
+    color: #0F6B43;
+    font-size: 14px;
+}
+
+.rs-gcs-total strong {
+    font-size: 22px;
+}
+
+.rs-gcs.is-warn .rs-gcs-total {
+    background: #FFF4E5;
+    color: #93370D;
+}
+
+/* Skala nyeri */
+.rs-nyeri {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.rs-nyeri-angka {
+    display: grid;
+    place-items: center;
+    min-height: 42px;
+    border: 1px solid var(--rs-border-input);
+    border-radius: 8px;
+    background: var(--rs-surface);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.rs-nyeri-angka:hover {
+    background: var(--rs-hover);
+}
+
+.btn-check:checked+.rs-nyeri-angka {
+    border-color: var(--rs-primary);
+    background: var(--rs-primary);
+    color: #fff;
+}
+
+.btn-check:focus-visible+.rs-nyeri-angka {
+    box-shadow: 0 0 0 4px var(--rs-primary-soft);
+}
+
+.rs-nyeri-skala {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.rs-nyeri-detail {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rs-hover);
+}
+
+[data-rs-nyeri]:has(input[name="nyeri"][value="0"]:checked) .rs-nyeri-detail {
+    display: none;
+}
+
+/* Pemeriksaan fisik */
+.rs-fisik {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rs-fisik-baris {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) auto;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 8px 12px;
+    border: 1px solid var(--rs-border);
+    border-radius: 10px;
+}
+
+.rs-fisik-nama {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.rs-fisik-pilih {
+    display: flex;
+    gap: 6px;
+}
+
+.rs-fisik-pilih .rs-pilih {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
+}
+
+.btn-check:checked+.rs-pilih-normal {
+    border-color: #157A4F;
+    background: #E7F6EE;
+    color: #0F6B43;
+}
+
+.btn-check:checked+.rs-pilih-temuan {
+    border-color: #DC6803;
+    background: #FFF4E5;
+    color: #93370D;
+}
+
+.rs-fisik-catatan {
+    grid-column: 1 / -1;
+    display: none;
+}
+
+.rs-fisik-baris:has(input[value="temuan"]:checked) {
+    border-color: #F7B27A;
+    background: #FFF8F1;
+}
+
+.rs-fisik-baris:has(input[value="temuan"]:checked) .rs-fisik-catatan {
+    display: block;
+}
+
+/* Risiko jatuh */
+.rs-jatuh-hasil {
+    display: inline-flex;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.rs-jatuh-hasil.is-aman {
+    background: #E7F6EE;
+    color: #0F6B43;
+}
+
+.rs-jatuh-hasil.is-sedang {
+    background: #FFF4E5;
+    color: #93370D;
+}
+
+.rs-jatuh-hasil.is-tinggi {
+    background: #FEF3F2;
+    color: #B42318;
+}
+
+/* ---------- CPPT / SBAR (Clara) ---------- */
+
+/* Tampilkan isian sesuai format terpilih */
+.rs-cppt-form:has(#format-soap:checked) [data-rs-format="sbar"],
+.rs-cppt-form:has(#format-sbar:checked) [data-rs-format="soap"] {
+    display: none;
+}
+
+.rs-segmented-inline {
+    display: inline-flex;
+}
+
+.rs-segmented-inline .rs-segmented-item {
+    flex: 0 0 auto;
+    padding: 0 14px;
+}
+
+.rs-soap-isian {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rs-soap-baris {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.rs-soap-huruf {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin-top: 26px;
+    border-radius: 8px;
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-weight: 800;
+}
+
+/* Badge profesi */
+.rs-profesi {
+    display: inline-flex;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.rs-profesi-dokter {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+}
+
+.rs-profesi-perawat {
+    background: #E7F6EE;
+    color: #0F6B43;
+}
+
+.rs-profesi-bidan {
+    background: #FDF2FA;
+    color: #C11574;
+}
+
+.rs-profesi-farmasi {
+    background: #F4F3FF;
+    color: #5925DC;
+}
+
+.rs-profesi-gizi {
+    background: #FFF4E5;
+    color: #93370D;
+}
+
+/* Isi SOAP / SBAR di tabel */
+.rs-format-tag {
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 0 6px;
+    border-radius: 4px;
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .06em;
+}
+
+.rs-soap-list {
+    margin: 0;
+    font-size: 13.5px;
+}
+
+.rs-soap-list div {
+    display: flex;
+    gap: 8px;
+}
+
+.rs-soap-list dt {
+    flex: none;
+    width: 14px;
+    color: var(--rs-text-muted);
+    font-weight: 800;
+}
+
+.rs-soap-list dd {
+    margin: 0;
+    white-space: pre-line;
+}
+
+.rs-table-cppt td:nth-child(2) {
+    min-width: 280px;
+}
+
+.rs-row-menunggu>td {
+    background: #FFFBF5;
+}
+
+/* ---------- E-Resep (Clara) ---------- */
+.rs-cari-obat {
+    position: relative;
+}
+
+.rs-obat-hasil {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    max-height: 320px;
+    margin: 0;
+    padding: 6px;
+    overflow-y: auto;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: var(--rs-surface);
+    box-shadow: 0 12px 24px rgba(16, 24, 40, .12);
+}
+
+.rs-obat-opsi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--rs-text);
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+}
+
+.rs-obat-opsi:hover,
+.rs-obat-opsi.active {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+}
+
+.rs-obat-opsi small {
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.rs-obat-kosong {
+    padding: 10px;
+    color: var(--rs-text-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+.rs-salin {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px dashed var(--rs-border-input);
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+    font-size: 13.5px;
+}
+
+.rs-table-resep td {
+    vertical-align: middle;
+}
+
+.rs-table-resep .rs-input-jumlah {
+    width: 84px;
+}
+
+/* ---------- Riwayat pemeriksaan (Clara) ---------- */
+.rs-timeline-hari {
+    margin-bottom: 20px;
+}
+
+.rs-timeline-hari:not(:has(.rs-timeline-item:not([hidden]))) {
+    display: none;
+}
+
+/* tanggal tanpa hasil cari */
+.rs-timeline-tanggal {
+    margin: 0 0 10px;
+    color: var(--rs-text-2);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.rs-timeline-list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0 0 0 48px;
+    list-style: none;
+}
+
+.rs-timeline-list::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 17px;
+    width: 2px;
+    background: var(--rs-border);
+}
+
+.rs-timeline-item {
+    position: relative;
+}
+
+.rs-timeline-ikon {
+    position: absolute;
+    top: 14px;
+    left: -48px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--rs-border);
+    border-radius: 50%;
+    background: var(--rs-surface);
+    color: var(--rs-text-3);
+    font-size: 16px;
+}
+
+.rs-jenis-kunjungan {
+    border-color: #B2CCEB;
+    color: var(--rs-primary-dark);
+}
+
+.rs-jenis-lab {
+    border-color: #B2DDFF;
+    color: #175CD3;
+}
+
+.rs-jenis-radiologi {
+    border-color: #D9D6FE;
+    color: #5925DC;
+}
+
+.rs-jenis-ekg {
+    border-color: #FECDCA;
+    color: #B42318;
+}
+
+.rs-jenis-cppt {
+    border-color: #ABEFC6;
+    color: #067647;
+}
+
+.rs-jenis-kontrol {
+    border-color: #FEDF89;
+    color: #93370D;
+}
+
+.rs-detail-hasil summary {
+    color: var(--rs-primary-dark);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.rs-detail-hasil[open] summary {
+    margin-bottom: 8px;
+}
+
+.rs-flag {
+    margin-left: 6px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.rs-flag-tinggi {
+    background: #FEF3F2;
+    color: #B42318;
+}
+
+.rs-flag-rendah {
+    background: #FFF4E5;
+    color: #93370D;
+}
+
+/* ---------- Checklist PPI / CP / Psikologi (Clara) ---------- */
+
+/* Daftar butir: satu kotak, baris dipisah garis */
+.rs-cek {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    counter-reset: butir;
+}
+
+.rs-cek-baris {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 252px;
+    align-items: center;
+    gap: 10px 16px;
+    width: 100%;
+    margin: 0;
+    padding: 10px 14px;
+    border-top: 1px solid var(--rs-border);
+    background: var(--rs-surface);
+    text-align: left;
+    counter-increment: butir;
+    transition: background-color .15s ease, box-shadow .15s ease;
+}
+
+.rs-cek-baris:first-child {
+    border-top: 0;
+}
+
+.rs-cek-baris:hover {
+    background: #FAFBFC;
+}
+
+/* Garis warna di kiri sesuai jawaban (belum dijawab = tanpa garis) */
+.rs-cek-baris:has(input[value="ya"]:checked),
+.rs-cek-baris:has(input[value="baik"]:checked) {
+    box-shadow: inset 4px 0 0 #067647;
+}
+
+.rs-cek-baris:has(input[value="cukup"]:checked) {
+    box-shadow: inset 4px 0 0 #B54708;
+}
+
+.rs-cek-baris:has(input[value="tidak"]:checked),
+.rs-cek-baris:has(input[value="kurang"]:checked) {
+    box-shadow: inset 4px 0 0 #B42318;
+}
+
+.rs-cek-baris:has(input[value="na"]:checked) {
+    box-shadow: inset 4px 0 0 #98A2B3;
+}
+
+.rs-cek-baris.is-error {
+    background: #FEF3F2;
+    box-shadow: inset 4px 0 0 #D92D20;
+}
+
+/* Teks butir + nomor dalam lingkaran */
+.rs-cek-teks {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--rs-text);
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.rs-cek-teks::before {
+    content: counter(butir);
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Pilihan jawaban: 3 kotak sama lebar */
+.rs-cek-pilih {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    border-radius: 10px;
+    background: var(--rs-hover);
+}
+
+.rs-cek-pilih .rs-segmented-item {
+    min-width: 0;
+    min-height: 34px;
+    padding: 0 8px;
+    border-radius: 7px;
+    font-size: 13px;
+}
+
+.btn-check:checked+.rs-jawab-ya,
+.btn-check:checked+.rs-jawab-baik {
+    background: #067647;
+    color: #fff;
+    box-shadow: none;
+}
+
+.btn-check:checked+.rs-jawab-cukup {
+    background: #B54708;
+    color: #fff;
+    box-shadow: none;
+}
+
+.btn-check:checked+.rs-jawab-tidak,
+.btn-check:checked+.rs-jawab-kurang {
+    background: #B42318;
+    color: #fff;
+    box-shadow: none;
+}
+
+.btn-check:checked+.rs-jawab-na {
+    background: var(--rs-surface);
+    color: var(--rs-text-2);
+}
+
+/* Skor */
+.rs-skor-angka {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.rs-skor-bar {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--rs-hover);
+}
+
+.rs-skor-bar span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--rs-primary);
+    transition: width .2s ease;
+}
+
+.rs-skor-bar[data-tingkat="baik"] span {
+    background: #12B76A;
+}
+
+.rs-skor-bar[data-tingkat="cukup"] span {
+    background: #F79009;
+}
+
+.rs-skor-bar[data-tingkat="kurang"] span {
+    background: #D92D20;
+}
+
+/* ---------- Cari menu Ctrl+K & pintasan di menu RM (Clara) ---------- */
+.rs-cari-menu {
+    --bs-modal-width: 600px;
+}
+
+@media (min-width: 576px) {
+    .rs-cari-menu .modal-dialog {
+        margin-top: 10vh;
+    }
+}
+
+.rs-cari-menu .modal-content {
+    border: 0;
+    border-radius: 16px;
+}
+
+.rs-cari-menu .modal-header {
+    padding: 12px;
+}
+
+.rs-cari-menu .modal-body {
+    max-height: 60vh;
+}
+
+.rs-cari-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 8px;
+    color: var(--rs-text);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.rs-cari-menu-item .bi {
+    color: var(--rs-text-muted);
+}
+
+.rs-cari-menu-item small {
+    max-width: 45%;
+    overflow: hidden;
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rs-cari-menu-item:hover,
+.rs-cari-menu-item.active {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+}
+
+.rs-kbd kbd {
+    margin: 0 1px;
+    padding: 1px 6px;
+    border: 1px solid var(--rs-border-input);
+    border-radius: 4px;
+    background: var(--rs-surface);
+    color: var(--rs-text-2);
+    font-size: 11px;
+    box-shadow: 0 1px 0 var(--rs-border-input);
+}
+
+.rs-rmmenu-pintasan {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin: 6px 0 8px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    text-align: left;
+}
+
+.rs-rmmenu-pintasan:hover {
+    color: var(--rs-primary-dark);
+}
+
+/* ---------- Tanda vital (Clara) ---------- */
+.rs-ttv-ringkas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.rs-ttv-kartu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 14px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: var(--rs-surface);
+}
+
+.rs-ttv-kartu.is-warn {
+    border-color: #F7B27A;
+    background: #FFF8F1;
+}
+
+.rs-ttv-kartu-label {
+    color: var(--rs-text-3);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.rs-ttv-kartu-nilai {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.rs-ttv-kartu-nilai small {
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rs-ttv-kartu-catatan {
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rs-ttv-kartu.is-warn .rs-ttv-kartu-catatan {
+    color: #B54708;
+}
+
+.rs-grafik-ttv {
+    position: relative;
+    height: 280px;
+}
+
+.rs-nilai-tinggi {
+    color: #B42318;
+    font-weight: 700;
+}
+
+.rs-nilai-rendah {
+    color: #B54708;
+    font-weight: 700;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {
@@ -2178,5 +3204,86 @@
     /* Daftar kelengkapan di kartu: tanpa jarak bawaan */
     .rs-table-kartu .rs-cek-list {
         margin: 0;
+    }
+
+    .rs-fisik-baris {
+        grid-template-columns: 1fr;
+    }
+
+    .rs-langkah-tab {
+        flex: 0 0 auto;
+        padding: 0 12px;
+    }
+
+    .rs-nyeri-angka {
+        min-height: 38px;
+        font-size: 13px;
+    }
+
+    .rs-soap-huruf {
+        width: 28px;
+        height: 28px;
+        margin-top: 24px;
+        font-size: 13px;
+    }
+
+    .rs-table-cppt .rs-td-utama {
+        padding-right: 0 !important;
+    }
+
+    .rs-table-cppt td:nth-child(2) {
+        min-width: 0;
+    }
+
+    .rs-table-kartu td>.form-control,
+    .rs-table-kartu td>.form-select {
+        flex: 1;
+        min-width: 0;
+        width: auto;
+    }
+
+    .rs-table-resep .rs-input-jumlah {
+        width: auto;
+    }
+
+    .rs-table-tanpa-aksi .rs-td-utama {
+        padding-right: 0 !important;
+    }
+
+    .rs-timeline-list {
+        padding-left: 40px;
+    }
+
+    .rs-timeline-list::before {
+        left: 13px;
+    }
+
+    .rs-timeline-ikon {
+        left: -40px;
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+    }
+
+    .rs-cek-baris {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+
+    .rs-cek-pilih .rs-segmented-item {
+        min-height: 38px;
+    }
+
+    .rs-ttv-ringkas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rs-grafik-ttv {
+        height: 220px;
+    }
+
+    .rs-segmented-inline {
+        display: flex;
+        overflow-x: auto;
     }
 }
