@@ -1,32 +1,34 @@
 @props(['pilihan' => [], 'nilai' => [], 'jumlahFilter' => 0, 'dari', 'sampai'])
 
-<form method="GET" class="rs-card rs-filter mb-3" role="search" aria-label="Filter kunjungan">
+{{-- Filter otomatis: ganti dropdown/tanggal langsung menyaring; Cari dijalankan dengan Enter. --}}
+<form method="GET" class="rs-card rs-filter mb-3" role="search" aria-label="Filter kunjungan"
+      data-rs-filter-otomatis>
     @if (request('status'))
         <input type="hidden" name="status" value="{{ request('status') }}">
     @endif
 
-    {{-- Satu baris. Layar sempit: turun baris otomatis. HP: filter selain cari & tanggal dilipat. --}}
     <div class="rs-filter-baris">
         <div class="rs-filter-item rs-filter-cari">
             <span class="form-label d-block" aria-hidden="true">Cari pasien</span>
-            <x-search label="Cari pasien" name="q" :value="$nilai['q'] ?? ''"
-                placeholder="Nama / No. RM / No. Reg" />
+            <x-search label="Cari pasien, tekan Enter untuk mencari" name="q" :value="$nilai['q'] ?? ''"
+                placeholder="Nama / No. RM / No. Reg" title="Ketik lalu tekan Enter" />
         </div>
 
         <div class="rs-filter-item" role="group" aria-labelledby="judul-tgl-daftar">
             <span class="form-label d-block" id="judul-tgl-daftar">Tanggal daftar</span>
-            {{-- Satu kotak menyatu: Dari │ tanggal │ Sampai │ tanggal --}}
+            {{-- Label di luar input-group supaya sudut kotak tetap membulat --}}
+            <label class="visually-hidden" for="f-dari">Dari tanggal</label>
+            <label class="visually-hidden" for="f-sampai">Sampai tanggal</label>
             <div class="input-group rs-rentang-tanggal" data-rs-rentang-tanggal>
-                <label class="input-group-text" for="f-dari">Dari</label>
                 <input type="date" id="f-dari" name="dari" value="{{ $dari }}" max="{{ $sampai }}"
-                    class="form-control" data-rs-tgl-dari>
-                <label class="input-group-text" for="f-sampai">Sampai</label>
+                    class="form-control" title="Dari tanggal" data-rs-tgl-dari>
+                <span class="input-group-text" aria-hidden="true">–</span>
                 <input type="date" id="f-sampai" name="sampai" value="{{ $sampai }}" min="{{ $dari }}"
-                    class="form-control" data-rs-tgl-sampai>
+                    class="form-control" title="Sampai tanggal" data-rs-tgl-sampai>
             </div>
         </div>
 
-        {{-- Desktop: isi bagian ini ikut berjajar di baris yang sama (CSS display: contents) --}}
+        {{-- Desktop: isi bagian ini ikut berjajar di baris yang sama (CSS display: contents). HP: dilipat. --}}
         <div class="collapse rs-filter-lain" id="filterLain">
             <div class="rs-filter-lain-isi">
                 <div class="rs-filter-item rs-filter-pilih">
@@ -78,25 +80,27 @@
             </div>
         </div>
 
-        {{-- Tombol desktop --}}
+        {{-- Desktop: tombol reset --}}
         <div class="rs-filter-aksi d-none d-md-flex">
             <a href="{{ url()->current() }}" class="btn btn-outline-secondary rs-btn-ikon"
                title="Reset filter" aria-label="Reset filter">
                 <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
             </a>
-            <button type="submit" class="btn btn-primary">Terapkan</button>
         </div>
 
-        {{-- Tombol HP --}}
-        <div class="d-flex gap-2 w-100 d-md-none">
-            <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-toggle="collapse"
+        {{-- HP: buka/tutup filter lain --}}
+        <div class="w-100 d-md-none">
+            <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="collapse"
                     data-bs-target="#filterLain" aria-expanded="false" aria-controls="filterLain">
                 <i class="bi bi-sliders me-1" aria-hidden="true"></i>Filter lain
                 @if ($jumlahFilter)
                     <span class="rs-badge-count ms-2">{{ $jumlahFilter }}</span>
                 @endif
             </button>
-            <button type="submit" class="btn btn-primary flex-fill">Terapkan</button>
         </div>
+
+        {{-- Tombol tersembunyi: supaya Enter di kotak Cari tetap mengirim form --}}
+        <button type="submit" class="visually-hidden" tabindex="-1">Terapkan filter</button>
+        <span class="visually-hidden" role="status" aria-live="polite" data-rs-filter-status></span>
     </div>
 </form>

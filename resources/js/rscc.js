@@ -964,3 +964,59 @@ export function initRentangTanggal() {
         sinkron();
     });
 }
+
+/**
+ * Filter daftar kunjungan otomatis (tanpa tombol Terapkan).
+ * - Dropdown berubah        → langsung menyaring.
+ * - Tanggal berubah         → menyaring setelah jeda 0,7 detik
+ *                             (saat tahun diketik manual, nilainya berubah tiap tombol ditekan).
+ * - Kotak cari              → Enter; tombol × (mengosongkan) langsung menampilkan semua lagi.
+ * Selama memuat: garis biru di atas kotak filter (class .is-memuat).
+ */
+export function initFilterOtomatis() {
+    document.querySelectorAll('[data-rs-filter-otomatis]').forEach((form) => {
+        let jeda;
+        const status = form.querySelector('[data-rs-filter-status]');
+
+        const kirim = () => {
+            if (form.classList.contains('is-memuat')) return; // cegah kirim dua kali
+            form.requestSubmit();
+        };
+
+        form.addEventListener('submit', () => {
+            form.classList.add('is-memuat');
+            form.setAttribute('aria-busy', 'true');
+            if (status) status.textContent = 'Memuat data kunjungan…';
+        });
+
+        form.addEventListener('change', (e) => {
+            const el = e.target;
+
+            if (el.matches('select')) {
+                kirim();
+                return;
+            }
+
+            if (el.matches('input[type="date"]')) {
+                clearTimeout(jeda);
+                const tahun = Number((el.value || '').slice(0, 4));
+                if (el.value && tahun >= 2000) {
+                    jeda = setTimeout(kirim, 700);
+                }
+            }
+        });
+
+        form.querySelectorAll('input[type="search"]').forEach((cari) => {
+            cari.addEventListener('search', () => {
+                if (cari.value === '') kirim();
+            });
+        });
+
+        // Kembali dengan tombol Back: hapus tanda memuat yang tersisa di cache halaman
+        window.addEventListener('pageshow', () => {
+            form.classList.remove('is-memuat');
+            form.removeAttribute('aria-busy');
+            if (status) status.textContent = '';
+        });
+    });
+}
