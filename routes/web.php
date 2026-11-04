@@ -12,6 +12,9 @@ use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\BerkasController;
 use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\CpptController;
+use App\Http\Controllers\ChecklistController;
+use App\Http\Controllers\ResepController;
+use App\Http\Controllers\RiwayatController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -57,6 +60,17 @@ Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->group(function () {
     Route::get('cppt', [CpptController::class, 'index'])->name('cppt');
     Route::post('cppt', [CpptController::class, 'simpan'])->name('cppt.simpan');
     Route::post('cppt/{id}/verifikasi', [CpptController::class, 'verifikasi'])->name('cppt.verifikasi');
+    Route::get('resep', [ResepController::class, 'index'])->name('resep');
+    Route::post('resep', [ResepController::class, 'simpan'])->name('resep.simpan');
+
+    Route::get('riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+
+    Route::get('checklist/{kategori}/{slug?}', [ChecklistController::class, 'index'])
+        ->whereIn('kategori', ['ppi', 'cp', 'psikologi'])
+        ->name('checklist');
+    Route::post('checklist/{kategori}/{slug}', [ChecklistController::class, 'simpan'])
+        ->whereIn('kategori', ['ppi', 'cp', 'psikologi'])
+        ->name('checklist.simpan');
 });
 
 Route::prefix('akun')->name('akun.')->controller(AkunController::class)->group(function () {

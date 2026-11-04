@@ -607,3 +607,143 @@ export function initSisipTeks() {
         });
     });
 }
+
+/* ---------- E-Resep: cari obat, tambah/hapus baris, salin resep ---------- */
+export function initResep() {
+    const form = document.querySelector('[data-rs-resep]');
+    if (!form) return;
+
+    const katalog = JSON.parse(document.getElementById('data-obat')?.textContent || '[]');
+    const tbody = form.querySelector('[data-rs-daftar-resep]');
+    const tabel = form.querySelector('[data-rs-tabel-resep]');
+    const kosong = form.querySelector('[data-rs-resep-kosong]');
+    const jumlah = document.querySelectorAll('[data-rs-jumlah-item]');
+    const tpl = document.getElementById('tpl-baris-resep');
+    const cari = document.querySelector('[data-rs-cari-obat]');
+    const hasil = document.querySelector('[data-rs-hasil-obat]');
+    let indeks = Number(form.dataset.rsIndeksAwal || 0);
+    let cocok = [];
+    let aktif = 0;
+
+    const perbarui = () => {
+        const n = tbody.querySelectorAll('[data-rs-baris-resep]').length;
+        tabel.hidden = n === 0;
+        kosong.hidden = n > 0;
+        jumlah.forEach((el) => { el.textContent = n; });
+    };
+
+    const barisAda = (kode) =>
+        [...tbody.querySelectorAll('[data-rs-baris-resep]')].find((tr) => tr.dataset.kode === kode);
+
+    // Tambah satu baris dari cetakan; kalau obat sudah ada, kembalikan baris yang ada
+    function tambahBaris(obat, nilai = {}) {
+        const ada = barisAda(obat.kode);
+        if (ada) return ada;
+
+        const wadah = document.createElement('tbody');
+        wadah.innerHTML = tpl.innerHTML.replaceAll('__I__', String(indeks++));
+        const tr = wadah.firstElementChild;
+
+        tr.dataset.kode = obat.kode;
+        tr.querySelector('[data-rs-obat-nama]').textContent = obat.nama;
+        tr.querySelector('[data-rs-obat-satuan]').textContent = obat.satuan;
+        tr.querySelector('[data-rs-hapus-baris]').setAttribute('aria-label', `Hapus ${obat.nama}`);
+
+        const isi = {
+            kode: obat.kode, nama: obat.nama, satuan: obat.satuan,
+            jumlah: '', signa: '', rute: 'oral', catatan: '', ...nilai,
+        };
+        Object.entries(isi).forEach(([kunci, v]) => {
+            const el = tr.querySelector(`[data-rs-f="${kunci}"]`);
+            if (el) el.value = v ?? '';
+        });
+
+        tbody.append(tr);
+        perbarui();
+        return tr;
+    }
+
+    function pilih(obat) {
+        const tr = tambahBaris(obat);
+        cari.value = '';
+        hasil.hidden = true;
+        tr.querySelector('[data-rs-f="jumlah"]').focus();
+    }
+
+    // Hapus baris
+    tbody.addEventListener('click', (e) => {
+        const tombol = e.target.closest('[data-rs-hapus-baris]');
+        if (!tombol) return;
+        tombol.closest('[data-rs-baris-resep]').remove();
+        perbarui();
+        cari?.focus();
+    });
+
+    // Hasil pencarian obat
+    const tampilkanHasil = () => {
+        const q = cari.value.trim().toLowerCase();
+        if (!q) { hasil.hidden = true; return; }
+
+        cocok = katalog.filter((o) => o.nama.toLowerCase().includes(q)).slice(0, 8);
+        aktif = 0;
+
+        if (!cocok.length) {
+            const li = document.createElement('li');
+            li.className = 'rs-obat-kosong';
+            li.textContent = 'Obat tidak ditemukan';
+            hasil.replaceChildren(li);
+        } else {
+            hasil.replaceChildren(...cocok.map((o, i) => {
+                const li = document.createElement('li');
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'rs-obat-opsi' + (i === 0 ? ' active' : '');
+                const nama = document.createElement('span');
+                nama.textContent = o.nama;
+                const info = document.createElement('small');
+                info.textContent = `${o.satuan} · ${o.jenis === 'alkes' ? 'alkes' : 'obat'}`;
+                b.append(nama, info);
+                b.addEventListener('click', () => pilih(o));
+                li.append(b);
+                return li;
+            }));
+        }
+        hasil.hidden = false;
+    };
+
+    cari?.addEventListener('input', tampilkanHasil);
+    cari?.addEventListener('keydown', (e) => {
+        const opsi = [...hasil.querySelectorAll('.rs-obat-opsi')];
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (cocok[aktif]) pilih(cocok[aktif]);
+            return;
+        }
+        if (e.key === 'Escape') { hasil.hidden = true; return; }
+        if (!opsi.length || (e.key !== 'ArrowDown' && e.key !== 'ArrowUp')) return;
+        e.preventDefault();
+        aktif = (aktif + (e.key === 'ArrowDown' ? 1 : -1) + opsi.length) % opsi.length;
+        opsi.forEach((b, i) => b.classList.toggle('active', i === aktif));
+        opsi[aktif].scrollIntoView({ block: 'nearest' });
+    });
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-rs-cari-obat-wadah]')) hasil.hidden = true;
+    });
+
+    // Salin resep sebelumnya
+    document.querySelector('[data-rs-salin-resep]')?.addEventListener('click', () => {
+        const data = JSON.parse(document.getElementById('data-resep-sebelumnya')?.textContent || '[]');
+        let n = 0;
+        data.forEach((item) => {
+            if (!barisAda(item.kode)) { tambahBaris(item, item); n++; }
+        });
+        const info = document.querySelector('[data-rs-salin-info]');
+        if (info) {
+            info.textContent = n
+                ? `${n} obat disalin. Periksa kembali dosis dan jumlah sebelum mengirim.`
+                : 'Semua obat dari resep sebelumnya sudah ada di daftar.';
+        }
+    });
+
+    perbarui();
+}

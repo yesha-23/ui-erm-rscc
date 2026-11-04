@@ -454,4 +454,102 @@ class DataContoh
             ],
         ];
     }
+
+        /** Katalog obat & alkes (CONTOH). IT RSCC: ganti dengan master farmasi. */
+    public static function katalogObat(): array
+    {
+        $o = fn ($kode, $nama, $satuan, $jenis = 'obat') => compact('kode', 'nama', 'satuan', 'jenis');
+
+        return [
+            $o('PCT500', 'Parasetamol 500 mg tablet', 'tablet'),
+            $o('PCTINF', 'Parasetamol infus 1 g/100 ml', 'botol'),
+            $o('OMZ40', 'Omeprazole 40 mg injeksi', 'vial'),
+            $o('OMZ20', 'Omeprazole 20 mg kapsul', 'kapsul'),
+            $o('CTX1G', 'Ceftriaxone 1 g injeksi', 'vial'),
+            $o('OND4', 'Ondansetron 4 mg injeksi', 'ampul'),
+            $o('DOM10', 'Domperidon 10 mg tablet', 'tablet'),
+            $o('AMX500', 'Amoksisilin 500 mg kapsul', 'kapsul'),
+            $o('CTZ10', 'Cetirizin 10 mg tablet', 'tablet'),
+            $o('ANT', 'Antasida doen suspensi 60 ml', 'botol'),
+            $o('RL500', 'Ringer laktat 500 ml', 'kolf'),
+            $o('NS500', 'NaCl 0,9% 500 ml', 'kolf'),
+            $o('INFSET', 'Infus set dewasa', 'buah', 'alkes'),
+            $o('IVC22', 'IV catheter 22G', 'buah', 'alkes'),
+            $o('SP3', 'Spuit 3 ml', 'buah', 'alkes'),
+            $o('SP5', 'Spuit 5 ml', 'buah', 'alkes'),
+        ];
+    }
+
+    /** Resep kunjungan sebelumnya (untuk tombol "Salin"). */
+    public static function resepSebelumnya(): array
+    {
+        return [
+            'tanggal' => '31 Okt 2026',
+            'unit'    => 'IGD',
+            'dokter'  => 'dr. [Nama Dokter]',
+            'items'   => [
+                ['kode' => 'OMZ20', 'nama' => 'Omeprazole 20 mg kapsul', 'satuan' => 'kapsul',
+                 'jumlah' => 10, 'signa' => '2 x 1', 'rute' => 'oral', 'catatan' => 'Sebelum makan'],
+                ['kode' => 'ANT', 'nama' => 'Antasida doen suspensi 60 ml', 'satuan' => 'botol',
+                 'jumlah' => 1, 'signa' => '3 x 1 sdm', 'rute' => 'oral', 'catatan' => ''],
+                ['kode' => 'DOM10', 'nama' => 'Domperidon 10 mg tablet', 'satuan' => 'tablet',
+                 'jumlah' => 10, 'signa' => '3 x 1', 'rute' => 'oral', 'catatan' => 'Bila mual'],
+            ],
+        ];
+    }
+
+    /** Riwayat pemberian obat ke pasien (popup di E-Resep). */
+    public static function riwayatPemberianObat(): array
+    {
+        return [
+            ['waktu' => '02 Nov · 10:30', 'obat' => 'Parasetamol infus 1 g/100 ml', 'dosis' => '1 g',    'rute' => 'IV', 'oleh' => '[Nama Perawat]'],
+            ['waktu' => '02 Nov · 10:25', 'obat' => 'Omeprazole 40 mg injeksi',     'dosis' => '40 mg',  'rute' => 'IV', 'oleh' => '[Nama Perawat]'],
+            ['waktu' => '02 Nov · 09:10', 'obat' => 'Ringer laktat 500 ml',         'dosis' => '20 tpm', 'rute' => 'IV', 'oleh' => '[Nama Perawat]'],
+            ['waktu' => '31 Okt · 21:40', 'obat' => 'Omeprazole 40 mg injeksi',     'dosis' => '40 mg',  'rute' => 'IV', 'oleh' => '[Nama Perawat]'],
+        ];
+    }
+
+    /**
+     * Riwayat pemeriksaan pasien, terbaru di atas (CONTOH).
+     * detail = [nama, hasil, nilai rujukan, flag ('tinggi' | 'rendah' | '')]
+     */
+    public static function riwayatPemeriksaan(): array
+    {
+        $r = fn ($tanggal, $jam, $jenis, $judul, $unit, $oleh, $ringkasan, $detail = null) =>
+            compact('tanggal', 'jam', 'jenis', 'judul', 'unit', 'oleh', 'ringkasan', 'detail');
+
+        return [
+            $r('02 Nov 2026', '10:05', 'lab', 'Darah rutin, Widal, NS1 Dengue', 'Laboratorium', 'dr. [Nama Dokter]',
+               '3 nilai di luar batas normal', [
+                   ['Hemoglobin', '13,8 g/dl', '13–17', ''],
+                   ['Leukosit', '9.800 /µl', '4.000–10.000', ''],
+                   ['Trombosit', '145.000 /µl', '150.000–400.000', 'rendah'],
+                   ['Neutrofil', '73,9 %', '50–70', 'tinggi'],
+                   ['Widal S. typhi H', '1/80', '< 1/80', 'tinggi'],
+                   ['NS1 Dengue', 'Negatif', 'Negatif', ''],
+               ]),
+            $r('02 Nov 2026', '09:40', 'radiologi', 'Thorax PA', 'Radiologi', 'dr. [Nama Dokter], Sp.Rad',
+               'Cor dan pulmo dalam batas normal'),
+            $r('02 Nov 2026', '09:20', 'ekg', 'EKG 12 lead', 'IGD', 'dr. [Nama Dokter]',
+               'Sinus takikardia, 104 x/mnt'),
+            $r('02 Nov 2026', '08:50', 'kunjungan', 'Kunjungan IGD', 'IGD', 'dr. [Nama Dokter]',
+               'Obs. febris H6, susp. demam tifoid'),
+            $r('31 Okt 2026', '22:00', 'kontrol', 'Surat kontrol', 'IGD', 'dr. [Nama Dokter]',
+               'Kontrol ke Klinik Penyakit Dalam, 7 Nov 2026'),
+            $r('31 Okt 2026', '21:45', 'cppt', 'CPPT dokter jaga', 'IGD', 'dr. [Nama Dokter]',
+               'S: nyeri ulu hati · A: dispepsia · P: omeprazole, antasida'),
+            $r('31 Okt 2026', '21:30', 'kunjungan', 'Kunjungan IGD', 'IGD', 'dr. [Nama Dokter]',
+               'Dispepsia; pulang dengan obat'),
+            $r('14 Agu 2026', '10:15', 'kunjungan', 'Klinik Penyakit Dalam', 'Rawat Jalan', 'dr. [Nama Dokter], Sp.PD',
+               'Kontrol rutin'),
+            $r('14 Agu 2026', '09:30', 'lab', 'Gula darah, profil lipid', 'Laboratorium', 'dr. [Nama Dokter], Sp.PD',
+               'Semua dalam batas normal', [
+                   ['Gula darah puasa', '92 mg/dl', '70–100', ''],
+                   ['Kolesterol total', '185 mg/dl', '< 200', ''],
+                   ['Trigliserida', '120 mg/dl', '< 150', ''],
+               ]),
+            $r('03 Mar 2026', '11:00', 'kunjungan', 'Klinik Gigi dan Mulut', 'Rawat Jalan', 'drg. [Nama Dokter]',
+               'Karies gigi'),
+        ];
+    }
 }

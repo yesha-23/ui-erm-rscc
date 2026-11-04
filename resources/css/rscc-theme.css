@@ -2648,6 +2648,83 @@
     background: #FFFBF5;
 }
 
+/* ---------- E-Resep (Clara) ---------- */
+.rs-cari-obat {
+    position: relative;
+}
+
+.rs-obat-hasil {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    max-height: 320px;
+    margin: 0;
+    padding: 6px;
+    overflow-y: auto;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: var(--rs-surface);
+    box-shadow: 0 12px 24px rgba(16, 24, 40, .12);
+}
+
+.rs-obat-opsi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--rs-text);
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+}
+
+.rs-obat-opsi:hover,
+.rs-obat-opsi.active {
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+}
+
+.rs-obat-opsi small {
+    color: var(--rs-text-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.rs-obat-kosong {
+    padding: 10px;
+    color: var(--rs-text-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+.rs-salin {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px dashed var(--rs-border-input);
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+    font-size: 13.5px;
+}
+
+.rs-table-resep td {
+    vertical-align: middle;
+}
+
+.rs-table-resep .rs-input-jumlah {
+    width: 84px;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {
@@ -2729,5 +2806,20 @@
 
     .rs-table-cppt td:nth-child(2) {
         min-width: 0;
+    }
+
+    .rs-table-kartu td>.form-control,
+    .rs-table-kartu td>.form-select {
+        flex: 1;
+        min-width: 0;
+        width: auto;
+    }
+
+    .rs-table-resep .rs-input-jumlah {
+        width: auto;
+    }
+
+    .rs-table-tanpa-aksi .rs-td-utama {
+        padding-right: 0 !important;
     }
 }
