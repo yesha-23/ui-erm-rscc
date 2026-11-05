@@ -39,7 +39,9 @@ Route::prefix('kunjungan')->name('kunjungan.')
 
 Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->middleware(CatatPasienTerakhir::class)->group(function () {
     Route::get('/', [RekamMedisController::class, 'show'])->name('show');
-
+    Route::post('final', [RekamMedisController::class, 'simpanFinal'])->name('final');
+    Route::delete('final', [RekamMedisController::class, 'batalFinal'])->name('final.batal');
+    Route::post('alergi', [RekamMedisController::class, 'simpanAlergi'])->name('alergi');
     Route::get('/dokumen/{jenis?}/{slug?}', [DokumenController::class, 'index'])
         ->whereIn('jenis', ['surat', 'persetujuan'])
         ->name('dokumen');

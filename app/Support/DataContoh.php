@@ -247,6 +247,8 @@ class DataContoh
         $daftar = self::kunjungan($unit, $sub);
         $row    = collect($daftar)->firstWhere('no_reg', $noReg) ?? $daftar[0];
         $info   = KonfigurasiRekamMedis::UNIT[$unit];
+        // Alergi melekat ke pasien (per No. RM), bukan per kunjungan. IT: tabel alergi_pasien.
+        $alergi = session("alergi.{$row['no_rm']}");
 
         $perempuan = ['Siti Rahmawati', 'Dewi Lestari', 'Putri Maharani', 'Nur Aisyah',
                       'Rina Kartika', 'Lina Marlina', 'Wulan Sari'];
@@ -259,7 +261,9 @@ class DataContoh
             'nik'            => '[NIK]',
             'no_hp'          => '[No. HP]',
             'no_bpjs'        => $row['penjamin'] === 'JKN' ? '[No. BPJS]' : '—',
-            'alergi'         => '[isi alergi]',
+            'alergi_status'  => $alergi['status'] ?? null,               // null | 'tidak' | 'ada'
+            'alergi'         => $alergi['keterangan'] ?? ($alergi ? 'Tidak ada' : 'Belum dikaji'),
+            'alergi_waktu'   => $alergi['waktu'] ?? null,
             'status_hiv'     => 'Negatif (data contoh)',
             'unit'           => $info['label'] . ($sub ? ' · ' . KonfigurasiRekamMedis::SUB[$unit][$sub] : ''),
             'unit_kode'      => $unit,

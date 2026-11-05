@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Support\DataContoh;
 use App\Support\KonfigurasiRekamMedis;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 
 class RekamMedisController extends Controller
 {
@@ -24,6 +26,55 @@ class RekamMedisController extends Controller
             'crumb'     => 'Ringkasan',
             'menuAktif' => 'ringkasan',
         ]);
+    }
+
+    /** Submit final: hanya bila semua form wajib sudah selesai. */
+    public function simpanFinal(string $noReg)
+    {
+        $pasien     = DataContoh::pasien($noReg);
+        $penghalang = KonfigurasiRekamMedis::penghalangFinal(
+            KonfigurasiRekamMedis::tugas($pasien['unit_kode'], $noReg)
+        );
+
+        if ($penghalang) {
+            return back()->with('gagal', 'Belum bisa final: '
+                . implode(', ', array_column($penghalang, 'label')) . ' belum selesai.');
+        }
+
+        // TODO (IT RSCC): set kunjungan close + BRM terisi, kunci form, catat log siapa & kapan.
+        session()->put("final.$noReg", [
+            'waktu' => now()->format('H:i'),
+            'oleh'  => DataContoh::pengguna()['nama'],
+        ]);
+
+        return redirect()->route('rekam-medis.show', $noReg)->with('sukses', 'Kunjungan disimpan final.');
+    }
+
+    /** Buka kembali kunjungan yang sudah final (untuk koreksi). */
+    public function batalFinal(string $noReg)
+    {
+        // TODO (IT RSCC): catat alasan & siapa yang membuka kembali.
+        session()->forget("final.$noReg");
+
+        return back()->with('sukses', 'Kunjungan dibuka kembali untuk koreksi.');
+    }
+
+    /** Riwayat alergi pasien (berlaku untuk semua kunjungan, disimpan per No. RM). */
+    public function simpanAlergi(Request $request, string $noReg)
+    {
+        $data = $request->validateWithBag('alergi', [
+            'status'     => ['required', Rule::in(['tidak', 'ada'])],
+            'keterangan' => ['exclude_unless:status,ada', 'required', 'string', 'max:200'],
+        ], [
+            'status.required'     => 'Pilih status alergi.',
+            'keterangan.required' => 'Tuliskan alergi terhadap apa.',
+            'keterangan.max'      => 'Keterangan alergi maksimal 200 karakter.',
+        ]);
+
+        $pasien = DataContoh::pasien($noReg);
+        session()->put("alergi.{$pasien['no_rm']}", $data + ['waktu' => now()->format('d M Y, H:i')]);
+
+        return back()->with('sukses', 'Riwayat alergi diperbarui.');
     }
 
     /**

@@ -2,6 +2,7 @@
 // RSCC — komponen JavaScript bersama
 // =========================================================
 import Chart from 'chart.js/auto';
+import { Modal } from 'bootstrap';
 
 const KUNCI_SIDEBAR = 'rs-sidebar';
 
@@ -1309,5 +1310,26 @@ export function initSesiHd() {
             info.hidden = false;
         }
         hitung();
+    });
+}
+
+/**
+ * Form riwayat alergi (modal di header pasien):
+ * kotak keterangan hanya muncul bila "Ada alergi" dipilih.
+ * Juga membuka otomatis modal yang ditandai data-rs-buka-otomatis (mis. setelah gagal validasi).
+ */
+export function initFormAlergi() {
+    document.querySelectorAll('[data-rs-form-alergi]').forEach((form) => {
+        const detail = form.querySelector('[data-rs-alergi-detail]');
+        form.addEventListener('change', (e) => {
+            if (e.target.name !== 'status') return;
+            const ada = e.target.value === 'ada';
+            detail.hidden = !ada;
+            if (ada) detail.querySelector('textarea')?.focus();
+        });
+    });
+
+    document.querySelectorAll('.modal[data-rs-buka-otomatis]').forEach((el) => {
+        Modal.getOrCreateInstance(el).show();
     });
 }

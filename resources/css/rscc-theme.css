@@ -4314,3 +4314,49 @@
         grid-column: auto;
     }
 }
+
+/* =========================================================
+   Header pasien: badge alergi yang bisa diklik + modal
+   ========================================================= */
+.rs-badge-tombol {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 340px;
+    border: 0;
+    cursor: pointer;
+}
+
+.rs-badge-tombol .rs-badge-teks {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rs-badge-tombol .bi-pencil {
+    font-size: 11px;
+    opacity: .7;
+}
+
+.rs-badge-tombol:hover {
+    filter: brightness(.95);
+}
+
+.rs-badge-tombol:hover .rs-badge-teks {
+    text-decoration: underline;
+}
+
+.rs-badge-tombol:focus-visible {
+    outline: 3px solid var(--rs-primary-soft);
+    outline-offset: 2px;
+}
+
+.rs-modal {
+    border: 0;
+    border-radius: var(--rs-radius-card);
+}
+
+.rs-modal .modal-header,
+.rs-modal .modal-footer {
+    border-color: var(--rs-border);
+}

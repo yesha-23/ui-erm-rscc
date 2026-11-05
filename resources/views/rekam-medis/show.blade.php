@@ -46,6 +46,7 @@
                                 <div class="fw-semibold">{{ $t['label'] }}</div>
                                 <div class="small rs-text-muted">
                                     <span class="visually-hidden">Status: {{ $t['status'] }}.</span>{{ $t['ket'] }}
+                                    @unless ($t['wajib']) <span class="rs-soon ms-1">Opsional</span> @endunless
                                 </div>
                             </div>
                             @if ($t['href'] === '#')

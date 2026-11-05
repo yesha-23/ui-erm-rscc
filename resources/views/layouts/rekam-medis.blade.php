@@ -11,8 +11,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-    @stack('modal')
-<x-cari-menu :pasien="$pasien" />
 <body class="rs-body-app">
 <div class="rs-app">
     {{-- Sidebar utama otomatis mode ikon (class rs-sidebar-mini di <html>) --}}
@@ -33,6 +31,12 @@
         </div>
     </div>
 </div>
+
+{{-- Modal diletakkan di akhir <body> supaya tidak terpotong oleh area yang bisa digulir --}}
+<x-cari-menu :pasien="$pasien" />
+<x-modal-final :pasien="$pasien" />
+<x-modal-alergi :pasien="$pasien" />
+@stack('modal')
 @stack('scripts')
 </body>
 </html>

@@ -118,29 +118,27 @@ class KonfigurasiRekamMedis
         };
     }
 
-    /**
+        /**
      * Daftar "Perlu dikerjakan" di Ringkasan.
-     * status: 'selesai' | 'draf' | 'belum'. Asesmen IGD membaca isian asli; lainnya CONTOH.
+     * status: 'selesai' | 'draf' | 'belum'. wajib=false → tidak menghalangi Submit final.
+     * Asesmen IGD, Pemeriksaan rajal, dan Sesi HD membaca isian asli; lainnya CONTOH.
      */
     public static function tugas(string $unit, string $noReg): array
     {
         $r = fn (string $nama, array $p = []) => route("rekam-medis.$nama", [$noReg, ...$p]);
-        $t = fn (string $label, string $status, string $ket, string $href = '#') => compact('label', 'status', 'ket', 'href');
+        $t = fn (string $label, string $status, string $ket, string $href = '#', bool $wajib = true)
+            => compact('label', 'status', 'ket', 'href', 'wajib');
 
-        $asesmen = session("asesmen.$noReg");
-        [$stAsesmen, $ketAsesmen] = match ($asesmen['status'] ?? null) {
-            'final' => ['selesai', 'Disimpan final · ' . $asesmen['waktu']],
-            'draf'  => ['draf', 'Draf · ' . $asesmen['waktu']],
+        // Status form yang punya draf/final
+        $statusForm = fn (?array $data) => match ($data['status'] ?? null) {
+            'final' => ['selesai', 'Disimpan final · ' . $data['waktu']],
+            'draf'  => ['draf', 'Draf · ' . $data['waktu']],
             default => ['belum', 'Belum diisi'],
         };
+        [$stAsesmen, $ketAsesmen] = $statusForm(session("asesmen.$noReg"));
+        [$stPeriksa, $ketPeriksa] = $statusForm(session("pemeriksaan.$noReg"));
 
-        $periksa = session("pemeriksaan.$noReg");
-        [$stPeriksa, $ketPeriksa] = match ($periksa['status'] ?? null) {
-            'final' => ['selesai', 'Disimpan final · ' . $periksa['waktu']],
-            'draf'  => ['draf', 'Draf · ' . $periksa['waktu']],
-            default => ['belum', 'Belum diisi'],
-        };
-
+        // Sesi HD
         $hd     = session("hd.$noReg", []);
         $hdSt   = fn (string $k) => isset($hd[$k]) ? 'selesai' : 'belum';
         $hdKet  = fn (string $k) => isset($hd[$k]) ? 'Tersimpan · ' . $hd[$k]['waktu'] : 'Belum diisi';
@@ -150,8 +148,8 @@ class KonfigurasiRekamMedis
             'rajal' => [
                 $t('Tanda vital', 'selesai', 'Terakhir 14:00', $r('ttv')),
                 $t('Pemeriksaan dokter (SOAP)', $stPeriksa, $ketPeriksa, $r('pemeriksaan')),
-                $t('E-Resep', 'belum', 'Belum ada resep', $r('resep')),
-                $t('Surat kontrol', 'belum', 'Perlu dibuat', $r('dokumen', ['surat'])),
+                $t('E-Resep', 'belum', 'Bila ada terapi obat', $r('resep'), false),
+                $t('Surat kontrol', 'belum', 'Bila pasien perlu kontrol', $r('dokumen', ['surat']), false),
             ],
             'rm' => [
                 $t('Asesmen dokter rehab medik', 'selesai', 'Kunjungan sebelumnya · 07 Okt'),
@@ -161,7 +159,7 @@ class KonfigurasiRekamMedis
             'hd' => [
                 $t('Pra-HD', $hdSt('pra'), $hdKet('pra'), $r('hd', ['pra'])),
                 $t('Resep HD', $hdSt('resep'), $hdKet('resep'), $r('hd', ['resep'])),
-                $t('Monitoring intra-HD', $jmlObs ? 'draf' : 'belum',
+                $t('Monitoring intra-HD', $jmlObs ? 'selesai' : 'belum',
                    $jmlObs ? "$jmlObs observasi tercatat" : 'Belum ada observasi', $r('hd', ['intra'])),
                 $t('Pasca-HD & evaluasi', $hdSt('pasca'), $hdKet('pasca'), $r('hd', ['pasca'])),
             ],
@@ -169,7 +167,7 @@ class KonfigurasiRekamMedis
                 $t('Asesmen awal medis', 'selesai', 'Hari pertama rawat'),
                 $t('Asesmen awal keperawatan', 'selesai', 'Hari pertama rawat'),
                 $t('Monitoring tanda vital', 'selesai', 'Terakhir 14:00', $r('ttv')),
-                $t('CPPT hari ini', 'belum', 'Belum ada catatan hari ini', $r('cppt')),
+                $t('CPPT hari ini', 'belum', 'Catatan harian PPA', $r('cppt'), false),
                 $t('Discharge summary', 'belum', 'Diisi saat pasien pulang'),
             ],
             'ok' => [
@@ -180,14 +178,25 @@ class KonfigurasiRekamMedis
                 $t('Catatan operasi', 'belum', 'Diisi operator'),
                 $t('Monitoring ruang pulih', 'belum', 'Setelah operasi'),
             ],
-            default => [ // igd
+            default => [ // igd — "Close kunjungan" diganti tombol Submit final
                 $t('Triase', 'selesai', '08:52', $r('asesmen')),
                 $t('Asesmen awal keperawatan GD', $stAsesmen, $ketAsesmen, $r('asesmen')),
                 $t('Tanda vital', 'selesai', 'Terakhir 14:00', $r('ttv')),
                 $t('CPPT dokter', 'selesai', '10:21', $r('cppt')),
-                $t('E-Resep', 'belum', 'Belum ada resep', $r('resep')),
-                $t('Close kunjungan', 'belum', 'Setelah pasien pulang / dipindah'),
+                $t('E-Resep', 'belum', 'Bila ada terapi obat', $r('resep'), false),
             ],
         };
+    }
+
+    /**
+     * Form yang menghalangi Submit final: wajib, belum selesai, dan halamannya sudah tersedia.
+     * (Form "Segera" tidak ikut diperiksa supaya alur tetap bisa didemokan.)
+     */
+    public static function penghalangFinal(array $tugas): array
+    {
+        return array_values(array_filter(
+            $tugas,
+            fn ($t) => $t['wajib'] && $t['status'] !== 'selesai' && $t['href'] !== '#'
+        ));
     }
 }
