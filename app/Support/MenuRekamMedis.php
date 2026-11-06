@@ -4,12 +4,14 @@ namespace App\Support;
 
 /**
  * Isi menu rekam medis — dipakai components/menu-rm dan cari menu (Ctrl+K).
+ * Menu menyesuaikan unit kunjungan (lihat KonfigurasiRekamMedis).
  * 'href' => '#' berarti halaman belum dibuat → tampil dengan label "Segera".
  */
 class MenuRekamMedis
 {
-    public static function grup(string $noReg): array
+    public static function grup(string $noReg, ?string $unit = null): array
     {
+        $unit ??= KonfigurasiRekamMedis::unitAktif($noReg)['unit'];
         $r   = fn (string $nama, array $param = []) => route("rekam-medis.$nama", [$noReg, ...$param]);
         $dok = KatalogDokumen::jumlah();
         $cek = KatalogChecklist::jumlah();
@@ -17,9 +19,10 @@ class MenuRekamMedis
         return [
             ['judul' => 'Asesmen & pemeriksaan', 'ikon' => 'bi-clipboard2-pulse', 'items' => [
                 ['key' => 'ringkasan', 'label' => 'Ringkasan pasien', 'href' => $r('show')],
-                ['key' => 'asesmen',   'label' => 'Asesmen awal',     'href' => $r('asesmen')],
-                ['key' => 'ttv',       'label' => 'Tanda vital',      'href' => $r('ttv')],
+                ...KonfigurasiRekamMedis::formUtama($unit, $r),
+                ['key' => 'ttv', 'label' => 'Tanda vital', 'href' => $r('ttv')],
             ]],
+            ...KonfigurasiRekamMedis::grupKhusus($unit, $r),
             ['judul' => 'Catatan terintegrasi', 'ikon' => 'bi-journal-text', 'items' => [
                 ['key' => 'cppt', 'label' => 'CPPT / SBAR', 'href' => $r('cppt')],
             ]],

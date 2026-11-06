@@ -2,6 +2,7 @@
 // RSCC — komponen JavaScript bersama
 // =========================================================
 import Chart from 'chart.js/auto';
+import { Modal } from 'bootstrap';
 
 const KUNCI_SIDEBAR = 'rs-sidebar';
 
@@ -962,5 +963,373 @@ export function initRentangTanggal() {
         dari.addEventListener('change', sinkron);
         sampai.addEventListener('change', sinkron);
         sinkron();
+    });
+}
+
+/**
+ * Filter daftar kunjungan otomatis (tanpa tombol Terapkan).
+ * - Dropdown berubah        → langsung menyaring.
+ * - Tanggal berubah         → menyaring setelah jeda 0,7 detik
+ *                             (saat tahun diketik manual, nilainya berubah tiap tombol ditekan).
+ * - Kotak cari              → Enter; tombol × (mengosongkan) langsung menampilkan semua lagi.
+ * Selama memuat: garis biru di atas kotak filter (class .is-memuat).
+ */
+export function initFilterOtomatis() {
+    document.querySelectorAll('[data-rs-filter-otomatis]').forEach((form) => {
+        let jeda;
+        const status = form.querySelector('[data-rs-filter-status]');
+
+        const kirim = () => {
+            if (form.classList.contains('is-memuat')) return; // cegah kirim dua kali
+            form.requestSubmit();
+        };
+
+        form.addEventListener('submit', () => {
+            form.classList.add('is-memuat');
+            form.setAttribute('aria-busy', 'true');
+            if (status) status.textContent = 'Memuat data kunjungan…';
+        });
+
+        form.addEventListener('change', (e) => {
+            const el = e.target;
+
+            if (el.matches('select')) {
+                kirim();
+                return;
+            }
+
+            if (el.matches('input[type="date"]')) {
+                clearTimeout(jeda);
+                const tahun = Number((el.value || '').slice(0, 4));
+                if (el.value && tahun >= 2000) {
+                    jeda = setTimeout(kirim, 700);
+                }
+            }
+        });
+
+        form.querySelectorAll('input[type="search"]').forEach((cari) => {
+            cari.addEventListener('search', () => {
+                if (cari.value === '') kirim();
+            });
+        });
+
+        // Kembali dengan tombol Back: hapus tanda memuat yang tersisa di cache halaman
+        window.addEventListener('pageshow', () => {
+            form.classList.remove('is-memuat');
+            form.removeAttribute('aria-busy');
+            if (status) status.textContent = '';
+        });
+    });
+}
+
+/**
+ * Kotak cari ICD (combobox): ketik → pilih → jadi chip (input hidden name="icd10[]").
+ * Keyboard: ↑/↓ memilih, Enter menambah, Esc menutup.
+ * data-utama="1": chip pertama diberi tanda "Utama".
+ */
+export function initPilihIcd() {
+    document.querySelectorAll('[data-rs-icd]').forEach((kotak) => {
+        const nama = kotak.dataset.nama;
+        const katalog = JSON.parse(kotak.querySelector('[data-rs-icd-katalog]').textContent);
+        const semuaKode = Object.keys(katalog);
+        const cari = kotak.querySelector('[data-rs-icd-cari]');
+        const saran = kotak.querySelector('[data-rs-icd-daftar]');
+        const terpilih = kotak.querySelector('[data-rs-icd-terpilih]');
+        let hasil = [];
+        let aktif = -1;
+
+        const kodeTerpilih = () => [...terpilih.querySelectorAll('input')].map((i) => i.value);
+        const beriTahuBerubah = () => kotak.dispatchEvent(new Event('change', { bubbles: true }));
+
+        const tandaiUtama = () => {
+            if (kotak.dataset.utama !== '1') return;
+            terpilih.querySelectorAll('.rs-px-utama').forEach((el) => el.remove());
+            const pertama = terpilih.querySelector('li');
+            if (pertama) {
+                const tanda = document.createElement('span');
+                tanda.className = 'rs-px-utama';
+                tanda.textContent = 'Utama';
+                pertama.prepend(tanda);
+            }
+        };
+
+        const tambah = (kode) => {
+            if (!katalog[kode] || kodeTerpilih().includes(kode)) return;
+            const li = document.createElement('li');
+            li.className = 'rs-px-chip';
+            li.innerHTML = '<input type="hidden"><strong></strong><span></span>'
+                + '<button type="button" class="rs-px-chip-hapus" data-rs-icd-hapus>'
+                + '<i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+            const input = li.querySelector('input');
+            input.name = `${nama}[]`;
+            input.value = kode;
+            li.querySelector('strong').textContent = kode;
+            li.querySelector('span').textContent = katalog[kode];
+            li.querySelector('button').setAttribute('aria-label', `Hapus ${kode}`);
+            terpilih.append(li);
+            tandaiUtama();
+            beriTahuBerubah();
+        };
+
+        const tutup = () => {
+            saran.hidden = true;
+            cari.setAttribute('aria-expanded', 'false');
+            cari.removeAttribute('aria-activedescendant');
+            aktif = -1;
+        };
+
+        const tampilkan = () => {
+            const q = cari.value.trim().toLowerCase();
+            saran.replaceChildren();
+            if (!q) { tutup(); return; }
+
+            const dipilih = kodeTerpilih();
+            hasil = semuaKode
+                .filter((k) => !dipilih.includes(k)
+                    && (k.toLowerCase().includes(q) || katalog[k].toLowerCase().includes(q)))
+                .slice(0, 8);
+
+            if (!hasil.length) {
+                const kosong = document.createElement('li');
+                kosong.className = 'rs-px-saran-kosong';
+                kosong.textContent = 'Tidak ditemukan. Coba kata lain.';
+                saran.append(kosong);
+            }
+            hasil.forEach((k, i) => {
+                const li = document.createElement('li');
+                li.id = `${saran.id}-${i}`;
+                li.setAttribute('role', 'option');
+                li.setAttribute('aria-selected', 'false');
+                li.className = 'rs-px-saran-item';
+                li.dataset.kode = k;
+                li.innerHTML = '<strong></strong><span></span>';
+                li.querySelector('strong').textContent = k;
+                li.querySelector('span').textContent = katalog[k];
+                saran.append(li);
+            });
+            saran.hidden = false;
+            cari.setAttribute('aria-expanded', 'true');
+            aktif = -1;
+        };
+
+        const sorot = (i) => {
+            const opsi = saran.querySelectorAll('[role="option"]');
+            opsi.forEach((el, j) => el.setAttribute('aria-selected', String(j === i)));
+            aktif = i;
+            if (opsi[i]) {
+                cari.setAttribute('aria-activedescendant', opsi[i].id);
+                opsi[i].scrollIntoView({ block: 'nearest' });
+            }
+        };
+
+        const pilih = (kode) => {
+            tambah(kode);
+            cari.value = '';
+            tutup();
+            cari.focus();
+        };
+
+        cari.addEventListener('input', tampilkan);
+        cari.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' && hasil.length) {
+                e.preventDefault();
+                sorot(Math.min(aktif + 1, hasil.length - 1));
+            } else if (e.key === 'ArrowUp' && hasil.length) {
+                e.preventDefault();
+                sorot(Math.max(aktif - 1, 0));
+            } else if (e.key === 'Enter') {
+                e.preventDefault(); // jangan kirim form
+                if (aktif >= 0) pilih(hasil[aktif]);
+                else if (hasil.length === 1) pilih(hasil[0]);
+            } else if (e.key === 'Escape') {
+                tutup();
+            }
+        });
+        cari.addEventListener('blur', () => setTimeout(tutup, 120));
+
+        // mousedown (bukan click) supaya terpilih sebelum kotak cari kehilangan fokus
+        saran.addEventListener('mousedown', (e) => {
+            const li = e.target.closest('[data-kode]');
+            if (li) { e.preventDefault(); pilih(li.dataset.kode); }
+        });
+
+        terpilih.addEventListener('click', (e) => {
+            const tombol = e.target.closest('[data-rs-icd-hapus]');
+            if (!tombol) return;
+            tombol.closest('li').remove();
+            tandaiUtama();
+            beriTahuBerubah();
+            cari.focus();
+        });
+
+        kotak.rsTambah = tambah; // dipakai tombol "Salin"
+    });
+}
+
+/**
+ * Form Pemeriksaan rawat jalan:
+ * - isian tambahan sesuai tindak lanjut (tanggal kontrol / tujuan rujukan),
+ * - tombol isi cepat, tombol "Salin" dari kunjungan sebelumnya,
+ * - penanda "ada perubahan" + peringatan bila meninggalkan halaman sebelum menyimpan.
+ */
+export function initFormPemeriksaan() {
+    const form = document.querySelector('[data-rs-form-pemeriksaan]');
+    if (!form) return;
+
+    const status = document.querySelector('[data-rs-status-simpan]');
+    let berubah = false;
+
+    function tandaiBerubah() {
+        if (berubah) return;
+        berubah = true;
+        if (status) status.textContent = 'Ada perubahan yang belum disimpan';
+    }
+
+    const perbaruiTindakLanjut = () => {
+        const nilai = form.querySelector('input[name="tindak_lanjut"]:checked')?.value;
+        form.querySelectorAll('[data-rs-tampil-jika]').forEach((el) => {
+            el.hidden = el.dataset.rsTampilJika !== nilai;
+        });
+    };
+
+    form.addEventListener('input', tandaiBerubah);
+    form.addEventListener('change', (e) => {
+        tandaiBerubah();
+        if (e.target.name === 'tindak_lanjut') perbaruiTindakLanjut();
+    });
+    form.addEventListener('submit', () => { berubah = false; });
+    window.addEventListener('beforeunload', (e) => {
+        if (berubah) { e.preventDefault(); e.returnValue = ''; }
+    });
+    perbaruiTindakLanjut();
+
+    // Tombol isi cepat, mis. "Isi: dalam batas normal"
+    form.querySelectorAll('[data-rs-isi-teks]').forEach((tombol) => {
+        tombol.addEventListener('click', () => {
+            const sasaran = form.querySelector(tombol.dataset.rsTarget);
+            if (!sasaran) return;
+            const lama = sasaran.value.trim();
+            sasaran.value = lama ? `${lama}\n${tombol.dataset.rsIsiTeks}` : tombol.dataset.rsIsiTeks;
+            sasaran.focus();
+            tandaiBerubah();
+        });
+    });
+
+    // Salin dari kunjungan sebelumnya
+    const info = document.querySelector('[data-rs-salin-info]');
+    document.querySelectorAll('[data-rs-salin]').forEach((tombol) => {
+        tombol.addEventListener('click', () => {
+            const data = JSON.parse(tombol.dataset.rsSalin);
+            ['diagnosa', 'rencana'].forEach((nama) => {
+                if (form.elements[nama] && data[nama]) form.elements[nama].value = data[nama];
+            });
+            const kotakIcd = form.querySelector('[data-rs-icd][data-nama="icd10"]');
+            (data.icd10 || []).forEach((kode) => kotakIcd?.rsTambah?.(kode));
+            tandaiBerubah();
+            if (info) {
+                info.textContent = `Diagnosa, ICD-10, dan rencana disalin dari kunjungan ${data.tanggal}. Periksa kembali sebelum menyimpan.`;
+                info.hidden = false;
+            }
+            form.elements.diagnosa?.focus();
+        });
+    });
+}
+
+/**
+ * Sesi hemodialisa: hitungan otomatis + salin resep sesi sebelumnya.
+ * - Kenaikan BB = BB pre − BB kering
+ * - Skor risiko jatuh Morse + kategori
+ * - UF aktual = BB pre − BB pasca
+ * - URR = (ureum pra − ureum pasca) ÷ ureum pra × 100%
+ */
+export function initSesiHd() {
+    const form = document.querySelector('[data-rs-hd-form]');
+    if (!form) return;
+
+    const angka = (nama) => {
+        const n = parseFloat(form.querySelector(`[data-rs-hd="${nama}"]`)?.value);
+        return Number.isFinite(n) ? n : null;
+    };
+    const fmt = (n, d = 1) => n.toLocaleString('id-ID', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+    const hitung = () => {
+        const idwg = form.querySelector('[data-rs-hd-idwg]');
+        if (idwg) {
+            const pre = angka('bb_pre');
+            const kering = angka('bb_kering');
+            idwg.textContent = pre !== null && kering !== null
+                ? `${pre - kering >= 0 ? '+' : ''}${fmt(pre - kering)} kg` : '—';
+        }
+
+        const uf = form.querySelector('[data-rs-hd-uf]');
+        if (uf) {
+            const pre = parseFloat(uf.dataset.bbPre);
+            const post = angka('bb_post');
+            uf.textContent = Number.isFinite(pre) && post !== null ? `${fmt(pre - post)} L` : '—';
+        }
+
+        const urr = form.querySelector('[data-rs-hd-urr]');
+        if (urr) {
+            const a = angka('ureum_pre');
+            const b = angka('ureum_post');
+            if (a && b !== null && b < a) {
+                const nilai = ((a - b) / a) * 100;
+                urr.textContent = `${fmt(nilai)} %`;
+                urr.classList.toggle('is-kurang', nilai < 65);
+            } else {
+                urr.textContent = '—';
+                urr.classList.remove('is-kurang');
+            }
+        }
+
+        const morse = form.querySelector('[data-rs-morse]');
+        if (morse) {
+            const skor = [...morse.querySelectorAll('input:checked')].reduce((t, el) => t + Number(el.value), 0);
+            const [teks, kategori] = skor >= 45 ? ['Risiko tinggi', 'tinggi']
+                : skor >= 25 ? ['Risiko rendah', 'rendah'] : ['Tidak berisiko', 'aman'];
+            const hasil = morse.querySelector('[data-rs-morse-hasil]');
+            hasil.textContent = `Skor ${skor} · ${teks}`;
+            hasil.dataset.kategori = kategori;
+        }
+    };
+
+    form.addEventListener('input', hitung);
+    form.addEventListener('change', hitung);
+    hitung();
+
+    const tombolSalin = document.querySelector('[data-rs-salin-resep]');
+    tombolSalin?.addEventListener('click', () => {
+        const data = JSON.parse(tombolSalin.dataset.rsSalinResep);
+        Object.entries(data).forEach(([nama, nilai]) => {
+            const el = form.elements[nama];
+            if (el) el.value = String(nilai); // radio (RadioNodeList) ikut tercentang
+        });
+        const info = document.querySelector('[data-rs-salin-info]');
+        if (info) {
+            info.textContent = 'Resep disalin dari sesi sebelumnya. Sesuaikan bila perlu, lalu simpan.';
+            info.hidden = false;
+        }
+        hitung();
+    });
+}
+
+/**
+ * Form riwayat alergi (modal di header pasien):
+ * kotak keterangan hanya muncul bila "Ada alergi" dipilih.
+ * Juga membuka otomatis modal yang ditandai data-rs-buka-otomatis (mis. setelah gagal validasi).
+ */
+export function initFormAlergi() {
+    document.querySelectorAll('[data-rs-form-alergi]').forEach((form) => {
+        const detail = form.querySelector('[data-rs-alergi-detail]');
+        form.addEventListener('change', (e) => {
+            if (e.target.name !== 'status') return;
+            const ada = e.target.value === 'ada';
+            detail.hidden = !ada;
+            if (ada) detail.querySelector('textarea')?.focus();
+        });
+    });
+
+    document.querySelectorAll('.modal[data-rs-buka-otomatis]').forEach((el) => {
+        Modal.getOrCreateInstance(el).show();
     });
 }

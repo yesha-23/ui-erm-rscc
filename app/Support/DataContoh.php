@@ -40,18 +40,19 @@ class DataContoh
     /**
      * Pekerjaan yang belum selesai hari ini (tampil di Beranda).
      * 'query' memakai nama tab di KonfigurasiUnit, jadi klik langsung membuka tab yang sesuai.
+     * 'bayar' => 'semua' supaya jumlahnya sama dengan tabel (bawaan tabel = belum terbayar).
      */
     public static function tugas(): array
     {
         return [
             ['label' => 'Pasien IGD belum close',          'jumlah' => 8, 'ikon' => 'bi-activity',
-             'route' => 'kunjungan.igd',   'query' => ['status' => 'belum_close']],
+             'route' => 'kunjungan.igd',   'query' => ['status' => 'belum_close', 'bayar' => 'semua']],
             ['label' => 'BRM rawat jalan belum terisi',    'jumlah' => 3, 'ikon' => 'bi-file-earmark-medical',
-             'route' => 'kunjungan.rajal', 'query' => ['status' => 'brm']],
+             'route' => 'kunjungan.rajal', 'query' => ['status' => 'brm', 'bayar' => 'semua']],
             ['label' => 'BRM hemodialisa belum terisi',    'jumlah' => 3, 'ikon' => 'bi-droplet',
-             'route' => 'kunjungan.hd',    'query' => ['status' => 'brm']],
+             'route' => 'kunjungan.hd',    'query' => ['status' => 'brm', 'bayar' => 'semua']],
             ['label' => 'Pasien rawat inap tanpa diagnosa', 'jumlah' => 2, 'ikon' => 'bi-clipboard2-x',
-             'route' => 'kunjungan.ranap', 'query' => ['status' => 'tanpa_diagnosa']],
+             'route' => 'kunjungan.ranap', 'query' => ['status' => 'tanpa_diagnosa', 'bayar' => 'semua']],
         ];
     }
 
@@ -113,86 +114,313 @@ class DataContoh
         ];
     }
 
-        /**
-     * Data kunjungan per unit (data contoh, 12 baris).
+    /**
+     * Data kunjungan per unit (data contoh, BUKAN data pasien asli).
+     * $sub = ruang rawat inap (umum/kebidanan/icu/hcu) atau jenis OK (mayor/minor).
+     * Tanggal dibuat relatif terhadap hari ini supaya filter tanggal bisa dicoba saat demo:
+     * - Rawat inap : 12 pasien, masuk dalam 10 hari terakhir.
+     * - Unit lain  : 12 pasien hari ini + 3 pasien kemarin.
      * Catatan untuk IT: ganti dengan query kunjungan per unit, dengan nama kunci yang sama.
      */
-    public static function kunjungan(string $unit): array
+    public static function kunjungan(string $unit, ?string $sub = null): array
     {
         $pasien = [
             ['Andi Pratama', '000123'], ['Siti Rahmawati', '000124'], ['Budi Santoso', '000131'],
             ['Dewi Lestari', '000142'], ['Hendra Wijaya', '000157'], ['Putri Maharani', '000163'],
             ['Rudi Hartono', '000170'], ['Nur Aisyah', '000181'], ['Agus Salim', '000195'],
             ['Rina Kartika', '000203'], ['Eko Prasetyo', '000214'], ['Lina Marlina', '000226'],
+            ['Fajar Ramadhan', '000231'], ['Wulan Sari', '000245'], ['Yusuf Hakim', '000252'],
         ];
-        $dokter  = ['dr. Arif Nugroho', 'dr. Laras Wulandari', 'dr. Rizky Ananda'];
-        $perawat = ['Bagus Setiawan, A.Md.Kep', 'Fitri Handayani, A.Md.Kep', 'Maya Lestari, AMK'];
-        $terapis = ['Citra Ayu, S.Tr.Kes', 'Rina Marlina, A.Md.TW', 'Sari Utami, A.Md.OT'];
-        $tujuan  = [
-            'igd'   => ['IGD', 'IGD, Laboratorium', 'IGD, Radiologi'],
-            'hd'    => ['Hemodialisa', 'Laboratorium, Hemodialisa'],
-            'rm'    => ['Okupasi Terapi', 'Terapi Wicara', 'Klinik Rehabilitasi Medik'],
-            'rajal' => ['Klinik Penyakit Dalam', 'Klinik Syaraf', 'Klinik Gigi dan Mulut', 'Klinik Mata'],
-        ];
-        $ruang    = [
-            ['Kenanga I', 'Kenanga I-C', 'Kelas III'], ['Lily II (Isolasi)', 'Lily II-A', 'Kelas I'],
-            ['Mawar', 'Mawar-D', 'Kelas II'], ['Anggrek IV', 'Anggrek IV', 'VIP'],
-        ];
-        $diagnosa = ['Demam tifoid', 'Pneumonia', 'Selulitis pedis', 'Dispepsia', ''];
-        $daftarTujuan = $tujuan[$unit] ?? ['—'];
+        if ($unit === 'ranap') {
+            $pasien = array_slice($pasien, 0, 12);
+        }
+
+        $hariIni  = now()->startOfDay();
+        $dokter   = ['dr. Arif Nugroho', 'dr. Laras Wulandari', 'dr. Rizky Ananda'];
+        $perawat  = ['Bagus Setiawan, A.Md.Kep', 'Fitri Handayani, A.Md.Kep', 'Maya Lestari, AMK'];
+        $bidan    = ['Bidan Ratna Dewi', 'Bidan Sinta Ayu'];
+        $apoteker = ['Apt. Nina Kurnia, S.Farm', 'Apt. Yoga Pradana, S.Farm'];
+
+        // [unit tujuan, PPA 1]. PPA 1 = null berarti dokter jaga.
+        $layanan = match ($unit) {
+            'igd' => [['IGD', null], ['IGD, Laboratorium', null], ['IGD, Radiologi', null]],
+            'hd'  => [['Hemodialisa', null], ['Laboratorium, Hemodialisa', null]],
+            'rm'  => [
+                ['Klinik Rehabilitasi Medik', 'dr. Hana Prameswari, Sp.KFR'],
+                ['Fisioterapi',               'Citra Ayu, S.Tr.Kes'],
+                ['Okupasi Terapi',            'Sari Utami, A.Md.OT'],
+                ['Terapi Wicara',             'Rina Marlina, A.Md.TW'],
+                ['Pedagogia',                 'Dian Puspita, S.Pd'],
+            ],
+            'rajal' => [
+                ['Klinik Penyakit Dalam',          'dr. Arif Nugroho, Sp.PD'],
+                ['Klinik Anak',                    'dr. Laras Wulandari, Sp.A'],
+                ['Klinik Syaraf',                  'dr. Rizky Ananda, Sp.N'],
+                ['Klinik Gigi dan Mulut',          'drg. Maya Sari, Sp.KG'],
+                ['Klinik Mata',                    'dr. Dimas Pratama, Sp.M'],
+                ['Klinik THT',                     'dr. Yudha Permana, Sp.THT-KL'],
+                ['Klinik Kebidanan dan Kandungan', 'dr. Sekar Ayu, Sp.OG'],
+                ['Klinik Bedah',                   'dr. Bima Saputra, Sp.B'],
+                ['Klinik Kesehatan Jiwa',          'dr. Fajar Nugraha, Sp.KJ'],
+                ['Klinik Umum',                    'dr. Tika Ramadhani'],
+            ],
+            default => [['—', null]],
+        };
+
+        // [ruang, bed, kelas], DPJP, dan diagnosa menyesuaikan unit rawat inap
+        [$ruangan, $dpjp, $diagnosa] = match ($sub) {
+            'kebidanan' => [
+                [['Melati I', 'Melati I-A', 'Kelas III'], ['Melati II', 'Melati II-B', 'Kelas II'],
+                 ['Teratai', 'Teratai-2', 'Kelas I'], ['Teratai VIP', 'Teratai VIP', 'VIP']],
+                ['dr. Sekar Ayu, Sp.OG', 'dr. Wening Putri, Sp.OG'],
+                ['G2P1A0 hamil 39 minggu', 'Post SC hari ke-1', 'Ketuban pecah dini', 'Abortus inkomplit', ''],
+            ],
+            'icu', 'hcu' => [
+                [[strtoupper($sub), strtoupper($sub) . '-01', strtoupper($sub)],
+                 [strtoupper($sub), strtoupper($sub) . '-02', strtoupper($sub)],
+                 [strtoupper($sub), strtoupper($sub) . '-03', strtoupper($sub)]],
+                ['dr. Arif Nugroho, Sp.PD', 'dr. Galih Wicaksono, Sp.An'],
+                ['Syok sepsis', 'Gagal jantung kongestif', 'Stroke hemoragik', 'Post laparotomi', ''],
+            ],
+            default => [
+                [['Kenanga I', 'Kenanga I-C', 'Kelas III'], ['Lily II (Isolasi)', 'Lily II-A', 'Kelas I'],
+                 ['Mawar', 'Mawar-D', 'Kelas II'], ['Anggrek IV', 'Anggrek IV', 'VIP'],
+                 ['Kenanga II', 'Kenanga II-B', 'Kelas III']],
+                array_map(fn ($d) => $d . ', Sp.PD', $dokter),
+                ['Demam tifoid', 'Pneumonia', 'Selulitis pedis', 'Dispepsia', ''],
+            ],
+        };
 
         $hasil = [];
         foreach ($pasien as $i => [$nama, $rm]) {
+            [$tujuan, $ppa1] = $layanan[$i % count($layanan)];
+            $kamar   = $ruangan[$i % count($ruangan)];
+            $jkn     = $i % 5 !== 3;
+            $tanggal = match (true) {
+                $unit === 'ranap' => $hariIni->copy()->subDays(($i * 2) % 11),
+                $i >= 12          => $hariIni->copy()->subDay(),
+                default           => $hariIni->copy(),
+            };
+
             $hasil[] = [
-                'no_rm'        => $rm,
-                'nama'         => $nama,
-                'no_reg'       => '26110200' . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
-                'no_sep'       => $i % 4 === 2 ? '' : '0179R01211260' . str_pad($i + 1, 5, '0', STR_PAD_LEFT),
-                'tgl'          => '02 Nov 2026',
-                'jam'          => sprintf('%02d:%02d', 7 + $i, ($i * 13) % 60),
-                'penjamin'     => $i % 5 === 3 ? 'NON JKN' : 'JKN',
-                'sudah_datang' => $i % 6 !== 4,
-                'terbayar'     => $i % 3 === 0,
-                'unit_tujuan'  => $daftarTujuan[$i % count($daftarTujuan)],
-                'brm'          => $i % 4 !== 3,
-                'close'        => $i % 3 === 0,
-                'rujukan'      => $i % 5 === 0,
-                'kontrol'      => $i % 4 === 1,
-                'dokter_isi'   => $dokter[$i % 3],
-                'dokter_pulang'=> $i % 3 === 0 ? $dokter[$i % 3] : '',
-                'perawat'      => $perawat[$i % 3],
-                'ppa1'         => in_array($unit, ['rm', 'rajal']) ? $terapis[$i % 3] : $dokter[$i % 3],
-                'ppa2'         => $perawat[($i + 1) % 3],
-                'ppa_farmasi'  => '',
-                'kelas'        => $ruang[$i % 4][2],
-                'ruang'        => $ruang[$i % 4][0],
-                'bed'          => $ruang[$i % 4][1],
-                'dpjp'         => $dokter[$i % 3] . ', Sp.PD',
-                'diagnosa'     => $diagnosa[$i % 5],
-                'unit_asal'    => $i % 3 ? 'UGD' : 'Poliklinik',
+                'no_rm'         => $rm,
+                'nama'          => $nama,
+                'no_reg'        => '26110200' . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
+                'no_sep'        => $jkn && $i % 4 !== 2 ? '0179R01211260' . str_pad($i + 1, 5, '0', STR_PAD_LEFT) : '',
+                'tanggal'       => $tanggal->toDateString(),           // untuk filter (Y-m-d)
+                'tgl'           => $tanggal->translatedFormat('d M Y'), // untuk tampilan
+                'jam'           => sprintf('%02d:%02d', 7 + $i, ($i * 13) % 60),
+                'penjamin'      => $jkn ? 'JKN' : 'NON JKN',
+                'sudah_datang'  => $i % 6 !== 4,
+                'terbayar'      => $i % 3 === 0,
+                'unit_tujuan'   => $tujuan,
+                'brm'           => $i % 4 !== 3,
+                'close'         => $i % 3 === 0,
+                'rujukan'       => $i % 5 === 0,
+                'kontrol'       => $i % 4 === 1,
+                'dokter_isi'    => $dokter[$i % 3],
+                'dokter_pulang' => $i % 3 === 0 ? $dokter[$i % 3] : '',
+                'perawat'       => $perawat[$i % 3],
+                'ppa1'          => $ppa1 ?? $dokter[$i % 3],
+                'ppa2'          => str_contains($tujuan, 'Kebidanan') ? $bidan[$i % 2] : $perawat[($i + 1) % 3],
+                'ppa_farmasi'   => in_array($unit, ['rm', 'rajal'], true) && $i % 3 !== 2 ? $apoteker[$i % 2] : '',
+                'kelas'         => $kamar[2],
+                'ruang'         => $kamar[0],
+                'bed'           => $kamar[1],
+                'dpjp'          => $dpjp[$i % count($dpjp)],
+                'diagnosa'      => $diagnosa[$i % 5],
+                'unit_asal'     => $i % 3 ? 'UGD' : 'Poliklinik',
             ];
         }
 
         return $hasil;
     }
 
-    /** Data satu pasien untuk ruang kerja Rekam Medis. Catatan untuk IT: ganti dengan query pasien + kunjungan. */
+        /**
+     * Data satu pasien untuk ruang kerja Rekam Medis (mengikuti unit yang sedang dibuka).
+     * Catatan untuk IT: ganti dengan query pasien + kunjungan.
+     */
     public static function pasien(string $noReg): array
     {
-        $daftar = self::kunjungan('igd');
-        $row = collect($daftar)->firstWhere('no_reg', $noReg) ?? $daftar[0];
+        ['unit' => $unit, 'sub' => $sub] = KonfigurasiRekamMedis::unitAktif($noReg);
+
+        $daftar = self::kunjungan($unit, $sub);
+        $row    = collect($daftar)->firstWhere('no_reg', $noReg) ?? $daftar[0];
+        $info   = KonfigurasiRekamMedis::UNIT[$unit];
+        // Alergi melekat ke pasien (per No. RM), bukan per kunjungan. IT: tabel alergi_pasien.
+        $alergi = session("alergi.{$row['no_rm']}");
+
+        $perempuan = ['Siti Rahmawati', 'Dewi Lestari', 'Putri Maharani', 'Nur Aisyah',
+                      'Rina Kartika', 'Lina Marlina', 'Wulan Sari'];
 
         return $row + [
-            'jk'             => 'Laki-laki',
-            'umur'           => '21 th',
+            'jk'             => in_array($row['nama'], $perempuan, true) ? 'Perempuan' : 'Laki-laki',
+            'umur'           => (18 + (int) $row['no_rm'] % 50) . ' th',
             'tgl_lahir'      => '[tgl lahir]',
             'alamat'         => '[alamat pasien]',
-            'alergi'         => '[isi alergi]',
-            'unit'           => 'IGD',
-            'unit_route'     => 'kunjungan.igd',
-            'datang'         => '02 Nov 2026, 08:50',
-            'dpjp_nama'      => 'dr. [Nama Dokter]',
-            'diagnosa_kerja' => 'Obs. febris H6, susp. demam tifoid',
+            'nik'            => '[NIK]',
+            'no_hp'          => '[No. HP]',
+            'no_bpjs'        => $row['penjamin'] === 'JKN' ? '[No. BPJS]' : '—',
+            'alergi_status'  => $alergi['status'] ?? null,               // null | 'tidak' | 'ada'
+            'alergi'         => $alergi['keterangan'] ?? ($alergi ? 'Tidak ada' : 'Belum dikaji'),
+            'alergi_waktu'   => $alergi['waktu'] ?? null,
+            'status_hiv'     => 'Negatif (data contoh)',
+            'unit'           => $info['label'] . ($sub ? ' · ' . KonfigurasiRekamMedis::SUB[$unit][$sub] : ''),
+            'unit_kode'      => $unit,
+            'unit_sub'       => $sub,
+            'unit_route'     => $info['route'],
+            'datang'         => $row['tgl'] . ', ' . $row['jam'],
+            'dpjp_nama'      => match ($unit) {
+                'ranap', 'ok' => $row['dpjp'],
+                'rajal'       => $row['ppa1'],
+                default       => $row['dokter_isi'],
+            },
+            'diagnosa_kerja' => match ($unit) {
+                'ranap', 'ok' => $row['diagnosa'] ?: 'Belum ada diagnosa',
+                'rajal'       => session("pemeriksaan.$noReg.isi.diagnosa") ?: 'Belum ada diagnosa',
+                default       => 'Obs. febris H6, susp. demam tifoid',
+            },
+        ];
+    }
+
+    /** Kartu khusus unit di Ringkasan (CONTOH). IT RSCC: ganti dengan data form unit masing-masing. */
+    public static function kartuUnit(array $p): array
+    {
+        $isi  = session("asesmen.{$p['no_reg']}.isi", []);
+        $opsi = self::opsiAsesmenGd();
+        $warnaTriase = ['merah' => 'gagal', 'kuning' => 'peringatan', 'hijau' => 'sukses', 'hitam' => 'info'];
+        $triase = $isi['triase'] ?? 'kuning';
+
+        $hariRawat = (int) abs(\Illuminate\Support\Carbon::parse($p['tanggal'])->startOfDay()
+            ->diffInDays(now()->startOfDay())) + 1;
+
+        return match ($p['unit_kode']) {
+            'rajal' => [
+                'judul' => 'Kunjungan poli', 'ikon' => 'bi-clipboard2-pulse',
+                'sorot' => [$p['sudah_datang'] ? 'Sudah datang' : 'Belum datang', $p['sudah_datang'] ? 'info' : 'peringatan'],
+                'progres' => null,
+                'baris' => [
+                    'Klinik'           => $p['unit_tujuan'],
+                    'Dokter'           => $p['ppa1'],
+                    'Jenis kunjungan'  => 'Kontrol ke-3',
+                    'Rujukan / konsul' => $p['rujukan'] ? 'Ada (rujukan FKTP)' : 'Tidak ada',
+                    'Surat kontrol'    => $p['kontrol'] ? 'Sudah dibuat' : 'Perlu dibuat',
+                ],
+            ],
+            'rm' => [
+                'judul' => 'Program terapi', 'ikon' => 'bi-person-walking',
+                'sorot' => ['Sesi 5 dari 8', 'info'],
+                'progres' => [5, 8],
+                'baris' => [
+                    'Layanan'         => $p['unit_tujuan'],
+                    'Terapis'         => $p['ppa1'],
+                    'Frekuensi'       => '2× seminggu',
+                    'Sesi berikutnya' => now()->addDays(3)->translatedFormat('l, d M Y') . ' · 09:00',
+                ],
+            ],
+            'hd' => [
+                'judul' => 'Sesi hemodialisa', 'ikon' => 'bi-droplet',
+                'sorot' => ['HD ke-49', 'info'],
+                'progres' => null,
+                'baris' => [
+                    'Jadwal rutin'      => '2× seminggu (Senin & Kamis)',
+                    'Akses vaskular'    => 'AV-fistula',
+                    'BB kering'         => '58,0 kg',
+                    'BB pre-HD'         => '63,6 kg (naik 5,6 kg)',
+                    'Resep HD terakhir' => 'QB 200 · QD 400 · UF 4,5 L · 4,5 jam',
+                ],
+            ],
+            'ranap' => [
+                'judul' => 'Perawatan', 'ikon' => 'bi-hospital',
+                'sorot' => ["Hari rawat ke-$hariRawat", 'info'],
+                'progres' => null,
+                'baris' => [
+                    'Ruang / bed'    => "{$p['ruang']} · {$p['bed']}",
+                    'Kelas'          => $p['kelas'],
+                    'Masuk dari'     => $p['unit_asal'],
+                    'Tanggal masuk'  => $p['tgl'],
+                    'Rencana pulang' => 'Belum ditentukan',
+                ],
+            ],
+            'ok' => [
+                'judul' => 'Jadwal operasi', 'ikon' => 'bi-scissors',
+                'sorot' => [($p['unit_sub'] === 'minor' ? 'OK Minor' : 'OK Mayor') . ' · 13:00', 'info'],
+                'progres' => null,
+                'baris' => [
+                    'Tindakan'              => 'Eksisi tumor (contoh)',
+                    'Operator'              => 'dr. Bima Saputra, Sp.B',
+                    'Anestesi'              => 'dr. Galih Wicaksono, Sp.An · anestesi umum',
+                    'Checklist keselamatan' => 'Sign in ✓ · Time out – · Sign out –',
+                    'Asal pasien'           => "{$p['ruang']} · {$p['bed']}",
+                ],
+            ],
+            default => [ // igd
+                'judul' => 'Triase & kedatangan', 'ikon' => 'bi-activity',
+                'sorot' => ['Triase ' . ($opsi['triase'][$triase] ?? 'Kuning · P2'), $warnaTriase[$triase] ?? 'peringatan'],
+                'progres' => null,
+                'baris' => [
+                    'Cara datang'  => $opsi['cara_datang'][$isi['cara_datang'] ?? 'keluarga'] ?? 'Diantar keluarga',
+                    'Waktu datang' => $p['datang'],
+                    'Tujuan'       => $p['unit_tujuan'],
+                    'Status'       => $p['close'] ? 'Sudah close' : 'Belum close',
+                ],
+            ],
+        };
+    }
+
+    /** Aktivitas terakhir pada kunjungan ini (CONTOH, terbaru di atas). 'route' = nama route rekam-medis.* */
+    public static function aktivitasTerakhir(): array
+    {
+        return [
+            ['jam' => '14:00', 'ikon' => 'bi-heart-pulse',  'teks' => 'Observasi tanda vital',                      'oleh' => '[Nama Perawat]',    'route' => 'ttv'],
+            ['jam' => '10:21', 'ikon' => 'bi-journal-text', 'teks' => 'CPPT dokter: obs. febris, susp. demam tifoid', 'oleh' => 'dr. [Nama Dokter]', 'route' => 'cppt'],
+            ['jam' => '10:05', 'ikon' => 'bi-droplet-half', 'teks' => 'Hasil lab: 3 nilai di luar batas normal',    'oleh' => 'Laboratorium',      'route' => 'riwayat'],
+            ['jam' => '09:40', 'ikon' => 'bi-image',        'teks' => 'Thorax PA: cor dan pulmo dalam batas normal', 'oleh' => 'Radiologi',         'route' => 'riwayat'],
+            ['jam' => '09:12', 'ikon' => 'bi-send',         'teks' => 'Permintaan radiologi dikirim',               'oleh' => 'dr. [Nama Dokter]', 'route' => 'permintaan'],
+        ];
+    }
+
+        /**
+     * Kunjungan rawat jalan sebelumnya (CONTOH, terbaru di atas) — panel kanan form Pemeriksaan.
+     * Catatan untuk IT: ganti dengan query pemeriksaan rawat jalan pasien yang sudah final.
+     */
+    public static function kunjunganSebelumnya(): array
+    {
+        return [
+            [
+                'tanggal' => '14 Agu 2026', 'klinik' => 'Klinik Penyakit Dalam', 'dokter' => 'dr. Arif Nugroho, Sp.PD',
+                's' => 'Kontrol. Nyeri ulu hati berkurang, mual (-)',
+                'o' => 'TD 130/80 mmHg, N 84 x/menit. Nyeri tekan epigastrium minimal',
+                'a' => 'Dispepsia fungsional, perbaikan', 'icd10' => ['K30', 'Z09.8'],
+                'p' => 'Omeprazole 20 mg 2×1 (14 hari). Kontrol 1 bulan.',
+            ],
+            [
+                'tanggal' => '10 Jul 2026', 'klinik' => 'Klinik Penyakit Dalam', 'dokter' => 'dr. Arif Nugroho, Sp.PD',
+                's' => 'Nyeri ulu hati 2 minggu, mual, kembung',
+                'o' => 'TD 128/82 mmHg. Nyeri tekan epigastrium',
+                'a' => 'Gastritis', 'icd10' => ['K29.7'],
+                'p' => 'Omeprazole 20 mg 2×1, antasida 3×1. Edukasi pola makan. Kontrol 1 bulan.',
+            ],
+            [
+                'tanggal' => '03 Mar 2026', 'klinik' => 'Klinik Gigi dan Mulut', 'dokter' => 'drg. Maya Sari, Sp.KG',
+                's' => 'Gigi geraham kiri bawah ngilu',
+                'o' => 'Karies media gigi 36',
+                'a' => 'Karies gigi', 'icd10' => ['K02.9'],
+                'p' => 'Tumpatan komposit gigi 36.',
+            ],
+        ];
+    }
+
+    /** Sesi HD sebelumnya (CONTOH) — untuk "Salin resep" dan BB kering bawaan. IT: ambil sesi_hd terakhir yang final. */
+    public static function hdSesiSebelumnya(): array
+    {
+        return [
+            'tanggal'   => '02 Nov (HD ke-48)',
+            'bb_kering' => 58.0,
+            'resep'     => [
+                'jenis' => 'rutin', 'durasi' => 4.5, 'qb' => 200, 'qd' => 400, 'uf_goal' => 4.5,
+                'dialisat' => 'bikarbonat', 'heparin' => 'minimal', 'heparin_awal' => 1000, 'heparin_lanjut' => 500,
+            ],
         ];
     }
 

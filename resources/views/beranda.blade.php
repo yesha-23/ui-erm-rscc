@@ -125,7 +125,7 @@
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <span class="rs-status rs-status-proses">{{ $jumlahTindak }} pasien</span>
-                        <a href="{{ route('kunjungan.igd') }}" class="small fw-semibold text-decoration-none">Lihat semua →</a>
+                        <a href="{{ route('kunjungan.igd', ['bayar' => 'semua']) }}" class="small fw-semibold text-decoration-none">Lihat semua →</a>
                     </div>
                 </div>
 
@@ -175,7 +175,7 @@
                                             </div>
                                         </td>
                                         <td class="rs-td-aksi text-end">
-                                            <a href="{{ route('rekam-medis.show', $r['no_reg']) }}" class="btn btn-primary btn-sm"
+                                            <a href="{{ route('rekam-medis.show', [$r['no_reg'], 'unit' => 'igd']) }}" class="btn btn-primary btn-sm"
                                                aria-label="Buka rekam medis {{ $r['nama'] }}">Buka</a>
                                         </td>
                                     </tr>

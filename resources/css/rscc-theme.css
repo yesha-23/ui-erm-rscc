@@ -622,23 +622,6 @@
     gap: 4px;
 }
 
-.rs-cek {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.rs-cek-ok {
-    color: var(--rs-success-text);
-}
-
-.rs-cek-belum {
-    color: var(--rs-danger-text);
-}
-
 .rs-table-foot {
     display: flex;
     flex-wrap: wrap;
@@ -3483,4 +3466,897 @@
         flex: 1;
         width: auto;
     }
+}
+
+/* =========================================================
+   Daftar kunjungan — revisi 4 Nov (filter 1 baris, No, No. Registrasi)
+   ========================================================= */
+
+/* ---------- Filter: satu baris, turun baris sendiri kalau tidak cukup ---------- */
+.rs-filter {
+    padding: 14px 16px;
+}
+
+.rs-filter-baris {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.rs-filter-item {
+    min-width: 0;
+}
+
+.rs-filter-item .form-label {
+    margin-bottom: 6px;
+    white-space: nowrap;
+}
+
+.rs-filter-cari {
+    flex: 1 1 180px;
+    /* mengisi sisa ruang, minimal 180px */
+}
+
+.rs-filter-pilih {
+    flex: 0 0 170px;
+}
+
+.rs-filter-pilih-lebar {
+    flex: 0 0 220px;
+}
+
+.rs-filter-aksi {
+    gap: 8px;
+    margin-left: auto;
+}
+
+.rs-btn-ikon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    padding: 0;
+    font-size: 17px;
+}
+
+.rs-rentang-tanggal {
+    flex-wrap: nowrap;
+}
+
+.rs-input-tanggal .input-group-text {
+    justify-content: center;
+    padding: 0 10px;
+}
+
+.rs-input-tanggal .form-control {
+    width: 140px;
+}
+
+/* Desktop: bungkus "filter lain" dilebur supaya isinya sebaris dengan Cari & Tanggal */
+@media (min-width: 768px) {
+
+    .rs-filter-lain,
+    .rs-filter-lain-isi {
+        display: contents !important;
+    }
+}
+
+/* ---------- Tabel: nomor, no. registrasi, kolom pasien ---------- */
+.rs-table thead th.rs-th-nomor,
+.rs-table .rs-td-nomor {
+    width: 52px;
+    text-align: right;
+}
+
+.rs-table .rs-td-nomor {
+    color: var(--rs-text-3);
+    font-variant-numeric: tabular-nums;
+}
+
+.rs-noreg {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* ---------- Kelengkapan ---------- */
+.rs-cek-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Label kelengkapan kunjungan (nama unik: .rs-cek = checklist, .rs-status = permintaan) */
+.rs-lengkap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.rs-lengkap-ok {
+    color: var(--rs-success-text);
+}
+
+.rs-lengkap-belum {
+    color: var(--rs-danger-text);
+}
+
+/* Badge info netral: rujukan/konsul, surat kontrol */
+.rs-info-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.rs-badge-netral {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--rs-border);
+    background: var(--rs-hover);
+    color: var(--rs-text-2);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+    .rs-table-kartu {
+        min-width: 1080px;
+    }
+
+    /* nama pasien tidak dipatah per kata ("Siti / Rahmawati") */
+    .rs-table .rs-td-utama {
+        min-width: 190px;
+    }
+}
+
+/* ---------- HP ---------- */
+@media (max-width: 767.98px) {
+
+    .rs-filter-item,
+    .rs-filter-cari,
+    .rs-filter-pilih,
+    .rs-filter-pilih-lebar {
+        flex: 1 1 100%;
+    }
+
+    .rs-rentang-tanggal {
+        flex-wrap: wrap;
+    }
+
+    .rs-input-tanggal .input-group-text {
+        width: 76px;
+    }
+
+    .rs-input-tanggal .form-control {
+        flex: 1;
+        width: auto;
+    }
+
+    .rs-filter-lain {
+        width: 100%;
+    }
+
+    .rs-filter-lain-isi {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Nomor urut tidak perlu di tampilan kartu */
+    .rs-table-kartu .rs-td-nomor {
+        display: none;
+    }
+}
+
+/* ---------- Filter kunjungan: versi otomatis (tanpa tombol Terapkan, muat 1 baris) ---------- */
+.rs-filter {
+    position: relative;
+    overflow: hidden;
+    /* garis "memuat" tidak keluar dari kotak */
+}
+
+.rs-filter-cari {
+    flex: 1 1 160px;
+}
+
+.rs-filter-pilih {
+    flex: 0 0 160px;
+}
+
+.rs-filter-pilih-lebar {
+    flex: 0 0 200px;
+}
+
+/* Tanggal: satu kotak  [tanggal] – [tanggal] */
+.rs-rentang-tanggal.input-group {
+    flex-wrap: nowrap;
+    width: auto;
+    gap: 0;
+}
+
+.rs-rentang-tanggal>.form-control {
+    flex: none;
+    width: 136px;
+}
+
+.rs-rentang-tanggal>.input-group-text {
+    padding: 0 8px;
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+}
+
+/* Sedang memuat: garis biru bergerak + isian diredupkan */
+.rs-filter.is-memuat::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 3px;
+    background: var(--rs-primary);
+    animation: rs-memuat 1s ease-in-out infinite;
+}
+
+.rs-filter.is-memuat .rs-filter-baris {
+    opacity: .7;
+    pointer-events: none;
+}
+
+@keyframes rs-memuat {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(250%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rs-filter.is-memuat::after {
+        width: 100%;
+        animation: none;
+    }
+}
+
+/* HP: dua tanggal tetap sebaris, masing-masing setengah lebar */
+@media (max-width: 767.98px) {
+    .rs-rentang-tanggal.input-group {
+        width: 100%;
+    }
+
+    .rs-rentang-tanggal>.form-control {
+        flex: 1 1 0;
+        width: auto;
+        min-width: 0;
+    }
+}
+
+/* =========================================================
+   Ringkasan pasien (rs-rk-*)
+   ========================================================= */
+.rs-rk-progres {
+    height: 6px;
+    background: var(--rs-hover);
+}
+
+.rs-rk-progres .progress-bar {
+    background: var(--rs-success);
+}
+
+.rs-rk-ikon {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--rs-primary-soft);
+    color: var(--rs-primary-dark);
+    font-size: 16px;
+}
+
+.rs-rk-sorot {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+/* Perlu dikerjakan */
+.rs-rk-tugas {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.rs-rk-tugas-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+}
+
+.rs-rk-tugas-item.is-selesai {
+    background: #FCFCFD;
+}
+
+.rs-rk-tugas-ikon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.is-selesai .rs-rk-tugas-ikon {
+    background: var(--rs-success-soft);
+    color: var(--rs-success-text);
+}
+
+.is-draf .rs-rk-tugas-ikon {
+    background: var(--rs-warning-soft);
+    color: var(--rs-warning-text);
+}
+
+.is-belum .rs-rk-tugas-ikon {
+    background: var(--rs-danger-soft);
+    color: var(--rs-danger-text);
+}
+
+/* Daftar label : nilai */
+.rs-rk-dl {
+    display: grid;
+    grid-template-columns: minmax(110px, 38%) minmax(0, 1fr);
+    gap: 8px 12px;
+    margin: 0;
+    font-size: 14px;
+}
+
+.rs-rk-dl dt {
+    color: var(--rs-text-3);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rs-rk-dl dd {
+    margin: 0;
+}
+
+@media (min-width: 992px) {
+    .rs-rk-dl-lebar {
+        grid-template-columns: 140px minmax(0, 1fr) 140px minmax(0, 1fr);
+    }
+}
+
+/* Tanda vital */
+.rs-rk-ttv {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+}
+
+.rs-rk-ttv-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+}
+
+.rs-rk-ttv-label {
+    color: var(--rs-text-3);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rs-rk-ttv-nilai {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+}
+
+.rs-rk-ttv-nilai .bi {
+    font-size: 14px;
+}
+
+.rs-rk-ttv-satuan {
+    color: var(--rs-text-muted);
+    font-size: 12px;
+}
+
+.rs-rk-ttv-item.is-tinggi {
+    background: var(--rs-danger-soft);
+}
+
+.rs-rk-ttv-item.is-tinggi .rs-rk-ttv-nilai {
+    color: var(--rs-danger-text);
+}
+
+.rs-rk-ttv-item.is-rendah {
+    background: var(--rs-warning-soft);
+}
+
+.rs-rk-ttv-item.is-rendah .rs-rk-ttv-nilai {
+    color: var(--rs-warning-text);
+}
+
+/* Aktivitas terakhir */
+.rs-rk-aktivitas {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.rs-rk-aktivitas a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 4px;
+    border-top: 1px solid var(--rs-hover);
+    color: var(--rs-text);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.rs-rk-aktivitas li:first-child a {
+    border-top: 0;
+}
+
+.rs-rk-aktivitas a:hover {
+    background: var(--rs-hover);
+}
+
+.rs-rk-aktivitas .bi {
+    color: var(--rs-primary-dark);
+}
+
+.rs-rk-aktivitas-jam {
+    flex: none;
+    width: 44px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Status khusus (rahasia) */
+.rs-rk-rahasia {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px dashed var(--rs-border-input);
+    border-radius: var(--rs-radius);
+    background: #FCFCFD;
+}
+
+.rs-rk-rahasia>.bi {
+    color: var(--rs-text-3);
+    font-size: 20px;
+}
+
+/* =========================================================
+   Pemeriksaan rawat jalan / SOAP (rs-px-*)
+   ========================================================= */
+.rs-px {
+    display: grid;
+    gap: 16px;
+    align-items: start;
+}
+
+@media (min-width: 1200px) {
+    .rs-px {
+        grid-template-columns: minmax(0, 1fr) 340px;
+    }
+
+    .rs-px-panel {
+        position: sticky;
+        top: 16px;
+    }
+}
+
+.rs-px section[id] {
+    scroll-margin-top: 16px;
+}
+
+.rs-px-judul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.rs-px-judul small {
+    color: var(--rs-text-3);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.rs-px-huruf {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--rs-primary);
+    color: #FFFFFF;
+    font-weight: 800;
+}
+
+/* Lompat ke S/O/A/P */
+.rs-px-nav {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: var(--rs-radius);
+    background: var(--rs-hover);
+}
+
+.rs-px-nav a {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 32px;
+    border-radius: 7px;
+    color: var(--rs-text-2);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.rs-px-nav a:hover {
+    background: var(--rs-surface);
+    color: var(--rs-primary-dark);
+}
+
+/* TTV ringkas */
+.rs-px-ttv {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.rs-px-ttv span {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--rs-hover);
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Kotak cari ICD */
+.rs-px-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 8px;
+    padding: 0;
+    list-style: none;
+}
+
+.rs-px-chips:empty {
+    display: none;
+}
+
+.rs-px-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 4px 4px 10px;
+    border: 1px solid #D4E2F4;
+    border-radius: 999px;
+    background: var(--rs-primary-soft);
+    font-size: 13px;
+}
+
+.rs-px-chip strong {
+    color: var(--rs-primary-dark);
+    font-variant-numeric: tabular-nums;
+}
+
+.rs-px-utama {
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--rs-primary);
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.rs-px-chip-hapus {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--rs-text-3);
+    font-size: 11px;
+}
+
+.rs-px-chip-hapus:hover {
+    background: var(--rs-surface);
+    color: var(--rs-danger-text);
+}
+
+.rs-px-saran {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 280px;
+    margin: 0;
+    padding: 4px;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: var(--rs-surface);
+    box-shadow: 0 12px 24px rgba(16, 24, 40, .12);
+}
+
+.rs-px-saran-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.rs-px-saran-item strong {
+    flex: none;
+    min-width: 52px;
+    color: var(--rs-primary-dark);
+}
+
+.rs-px-saran-item:hover,
+.rs-px-saran-item[aria-selected="true"] {
+    background: var(--rs-primary-soft);
+}
+
+.rs-px-saran-kosong {
+    padding: 10px;
+    color: var(--rs-text-3);
+    font-size: 13px;
+}
+
+/* Pintasan lanjutan di bagian P */
+.rs-px-lanjut {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--rs-hover);
+}
+
+/* Kunjungan sebelumnya */
+.rs-px-kunjungan {
+    padding: 12px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+}
+
+.rs-px-kunjungan+.rs-px-kunjungan {
+    margin-top: 8px;
+}
+
+.rs-px-soap {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
+    gap: 4px 8px;
+    margin: 8px 0 0;
+    font-size: 13px;
+}
+
+.rs-px-soap dt {
+    color: var(--rs-primary-dark);
+    font-weight: 800;
+}
+
+.rs-px-soap dd {
+    margin: 0;
+    color: var(--rs-text-2);
+}
+
+/* =========================================================
+   Sesi hemodialisa (rs-hd-*)
+   ========================================================= */
+.rs-hd-ringkas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin: 0;
+}
+
+.rs-hd-ringkas>div {
+    padding: 10px 12px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: var(--rs-surface);
+}
+
+.rs-hd-ringkas dt {
+    color: var(--rs-text-3);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rs-hd-ringkas dd {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Tab tahap */
+.rs-hd-tabs {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.rs-hd-no {
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--rs-border);
+    color: var(--rs-text-2);
+    font-size: 11px;
+}
+
+.rs-doc-tab.active .rs-hd-no {
+    background: var(--rs-primary);
+    color: #FFFFFF;
+}
+
+.rs-hd-st {
+    font-size: 12px;
+}
+
+.rs-hd-st.is-selesai {
+    color: var(--rs-success);
+}
+
+.rs-hd-st.is-draf {
+    color: var(--rs-warning);
+}
+
+.rs-hd-st.is-belum {
+    color: var(--rs-border-input);
+}
+
+/* Grid isian */
+.rs-hd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px 16px;
+}
+
+.rs-hd-catatan {
+    grid-column: span 2;
+}
+
+/* Risiko jatuh */
+.rs-hd-morse {
+    margin: 0;
+    padding: 12px 0;
+    border-top: 1px solid var(--rs-hover);
+}
+
+.rs-hd-morse:first-of-type {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.rs-hd-morse legend {
+    float: none;
+    width: auto;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.rs-hd-skor {
+    margin-left: 4px;
+    padding: 0 6px;
+    border-radius: 6px;
+    background: var(--rs-hover);
+    font-size: 11px;
+}
+
+[data-rs-morse-hasil][data-kategori="aman"] {
+    background: var(--rs-success-soft);
+    color: var(--rs-success-text);
+}
+
+[data-rs-morse-hasil][data-kategori="rendah"] {
+    background: var(--rs-warning-soft);
+    color: var(--rs-warning-text);
+}
+
+[data-rs-morse-hasil][data-kategori="tinggi"] {
+    background: var(--rs-danger-soft);
+    color: var(--rs-danger-text);
+}
+
+/* URR di bawah target */
+.rs-output.is-kurang {
+    background: var(--rs-warning-soft);
+    color: var(--rs-warning-text);
+}
+
+@media (max-width: 767.98px) {
+    .rs-hd-catatan {
+        grid-column: auto;
+    }
+}
+
+/* =========================================================
+   Header pasien: badge alergi yang bisa diklik + modal
+   ========================================================= */
+.rs-badge-tombol {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 340px;
+    border: 0;
+    cursor: pointer;
+}
+
+.rs-badge-tombol .rs-badge-teks {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rs-badge-tombol .bi-pencil {
+    font-size: 11px;
+    opacity: .7;
+}
+
+.rs-badge-tombol:hover {
+    filter: brightness(.95);
+}
+
+.rs-badge-tombol:hover .rs-badge-teks {
+    text-decoration: underline;
+}
+
+.rs-badge-tombol:focus-visible {
+    outline: 3px solid var(--rs-primary-soft);
+    outline-offset: 2px;
+}
+
+.rs-modal {
+    border: 0;
+    border-radius: var(--rs-radius-card);
+}
+
+.rs-modal .modal-header,
+.rs-modal .modal-footer {
+    border-color: var(--rs-border);
 }

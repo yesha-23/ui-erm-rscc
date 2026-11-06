@@ -17,6 +17,8 @@ use App\Http\Controllers\ResepController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\TtvController;
 use App\Http\Middleware\CatatPasienTerakhir;
+use App\Http\Controllers\PemeriksaanController;
+use App\Http\Controllers\HemodialisaController;
 use App\Http\Controllers\KeselamatanOperasiController;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -38,7 +40,9 @@ Route::prefix('kunjungan')->name('kunjungan.')
 
 Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->middleware(CatatPasienTerakhir::class)->group(function () {
     Route::get('/', [RekamMedisController::class, 'show'])->name('show');
-
+    Route::post('final', [RekamMedisController::class, 'simpanFinal'])->name('final');
+    Route::delete('final', [RekamMedisController::class, 'batalFinal'])->name('final.batal');
+    Route::post('alergi', [RekamMedisController::class, 'simpanAlergi'])->name('alergi');
     Route::get('/dokumen/{jenis?}/{slug?}', [DokumenController::class, 'index'])
         ->whereIn('jenis', ['surat', 'persetujuan'])
         ->name('dokumen');
@@ -60,10 +64,23 @@ Route::prefix('rekam-medis/{noReg}')->name('rekam-medis.')->middleware(CatatPasi
     Route::post('berkas', [BerkasController::class, 'simpan'])->name('berkas.simpan');
     Route::get('asesmen', [AsesmenController::class, 'index'])->name('asesmen');
     Route::post('asesmen', [AsesmenController::class, 'simpan'])->name('asesmen.simpan');
+    Route::get('berkas', [BerkasController::class, 'index'])->name('berkas');
+    Route::post('berkas', [BerkasController::class, 'simpan'])->name('berkas.simpan');
+    Route::get('asesmen', [AsesmenController::class, 'index'])->name('asesmen');
+    Route::post('asesmen', [AsesmenController::class, 'simpan'])->name('asesmen.simpan');
+    Route::get('pemeriksaan', [PemeriksaanController::class, 'index'])->name('pemeriksaan');
+    Route::post('pemeriksaan', [PemeriksaanController::class, 'simpan'])->name('pemeriksaan.simpan');
+    Route::get('hd/{tahap?}', [HemodialisaController::class, 'index'])
+        ->whereIn('tahap', ['pra', 'resep', 'intra', 'pasca'])->name('hd');
+    Route::post('hd/{tahap}', [HemodialisaController::class, 'simpan'])
+        ->whereIn('tahap', ['pra', 'resep', 'intra', 'pasca'])->name('hd.simpan');
+    Route::delete('hd/intra/{indeks}', [HemodialisaController::class, 'hapusObservasi'])
+        ->whereNumber('indeks')->name('hd.intra.hapus');
     Route::get('ok-checklist/{tahap?}', [KeselamatanOperasiController::class, 'index'])
         ->whereIn('tahap', ['sign-in', 'time-out', 'sign-out'])->name('ok-checklist');
     Route::post('ok-checklist/{tahap}', [KeselamatanOperasiController::class, 'simpan'])
         ->whereIn('tahap', ['sign-in', 'time-out', 'sign-out'])->name('ok-checklist.simpan');
+    Route::get('ttv', [TtvController::class, 'index'])->name('ttv');
     Route::get('ttv', [TtvController::class, 'index'])->name('ttv');
     Route::post('ttv', [TtvController::class, 'simpan'])->name('ttv.simpan');
     Route::get('cppt', [CpptController::class, 'index'])->name('cppt');
