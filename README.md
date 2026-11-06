@@ -60,6 +60,8 @@ Untuk produksi, ganti `npm run dev` dengan `npm run build`.
 
 **Login:** isian apa saja diterima (data contoh). Contoh pasien: buka **IGD**, lalu klik **Buka** pada **Andi Pratama** (No. Reg `2611020001`). No. Reg contoh: `2611020001` sampai `2611020012`.
 
+Menu rekam medis menyesuaikan **unit kunjungan** tempat pasien dibuka. Contoh: Sesi HD hanya muncul bila pasien dibuka dari daftar **Hemodialisa**, dan Checklist keselamatan operasi hanya muncul dari daftar **Kamar Operasi**.
+
 ---
 
 ## Halaman yang tersedia
@@ -79,17 +81,22 @@ Untuk produksi, ganti `npm run dev` dengan `npm run build`.
 
 | Kelompok menu | Halaman | URL | Keterangan |
 |---|---|---|---|
-| Asesmen & pemeriksaan | Ringkasan pasien | `/` | Halaman pertama ruang kerja pasien |
-| | Asesmen awal GD | `/asesmen` | 4 langkah, simpan draf / final |
+| Asesmen & pemeriksaan | Ringkasan pasien | `/` | Daftar "Perlu dikerjakan" per unit, TTV terakhir, tombol **Submit final** |
+| | Asesmen awal GD | `/asesmen` | Unit IGD · 4 langkah, simpan draf / final |
+| | Pemeriksaan dokter (SOAP) | `/pemeriksaan` | Unit Rawat Jalan · diagnosa ICD-10, tindakan ICD-9 |
 | | Tanda vital | `/ttv` | Ringkasan, grafik tren, observasi baru |
+| Sesi hemodialisa | Pra-HD, Resep HD, Intra-HD, Pasca-HD | `/hd/{pra\|resep\|intra\|pasca}` | Unit Hemodialisa · 4 tahap, tiap tahap disimpan sendiri |
+| Saat operasi | Checklist keselamatan operasi | `/ok-checklist/{sign-in\|time-out\|sign-out}` | Unit Kamar Operasi · 3 tahap disimpan berurutan, skor kepatuhan |
 | Catatan terintegrasi | CPPT / SBAR | `/cppt` | Format SOAP / SBAR, verifikasi DPJP |
 | Penunjang | Permintaan lab / radiologi | `/permintaan/{lab\|radiologi}` | Katalog, prioritas Cito / Rutin |
 | | Berkas digital | `/berkas` | Popup unggah tarik-lepas |
 | Farmasi | E-Resep | `/resep` | Cari obat, salin resep, riwayat pemberian obat |
 | Riwayat | Riwayat pemeriksaan | `/riwayat` | Linimasa, hasil lab |
 | Dokumen | Surat & persetujuan | `/dokumen/{surat\|persetujuan}/{slug?}` | 22 surat + 27 persetujuan |
-| | Cetak | `/cetak` | Lembar A4 dengan kop RS, cap DRAF |
+| | Cetak | `/cetak`, `/cetak/resume-medis` | Lembar A4 dengan kop RS, cap DRAF; resume medis dari tombol di Ringkasan |
 | Mutu & lainnya | Checklist | `/checklist/{ppi\|cp\|psikologi}/{slug?}` | 17 form, skor kepatuhan otomatis |
+
+**Header pasien:** riwayat alergi bisa diubah langsung dari badge alergi (popup). **Submit final** hanya bisa dilakukan bila semua form wajib di "Perlu dikerjakan" sudah selesai.
 
 **Cari menu:** tekan **Ctrl+K** (⌘K di Mac) dari halaman mana pun.
 
@@ -101,15 +108,18 @@ Daftar lengkap route: `php artisan route:list`.
 
 ```
 app/Http/Controllers/   Auth, Beranda, Kunjungan, Akun, RekamMedis, Dokumen, Cetak,
-                        Permintaan, Berkas, Asesmen, Ttv, Cppt, Resep, Riwayat, Checklist
-app/Support/            DataContoh        → semua data contoh (diganti query oleh IT)
-                        Navigasi          → isi sidebar utama
-                        KonfigurasiUnit   → kolom, tab, filter per unit
-                        MenuRekamMedis    → isi menu rekam medis (dipakai menu samping & Ctrl+K)
-                        KatalogDokumen    → daftar surat & persetujuan
-                        KatalogPenunjang  → daftar pemeriksaan lab & radiologi
-                        KatalogChecklist  → isi 17 form checklist PPI / CP / Psikologi
-                        RentangTtv        → rentang normal tanda vital (satu sumber)
+                        Permintaan, Berkas, Asesmen, Pemeriksaan, Ttv, Hemodialisa,
+                        KeselamatanOperasi, Cppt, Resep, Riwayat, Checklist
+app/Support/            DataContoh            → semua data contoh (diganti query oleh IT)
+                        Navigasi              → isi sidebar utama
+                        KonfigurasiUnit       → kolom, tab, filter per unit
+                        KonfigurasiRekamMedis → form khusus per unit + daftar "Perlu dikerjakan"
+                        MenuRekamMedis        → isi menu rekam medis (dipakai menu samping & Ctrl+K)
+                        KatalogDokumen        → daftar surat & persetujuan
+                        KatalogPenunjang      → daftar pemeriksaan lab & radiologi
+                        KatalogIcd            → daftar ICD-10 & ICD-9 (contoh)
+                        KatalogChecklist      → isi 17 form checklist PPI / CP / Psikologi
+                        RentangTtv            → rentang normal tanda vital (satu sumber)
 config/rscc.php         identitas RS untuk kop surat
 public/images/          logo-rscc.png, logo-kop-rscc.png, gedung-rscc.webp/.jpg
 resources/css/          app.css, rscc-theme.css, cetak.css
@@ -118,11 +128,12 @@ resources/views/
   layouts/              app, guest, rekam-medis, cetak
   components/           sidebar, topbar, search, badge, stat-card, flash, tabel-kunjungan,
                         filter-kunjungan, tab-status, status-cek, pasien-header, menu-rm,
-                        cari-menu, kop-surat
+                        cari-menu, kop-surat, modal-alergi, modal-final
   components/form/      pilihan, ttv, gcs, skala-nyeri, fisik   ← komponen form klinis
   auth/ beranda kunjungan/ akun/ cetak/
   rekam-medis/          show, dokumen (+ dokumen/*), cetak, permintaan, berkas, asesmen,
-                        ttv, cppt, resep (+ resep/_baris), riwayat, checklist
+                        pemeriksaan, ttv, hd (+ hd/*), keselamatan-operasi, cppt,
+                        resep (+ resep/_baris), riwayat, checklist
 routes/web.php
 ```
 
@@ -141,8 +152,10 @@ routes/web.php
 | Pilihan berbentuk chip | `<x-form.pilihan name="…" label="…" :opsi="[…]" :nilai="…" />` (tambah `tipe="checkbox"` untuk pilihan banyak) |
 | Tanda vital | `<x-form.ttv :isi="$isi" />` (rentang normal dari `RentangTtv`) |
 | GCS / skala nyeri / pemeriksaan fisik | `<x-form.gcs>`, `<x-form.skala-nyeri>`, `<x-form.fisik>` |
+| Form bertahap (diisi di jam berbeda) | Tab `.rs-doc-tabs.rs-hd-tabs` + ringkasan `.rs-hd-ringkas`. Contoh: Sesi HD, Checklist keselamatan operasi |
+| Baris checklist Ya / Tidak / N/A | `ol.rs-cek` + `li.rs-cek-baris`, skor otomatis dengan `data-rs-checklist` pada `<form>` |
 | Tabel yang jadi kartu di HP | `table.rs-table-kartu`, setiap `<td data-label="…">`, kolom utama `rs-td-utama`, kolom tombol `rs-td-aksi` |
-| Menu rekam medis baru | Tambah item di `app/Support/MenuRekamMedis.php`. `'href' => '#'` menampilkan label "Segera" |
+| Menu rekam medis baru | Menu umum: `app/Support/MenuRekamMedis.php`. Form khusus unit: `app/Support/KonfigurasiRekamMedis.php`. `'href' => '#'` menampilkan label "Segera" |
 | Popup (modal) | `@push('modal') … @endpush` |
 | Lembar cetak | `@extends('layouts.cetak')` + `@include('cetak._tanda-tangan', […])` |
 | Notifikasi berhasil | `->with('sukses', 'Pesan')` |
@@ -160,15 +173,20 @@ Semua data contoh ada di `app/Support/DataContoh.php`. Bentuk array-nya sama den
 |---|---|---|
 | Login | `AuthController` | Autentikasi asli, captcha, logout, middleware `auth` di semua route |
 | Nama pengguna | `topbar`, `layouts/cetak`, beberapa controller | Ganti `[Nama Pengguna]` / `[Nama PPA]` dengan `auth()->user()` |
-| Beranda | `BerandaController` | Angka ringkasan, data grafik, daftar tugas |
+| Beranda | `BerandaController` | Angka ringkasan, data grafik, daftar tugas (saat ini masih statis) |
 | Daftar kunjungan | `KunjunganController`, `KonfigurasiUnit` | Query kunjungan per unit; tombol Ekspor |
 | Akun | `AkunController` | Simpan password & pengaturan ke database, isi Inbox |
+| Ringkasan & Submit final | `RekamMedisController`, `KonfigurasiRekamMedis` | Status tiap form dari tabelnya masing-masing; saat final: set kunjungan close + BRM terisi, kunci form, catat log siapa & kapan |
+| Riwayat alergi | `RekamMedisController::simpanAlergi()` | Simpan per No. RM ke database (berlaku untuk semua kunjungan) |
 | Surat & persetujuan | `DokumenController`, `KatalogDokumen` | Simpan draf / final, isi per dokumen, tanda tangan elektronik |
 | Cetak | `CetakController`, `DataContoh::isiDokumen()`, `resumeMedis()` | Isi dari data tersimpan, penomoran surat, QR/TTE |
 | Permintaan lab / radiologi | `PermintaanController`, `KatalogPenunjang` | Master pemeriksaan dari LIS/RIS, simpan & kirim |
 | Berkas digital | `BerkasController` | Simpan fisik berkas, route Lihat & Unduh, hak akses |
 | Asesmen awal GD | `AsesmenController`, `DataContoh::opsiAsesmenGd()` | Tabel asesmen (draf / final), perawat dari akun login |
+| Pemeriksaan dokter | `PemeriksaanController`, `KatalogIcd` | Tabel pemeriksaan rawat jalan + tabel diagnosa (ICD-10) & tindakan (ICD-9) |
 | Tanda vital | `TtvController`, `RentangTtv` | Tabel observasi TTV; rentang normal sesuai SPO RS |
+| Sesi hemodialisa | `HemodialisaController` | Tabel sesi HD (pra, resep, pasca) + tabel observasi intra-HD |
+| Checklist keselamatan operasi | `KeselamatanOperasiController` | Tabel checklist per tahap; petugas dari akun login; butir sesuai SPO kamar operasi |
 | CPPT / SBAR | `CpptController` | Tabel CPPT; **hanya DPJP** pasien yang boleh memverifikasi |
 | E-Resep | `ResepController`, `DataContoh::katalogObat()` | Master obat & stok farmasi, simpan resep, kirim ke depo farmasi |
 | Riwayat pemeriksaan | `RiwayatController` | Gabungan data kunjungan, lab, radiologi, EKG, CPPT, surat kontrol |
@@ -176,13 +194,34 @@ Semua data contoh ada di `app/Support/DataContoh.php`. Bentuk array-nya sama den
 | Identitas RS | `config/rscc.php` | Bisa ditimpa lewat `.env` (`RS_ALAMAT`, `RS_TELEPON`, `RS_EMAIL`, …) |
 | Server | `php.ini` | `upload_max_filesize = 10M`, `post_max_size = 110M` |
 
-### Melanjutkan form rekam medis lain (±27 form)
+### Melanjutkan form rekam medis lain
 
-Sistem lama punya sekitar 28 form rekam medis. Yang sudah dibuat sebagai contoh lengkap adalah **Asesmen Awal Gawat Darurat** dan **Tanda vital**. Untuk form lain:
+Sistem lama punya sekitar 28 form rekam medis. Yang sudah dibuat sebagai contoh lengkap:
 
-1. Buat controller + view di `rekam-medis/`. Contoh untuk ditiru: `AsesmenController` + `rekam-medis/asesmen.blade.php`.
+| Pola | Contoh untuk ditiru |
+|---|---|
+| Form panjang bertahap, simpan draf / final | **Asesmen awal GD** (`AsesmenController` + `rekam-medis/asesmen.blade.php`) |
+| Form dokter dengan ICD | **Pemeriksaan dokter** (`PemeriksaanController` + `rekam-medis/pemeriksaan.blade.php`) |
+| Observasi berulang + grafik | **Tanda vital** (`TtvController` + `rekam-medis/ttv.blade.php`) |
+| Beberapa tahap di jam berbeda | **Sesi hemodialisa** (`HemodialisaController` + `rekam-medis/hd.blade.php`) |
+| Checklist bertahap dengan skor | **Checklist keselamatan operasi** (`KeselamatanOperasiController` + `rekam-medis/keselamatan-operasi.blade.php`) |
+
+Untuk form lain:
+
+1. Buat controller + view di `rekam-medis/`, meniru contoh yang polanya paling mirip.
 2. Susun isian dari komponen `components/form/*` (pilihan, ttv, gcs, skala-nyeri, fisik), lalu tambahkan komponen baru bila perlu.
-3. Daftarkan route di grup `rekam-medis/{noReg}`, lalu tambahkan item menu di `app/Support/MenuRekamMedis.php`. Form baru otomatis muncul di menu samping dan di Ctrl+K.
+3. Daftarkan route di grup `rekam-medis/{noReg}`, lalu tambahkan item menu:
+   - form umum (semua unit) di `app/Support/MenuRekamMedis.php`;
+   - form khusus unit di `app/Support/KonfigurasiRekamMedis.php`.
+
+   Form baru otomatis muncul di menu samping dan di Ctrl+K.
+
+Form unit yang masih berlabel **Segera** di menu: Rehab Medik (5 form), Rawat Inap (7 form), Kamar Operasi (10 form), dan Asesmen awal medis IGD. Daftarnya ada di `KonfigurasiRekamMedis.php` (method `formUtama()` dan `grupKhusus()`). Untuk menyambungkan satu form:
+
+1. Buat route + controller + view seperti langkah di atas.
+2. Di `KonfigurasiRekamMedis.php`, ganti `$s('key-form', 'Nama form')` menjadi
+   `['key' => 'key-form', 'label' => 'Nama form', 'href' => $r('nama-route')]`. Label "Segera" otomatis hilang.
+3. Bila form wajib diisi sebelum **Submit final**, ganti baris contohnya di method `tugas()` dengan status dari isian asli. Contoh: Checklist keselamatan operasi memakai `KeselamatanOperasiController::ringkas()`, Sesi HD membaca session `hd.{noReg}`.
 
 Form yang tidak didesain ulang tetap bisa dipindahkan apa adanya ke dalam `layouts/rekam-medis`. Input, tabel, dan judulnya otomatis mengikuti tema lewat `rscc-theme.css`.
 
