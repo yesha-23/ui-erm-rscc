@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Support;
+use App\Http\Controllers\KeselamatanOperasiController;
 
 /**
  * Pengaturan ruang kerja rekam medis per unit:
@@ -103,7 +104,7 @@ class KonfigurasiRekamMedis
                     $s('ok-penanda', 'Penanda area operasi'),
                 ]],
                 ['judul' => 'Saat operasi', 'ikon' => 'bi-scissors', 'items' => [
-                    $s('ok-checklist', 'Checklist keselamatan operasi'),
+                    ['key' => 'ok-checklist', 'label' => 'Checklist keselamatan operasi', 'href' => $r('ok-checklist')],
                     $s('ok-anestesi', 'Catatan anestesi'),
                     $s('ok-operasi', 'Catatan operasi'),
                     $s('ok-phaco', 'Catatan operasi Phaco'),
@@ -143,6 +144,9 @@ class KonfigurasiRekamMedis
         $hdSt   = fn (string $k) => isset($hd[$k]) ? 'selesai' : 'belum';
         $hdKet  = fn (string $k) => isset($hd[$k]) ? 'Tersimpan · ' . $hd[$k]['waktu'] : 'Belum diisi';
         $jmlObs = count($hd['intra'] ?? []);
+        
+        // Checklist keselamatan operasi (3 tahap)
+        [$stCekOk, $ketCekOk] = KeselamatanOperasiController::ringkas($noReg);
 
         return match ($unit) {
             'rajal' => [
@@ -174,7 +178,7 @@ class KonfigurasiRekamMedis
                 $t('Asesmen pra bedah', 'selesai', '08:30'),
                 $t('Asesmen pra anestesi', 'selesai', '09:10'),
                 $t('Penanda area operasi', 'selesai', '09:15'),
-                $t('Checklist keselamatan operasi', 'draf', 'Sign in selesai · Time out & Sign out belum'),
+                $t('Checklist keselamatan operasi', $stCekOk, $ketCekOk, $r('ok-checklist')),
                 $t('Catatan operasi', 'belum', 'Diisi operator'),
                 $t('Monitoring ruang pulih', 'belum', 'Setelah operasi'),
             ],

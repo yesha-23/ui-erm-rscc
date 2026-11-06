@@ -6,6 +6,7 @@ use App\Support\DataContoh;
 use App\Support\KatalogChecklist;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Arr;
 
 class ChecklistController extends Controller
 {
@@ -58,11 +59,13 @@ class ChecklistController extends Controller
             'shift.required'   => 'Pilih shift.',
         ]);
 
-        $skor = KatalogChecklist::skor($kategori, $request->input('jawab'));
+        // Hanya butir yang ada di form ini yang disimpan & dihitung
+        $jawab = Arr::only($request->input('jawab'), $kode);
+        $skor  = KatalogChecklist::skor($kategori, $jawab);
 
         // TODO (IT RSCC): simpan ke tabel checklist (no_reg, kategori, form, jawaban, petugas, waktu).
         session()->put("checklist.$noReg.$kategori.$slug", [
-            'isi'   => $request->only(['jawab', 'tanggal', 'shift', 'catatan']),
+            'isi'   => ['jawab' => $jawab, ...$request->only(['tanggal', 'shift', 'catatan'])],
             'waktu' => now()->format('H:i'),
         ]);
 
