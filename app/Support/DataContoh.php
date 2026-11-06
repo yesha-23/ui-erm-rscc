@@ -350,7 +350,9 @@ class DataContoh
                     'Tindakan'              => 'Eksisi tumor (contoh)',
                     'Operator'              => 'dr. Bima Saputra, Sp.B',
                     'Anestesi'              => 'dr. Galih Wicaksono, Sp.An · anestesi umum',
-                    'Checklist keselamatan' => 'Sign in ✓ · Time out – · Sign out –',
+                    'Checklist keselamatan' => collect(\App\Http\Controllers\KeselamatanOperasiController::TAHAP)
+                        ->map(fn ($t, $k) => $t['label'] . (session()->has("ok_checklist.{$p['no_reg']}.$k") ? ' ✓' : ' –'))
+                        ->implode(' · '),
                     'Asal pasien'           => "{$p['ruang']} · {$p['bed']}",
                 ],
             ],
