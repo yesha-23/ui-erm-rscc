@@ -1,8 +1,16 @@
 @props(['pasien', 'crumb' => null])
 
+{{--
+  Header ruang kerja pasien (revisi 10 Nov, masukan RS):
+  - Kiri  : tombol buka/tutup "Menu rekam medis", selebar kolom menu.
+  - Tengah: nama pasien besar + No. RM dan No. Reg yang menonjol, sejajar dengan isi halaman.
+            Chip alergi kecil di baris nomor (bisa diklik untuk mengubah).
+  - Kanan : Riwayat, Cetak, Submit final.
+  Saat isi halaman digulir, header menjadi ringkas (class is-ringkas, diatur initHeaderPasien di rscc.js).
+  Data lain (JK, umur, datang, DPJP, penjamin) ada di kartu Identitas pasien pada Ringkasan.
+--}}
+
 @php
-    $inisial = collect(explode(' ', $pasien['nama']))->map(fn ($w) => mb_substr($w, 0, 1))->take(2)->implode('');
-    $jkn   = $pasien['penjamin'] === 'JKN';
     $sub   = $pasien['unit_sub'] ?? null;
     $final = session("final.{$pasien['no_reg']}");
 
@@ -14,50 +22,57 @@
     };
 @endphp
 
-<header class="rs-pasien-header">
-    <nav aria-label="Breadcrumb" class="rs-crumb">
-        <a href="{{ route('beranda') }}">Beranda</a>
-        <span aria-hidden="true">/</span>
-        <a href="{{ route($pasien['unit_route'], $sub ? [$sub] : []) }}">{{ $pasien['unit'] }}</a>
-        <span aria-hidden="true">/</span>
-        <a href="{{ route('rekam-medis.show', $pasien['no_reg']) }}">Rekam Medis</a>
-        @if ($crumb)
-            <span aria-hidden="true">/</span>
-            <span aria-current="page">{{ $crumb }}</span>
-        @endif
-    </nav>
+<header class="rs-pasien-header" data-rs-pasien-header>
+    <div class="rs-ph">
+        {{-- Tombol menu rekam medis (status awal aria-expanded diperbaiki oleh initMenuRmBukaTutup) --}}
+        <div class="rs-ph-menu">
+            <button type="button" class="rs-ph-menu-tombol" data-rs-rmmenu-toggle
+                    aria-controls="menuRekamMedis" aria-expanded="true">
+                <i class="bi bi-list-ul" aria-hidden="true"></i>
+                <span class="flex-grow-1 text-start">Menu rekam medis</span>
+                <i class="bi bi-chevron-down rs-ph-menu-panah" aria-hidden="true"></i>
+            </button>
+        </div>
 
-    <div class="d-flex flex-wrap align-items-center gap-3">
-        <span class="rs-avatar rs-avatar-pasien rs-avatar-lg" aria-hidden="true">{{ $inisial }}</span>
+        <div class="rs-ph-identitas">
+            <nav aria-label="Breadcrumb" class="rs-crumb">
+                <a href="{{ route('beranda') }}">Beranda</a>
+                <span aria-hidden="true">/</span>
+                <a href="{{ route($pasien['unit_route'], $sub ? [$sub] : []) }}">{{ $pasien['unit'] }}</a>
+                <span aria-hidden="true">/</span>
+                <a href="{{ route('rekam-medis.show', $pasien['no_reg']) }}">Rekam Medis</a>
+                @if ($crumb)
+                    <span aria-hidden="true">/</span>
+                    <span aria-current="page">{{ $crumb }}</span>
+                @endif
+            </nav>
 
-        <div class="flex-grow-1" style="min-width: 0">
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <h1 class="h5 fw-bold mb-0">{{ $pasien['nama'] }}</h1>
-                <x-badge :jenis="$jkn ? 'jkn' : 'nonjkn'">{{ $jkn ? 'BPJS Kesehatan' : 'Umum' }}</x-badge>
-                <button type="button" class="rs-badge rs-badge-tombol {{ $alergi[0] }}"
+            <h1 class="rs-ph-nama">{{ $pasien['nama'] }}</h1>
+
+            <div class="rs-ph-id">
+                <span class="rs-ph-nomor">
+                    <span class="rs-ph-nomor-label">No. RM</span>
+                    <span class="rs-ph-nomor-isi">{{ $pasien['no_rm'] }}</span>
+                </span>
+                <span class="rs-ph-nomor">
+                    <span class="rs-ph-nomor-label">No. Reg</span>
+                    <span class="rs-ph-nomor-isi">{{ $pasien['no_reg'] }}</span>
+                </span>
+                <button type="button" class="rs-badge rs-badge-tombol rs-ph-alergi {{ $alergi[0] }}"
                         data-bs-toggle="modal" data-bs-target="#modalAlergi"
                         title="{{ $alergi[2] }} — klik untuk mengubah">
                     <i class="bi {{ $alergi[1] }}" aria-hidden="true"></i>
                     <span class="rs-badge-teks">{{ $alergi[2] }}</span>
-                    <i class="bi bi-pencil" aria-hidden="true"></i>
                     <span class="visually-hidden">(ubah riwayat alergi)</span>
                 </button>
             </div>
-            <p class="small rs-text-muted mb-0 mt-1">
-                RM {{ $pasien['no_rm'] }} · {{ $pasien['jk'] }}, {{ $pasien['umur'] }} · Reg {{ $pasien['no_reg'] }}
-                · Datang {{ $pasien['datang'] }} · DPJP {{ $pasien['dpjp_nama'] }}
-            </p>
         </div>
 
-        <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-outline-secondary d-lg-none" data-bs-toggle="collapse"
-                    data-bs-target="#menuRekamMedis" aria-expanded="false" aria-controls="menuRekamMedis">
-                <i class="bi bi-list-ul me-1" aria-hidden="true"></i>Menu
-            </button>
-            <a href="{{ route('rekam-medis.riwayat', $pasien['no_reg']) }}" class="btn btn-outline-secondary">
+        <div class="rs-ph-aksi">
+            <a href="{{ route('rekam-medis.riwayat', $pasien['no_reg']) }}" class="btn btn-outline-secondary rs-ph-aksi-sekunder">
                 <i class="bi bi-clock-history me-1" aria-hidden="true"></i>Riwayat
             </a>
-            <a href="{{ route('rekam-medis.cetak', $pasien['no_reg']) }}" class="btn btn-outline-secondary">
+            <a href="{{ route('rekam-medis.cetak', $pasien['no_reg']) }}" class="btn btn-outline-secondary rs-ph-aksi-sekunder">
                 <i class="bi bi-printer me-1" aria-hidden="true"></i>Cetak
             </a>
             @if ($final)

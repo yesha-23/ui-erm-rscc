@@ -1334,4 +1334,135 @@ export function initFormAlergi() {
     });
 }
 
+/* =========================================================
+   Revisi 10 Nov (masukan RS): header pasien, menu buka/tutup, kartu Identitas pasien
+   ========================================================= */
 
+/* Simpan ke localStorage / sessionStorage tanpa error di mode privat */
+function simpanLokal(kunci, nilai, wadah = localStorage) {
+    try {
+        if (nilai === null) wadah.removeItem(kunci);
+        else wadah.setItem(kunci, nilai);
+    } catch (e) {
+        // browser menolak penyimpanan — abaikan saja
+    }
+}
+
+function bacaLokal(kunci, wadah = localStorage) {
+    try {
+        return wadah.getItem(kunci);
+    } catch (e) {
+        return null;
+    }
+}
+
+/* ---------- Tombol "Menu rekam medis" di header: buka/tutup menu ke bawah + ingat posisi gulir ----------
+   Layar ≥ 992 px: menu terbuka secara bawaan; pilihan tutup diingat (localStorage 'rs-rmmenu'),
+   class rs-rmmenu-tutup sudah dipasang lebih awal oleh skrip kecil di <head> layouts/rekam-medis.
+   Layar < 992 px: menu tertutup secara bawaan dan tidak diingat (class rs-rmmenu-buka-hp). */
+export function initMenuRmBukaTutup() {
+    const tombol = document.querySelector('[data-rs-rmmenu-toggle]');
+    const menu = document.getElementById('menuRekamMedis');
+    if (!tombol || !menu) return;
+
+    const root = document.documentElement;
+    const lebar = window.matchMedia('(min-width: 992px)');
+
+    const terbuka = () => (lebar.matches
+        ? !root.classList.contains('rs-rmmenu-tutup')
+        : root.classList.contains('rs-rmmenu-buka-hp'));
+
+    const perbarui = () => tombol.setAttribute('aria-expanded', String(terbuka()));
+
+    tombol.addEventListener('click', () => {
+        if (lebar.matches) {
+            const tutup = root.classList.toggle('rs-rmmenu-tutup');
+            simpanLokal('rs-rmmenu', tutup ? 'tutup' : 'buka');
+        } else {
+            root.classList.toggle('rs-rmmenu-buka-hp');
+        }
+        perbarui();
+    });
+
+    lebar.addEventListener('change', perbarui);
+    perbarui();
+
+    // Posisi gulir menu diingat saat pindah halaman (sessionStorage 'rs-rmmenu-gulir').
+    // Posisi dipulihkan oleh skrip kecil tepat setelah menu di layouts/rekam-medis, supaya tidak melompat.
+    // Item aktif tetap dipastikan terlihat (mis. halaman dibuka dari Ctrl+K).
+    menu.querySelector('.rs-rmmenu-item.active')?.scrollIntoView({ block: 'nearest' });
+    const simpanGulir = () => simpanLokal('rs-rmmenu-gulir', String(menu.scrollTop), sessionStorage);
+    menu.addEventListener('click', simpanGulir);
+    window.addEventListener('pagehide', simpanGulir);
+}
+
+/* ---------- Header pasien: ringkas saat isi halaman digulir ----------
+   Layar ≥ 992 px yang digulir adalah .rs-rm-main; di HP yang digulir halaman (window).
+   Ambang dibuat berbeda (masuk > 96 px, keluar < 24 px) supaya header tidak berkedip.
+   Tinggi header disimpan di --rs-ph-tinggi untuk judul form yang menempel di HP. */
+export function initHeaderPasien() {
+    const header = document.querySelector('[data-rs-pasien-header]');
+    if (!header) return;
+
+    const area = document.querySelector('.rs-rm-main');
+    const lebar = window.matchMedia('(min-width: 992px)');
+    let ringkas = false;
+
+    const cek = () => {
+        const y = lebar.matches && area ? area.scrollTop : window.scrollY;
+        const baru = ringkas ? y > 24 : y > 96;
+        if (baru !== ringkas) {
+            ringkas = baru;
+            header.classList.toggle('is-ringkas', ringkas);
+        }
+    };
+
+    area?.addEventListener('scroll', cek, { passive: true });
+    window.addEventListener('scroll', cek, { passive: true });
+    lebar.addEventListener('change', cek);
+    cek();
+
+    const catatTinggi = () => {
+        document.documentElement.style.setProperty('--rs-ph-tinggi', `${header.offsetHeight}px`);
+    };
+    if ('ResizeObserver' in window) new ResizeObserver(catatTinggi).observe(header);
+    catatTinggi();
+}
+
+/* ---------- Kartu Identitas pasien (Ringkasan) ----------
+   1. Ringkas / lengkap diingat (localStorage 'rs-identitas').
+   2. Tombol "Tampilkan data" membuka semua data yang disensor sekaligus, dan tetap terbuka
+      sampai pindah pasien (sessionStorage 'rs-sensor-buka' berisi No. Reg). */
+export function initIdentitasPasien() {
+    const kartu = document.querySelector('[data-rs-identitas]');
+    if (!kartu) return;
+
+    const noReg = kartu.dataset.rsIdentitas;
+
+    // 1. Ringkas / lengkap — cek e.target karena collapse di dalamnya (DPJP) juga memicu event yang sama
+    const detail = kartu.querySelector('#identitasDetail');
+    detail?.addEventListener('shown.bs.collapse', (e) => {
+        if (e.target === detail) simpanLokal('rs-identitas', 'lengkap');
+    });
+    detail?.addEventListener('hidden.bs.collapse', (e) => {
+        if (e.target === detail) simpanLokal('rs-identitas', 'ringkas');
+    });
+
+    // 2. Sensor data pribadi
+    const tombol = kartu.querySelector('[data-rs-sensor-toggle]');
+    if (!tombol) return;
+    const label = tombol.querySelector('[data-rs-sensor-label]');
+    const ikon = tombol.querySelector('[data-rs-sensor-ikon]');
+
+    const atur = (buka) => {
+        kartu.classList.toggle('is-terbuka', buka);
+        tombol.setAttribute('aria-pressed', String(buka));
+        label.textContent = buka ? 'Sembunyikan data' : 'Tampilkan data';
+        ikon.classList.toggle('bi-eye', !buka);
+        ikon.classList.toggle('bi-eye-slash', buka);
+        simpanLokal('rs-sensor-buka', buka ? noReg : null, sessionStorage);
+    };
+
+    atur(bacaLokal('rs-sensor-buka', sessionStorage) === noReg);
+    tombol.addEventListener('click', () => atur(!kartu.classList.contains('is-terbuka')));
+}

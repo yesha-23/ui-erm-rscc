@@ -3,7 +3,7 @@
 @php $grup = \App\Support\MenuRekamMedis::grup($noReg); @endphp
 
 <nav class="rs-rmmenu" aria-label="Menu rekam medis" data-rs-rmmenu>
-    <p class="rs-rmmenu-title">Menu rekam medis</p>
+    {{-- Judul "Menu rekam medis" sekarang ada di tombol header (pasien-header) --}}
     <x-search label="Cari form" size="sm" placeholder="Cari form…" autocomplete="off" data-rs-rmmenu-cari />
     <button type="button" class="rs-rmmenu-pintasan" data-bs-toggle="modal" data-bs-target="#cariMenu">
         <i class="bi bi-lightning-charge" aria-hidden="true"></i>Cari dari mana saja:

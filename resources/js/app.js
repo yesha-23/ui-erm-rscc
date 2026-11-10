@@ -4,6 +4,7 @@ import {
     initPasswordStrength, initFilterDaftar, initHitungHari, initFokusSaatBuka, initSesiHd,
     initPilihPemeriksaan, initUnggahBerkas, initRentangTanggal, initFilterOtomatis, initPilihIcd, initFormPemeriksaan,
     initAsesmen, initSisipTeks, initResep, initChecklist, initMenuRmCari, initCariMenu, initFormAlergi, initGrafikTtv,
+    initMenuRmBukaTutup, initHeaderPasien, initIdentitasPasien,
 } from './rscc';
 
 window.bootstrap = bootstrap;
@@ -26,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initFormPemeriksaan();
     initSesiHd();
     initFormAlergi();
+    initMenuRmBukaTutup();
+    initHeaderPasien();
+    initIdentitasPasien();
 
     // Clara
     initAsesmen();

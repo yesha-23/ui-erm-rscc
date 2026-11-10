@@ -6,6 +6,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Rekam Medis') · {{ $pasien['nama'] }} · EMR RSCC</title>
 
+    {{-- Pulihkan pilihan buka/tutup menu rekam medis SEBELUM halaman tampil, supaya menu tidak berkedip
+         (pilihan disimpan oleh initMenuRmBukaTutup di rscc.js; hanya berlaku di layar ≥ 992 px) --}}
+    <script>
+        try {
+            if (localStorage.getItem('rs-rmmenu') === 'tutup') document.documentElement.classList.add('rs-rmmenu-tutup');
+        } catch (e) { /* abaikan */ }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -20,9 +28,18 @@
         <x-pasien-header :pasien="$pasien" :crumb="$crumb ?? null" />
 
         <div class="rs-rm-body">
-            <aside id="menuRekamMedis" class="rs-rm-menu collapse d-lg-block">
+            {{-- Dibuka/ditutup lewat tombol "Menu rekam medis" di header (bukan collapse Bootstrap lagi) --}}
+            <aside id="menuRekamMedis" class="rs-rm-menu">
                 <x-menu-rm :no-reg="$pasien['no_reg']" :aktif="$menuAktif ?? ''" />
             </aside>
+            {{-- Pulihkan posisi gulir menu SEBELUM halaman tampil, supaya menu tidak terlihat melompat
+                 (posisi disimpan oleh initMenuRmBukaTutup di rscc.js) --}}
+            <script>
+                try {
+                    const posisiMenu = sessionStorage.getItem('rs-rmmenu-gulir');
+                    if (posisiMenu !== null) document.getElementById('menuRekamMedis').scrollTop = Number(posisiMenu);
+                } catch (e) { /* abaikan */ }
+            </script>
 
             <main class="rs-rm-main">
                 <x-flash />

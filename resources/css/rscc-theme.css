@@ -4492,3 +4492,440 @@
 .rs-modal .modal-footer {
     border-color: var(--rs-border);
 }
+
+/* =========================================================
+   Revisi 10 Nov (masukan RS): header pasien (rs-ph-*), menu rekam medis buka/tutup,
+   kartu Identitas pasien (rs-idp-*), susunan Ringkasan
+   ========================================================= */
+
+/* ---------- Teks tombol yang berganti sesuai aria-expanded (collapse Bootstrap) ---------- */
+[aria-expanded="true"]>.rs-saat-tutup,
+[aria-expanded="false"]>.rs-saat-buka {
+    display: none;
+}
+
+/* ---------- Header pasien ---------- */
+.rs-pasien-header {
+    position: sticky;
+    /* di HP header ikut menempel di atas saat halaman digulir */
+    top: 0;
+    z-index: 1010;
+    padding: 12px 16px;
+    transition: padding .15s ease, box-shadow .15s ease;
+}
+
+.rs-ph {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px 16px;
+}
+
+.rs-ph-menu {
+    order: 3;
+    /* di HP tombol menu turun ke bawah identitas, selebar layar */
+    flex: 1 1 100%;
+}
+
+.rs-ph-identitas {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+.rs-ph-identitas .rs-crumb {
+    margin-bottom: 6px;
+}
+
+.rs-ph-aksi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rs-ph-menu-tombol {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--rs-border-input);
+    border-radius: var(--rs-radius);
+    background: var(--rs-surface);
+    color: var(--rs-text);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.rs-ph-menu-tombol>.bi-list-ul {
+    color: var(--rs-primary);
+    font-size: 18px;
+}
+
+.rs-ph-menu-tombol:hover {
+    background: var(--rs-hover);
+}
+
+.rs-ph-menu-tombol:focus-visible {
+    outline: 3px solid var(--rs-primary);
+    outline-offset: 2px;
+}
+
+.rs-ph-menu-panah {
+    color: var(--rs-text-3);
+    transition: transform .15s ease;
+}
+
+.rs-ph-menu-tombol[aria-expanded="true"] .rs-ph-menu-panah {
+    transform: rotate(180deg);
+}
+
+.rs-ph-nama {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -.01em;
+    overflow-wrap: anywhere;
+}
+
+.rs-ph-id {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.rs-ph-nomor {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: var(--rs-primary-soft);
+}
+
+.rs-ph-nomor-label {
+    color: var(--rs-primary-dark);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.rs-ph-nomor-isi {
+    color: var(--rs-text);
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: .02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.rs-ph-alergi {
+    padding: 4px 9px;
+    font-size: 12.5px;
+}
+
+/* Layar besar: kolom tombol menu selebar kolom menu (270 px), identitas sejajar isi halaman */
+@media (min-width: 992px) {
+    .rs-pasien-header {
+        position: relative;
+        /* header di luar area gulir, jadi selalu terlihat */
+        padding: 14px 26px 14px 0;
+    }
+
+    .rs-ph {
+        flex-wrap: nowrap;
+        column-gap: 0;
+    }
+
+    .rs-ph-menu {
+        order: 0;
+        flex: 0 0 270px;
+        padding: 0 12px;
+    }
+
+    .rs-ph-menu-tombol {
+        min-height: 48px;
+    }
+
+    .rs-ph-identitas {
+        padding-left: 26px;
+        /* = padding kiri .rs-rm-main */
+    }
+
+    .rs-ph-aksi {
+        flex: none;
+        margin-left: 16px;
+    }
+
+    .rs-ph-nama {
+        font-size: 28px;
+    }
+
+    .rs-ph-nomor-isi {
+        font-size: 19px;
+    }
+}
+
+/* Header ringkas saat digulir: nama, nomor, alergi dan Submit final tetap terlihat */
+.rs-pasien-header.is-ringkas {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(16, 24, 40, .06);
+}
+
+.is-ringkas .rs-ph {
+    align-items: center;
+}
+
+.is-ringkas .rs-crumb,
+.is-ringkas .rs-ph-aksi-sekunder {
+    display: none;
+}
+
+.is-ringkas .rs-ph-identitas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+}
+
+.is-ringkas .rs-ph-nama {
+    font-size: 19px;
+}
+
+.is-ringkas .rs-ph-id {
+    margin-top: 0;
+}
+
+.is-ringkas .rs-ph-nomor {
+    padding: 2px 8px;
+}
+
+.is-ringkas .rs-ph-nomor-isi {
+    font-size: 15px;
+}
+
+.is-ringkas .rs-ph-menu-tombol {
+    min-height: 40px;
+}
+
+/* ---------- Menu rekam medis: buka/tutup ke bawah ---------- */
+@media (max-width: 991.98px) {
+    .rs-rm-menu {
+        display: none;
+    }
+
+    .rs-rmmenu-buka-hp .rs-rm-menu {
+        display: block;
+    }
+
+    /* header ringkas di HP: tombol menu disembunyikan supaya header tidak terlalu tinggi */
+    .is-ringkas .rs-ph-menu {
+        display: none;
+    }
+
+    /* judul form Clara menempel tepat di bawah header pasien yang ikut menempel */
+    .rs-judul-form {
+        top: var(--rs-ph-tinggi, 0px);
+    }
+}
+
+@media (min-width: 992px) {
+    .rs-rmmenu-tutup .rs-rm-menu {
+        display: none;
+    }
+}
+
+/* ---------- Ringkasan: kartu sedikit lebih rapat supaya tidak banyak gulir ---------- */
+.rs-rk .rs-card {
+    padding: 18px;
+}
+
+.rs-rk .rs-rk-ttv {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+}
+
+.rs-rk-dx-kosong {
+    color: var(--rs-danger-text);
+}
+
+/* Form opsional yang belum diisi: netral, bukan tanda seru merah */
+.is-opsional .rs-rk-tugas-ikon {
+    background: var(--rs-hover);
+    color: var(--rs-text-3);
+}
+
+/* ---------- Kartu Identitas pasien (rs-idp-*) ---------- */
+.rs-idp {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.rs-idp-kepala {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.rs-idp-sub {
+    color: var(--rs-text-3);
+    font-size: 12.5px;
+}
+
+.rs-idp-alat {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.rs-idp-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.rs-idp-kotak {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius);
+    background: #FCFCFD;
+}
+
+.rs-idp-kotak p {
+    margin: 0;
+}
+
+.rs-idp-label {
+    color: var(--rs-text-3);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.rs-idp-utama {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.rs-idp-nomor {
+    color: var(--rs-primary-dark);
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: .02em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.rs-idp-nomor-sm {
+    font-size: 15px;
+}
+
+.rs-idp-ikon-tombol {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
+}
+
+/* Kotak alergi: warnanya mengikuti status alergi (sama dengan chip di header) */
+.rs-idp-aman.is-belum {
+    border-color: #F7D9B5;
+    background: var(--rs-warning-soft);
+}
+
+.rs-idp-aman.is-belum .rs-idp-label,
+.rs-idp-aman.is-belum .rs-idp-alergi-status,
+.rs-idp-aman.is-belum .rs-idp-alergi-ket {
+    color: var(--rs-warning-text);
+}
+
+.rs-idp-aman.is-ada {
+    border-color: #F5C2B3;
+    background: var(--rs-danger-soft);
+}
+
+.rs-idp-aman.is-ada .rs-idp-label,
+.rs-idp-aman.is-ada .rs-idp-alergi-status,
+.rs-idp-aman.is-ada .rs-idp-alergi-ket {
+    color: var(--rs-danger-text);
+}
+
+.rs-idp-aman.is-tidak .rs-idp-alergi-status {
+    color: var(--rs-success-text);
+}
+
+/* Status khusus: selalu abu-abu, apa pun isinya */
+.rs-idp-khusus {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 10px;
+    border: 1px dashed var(--rs-border-input);
+    border-radius: 8px;
+    background: var(--rs-surface);
+    color: var(--rs-text-2);
+    font-size: 13px;
+}
+
+.rs-idp-khusus>.bi {
+    color: var(--rs-text-3);
+    font-size: 16px;
+}
+
+/* Detail: 3 kolom di layar lebar */
+.rs-idp-detail {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    column-gap: 28px;
+    margin: 0;
+}
+
+.rs-idp-detail>div {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--rs-border);
+}
+
+.rs-idp-detail dt {
+    color: var(--rs-text-3);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rs-idp-detail dd {
+    margin: 0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* Sensor data pribadi: tutup secara bawaan, dibuka oleh tombol "Tampilkan data" */
+.rs-sensor-tutup {
+    letter-spacing: .04em;
+}
+
+.rs-sensor-asli,
+.rs-idp.is-terbuka .rs-sensor-tutup,
+.rs-idp.is-terbuka .rs-sensor-sr {
+    display: none;
+}
+
+.rs-idp.is-terbuka .rs-sensor-asli {
+    display: inline;
+}
