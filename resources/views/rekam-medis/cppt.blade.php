@@ -11,6 +11,11 @@
         'dokter'   => 'Dokter',
         'perawat'  => 'Perawat',
     ];
+    // Judul bagian di hasil catatan (ditulis lengkap seperti sistem lama)
+    $judulBagian = [
+        'soap' => ['s' => 'Subjective', 'o' => 'Objective', 'a' => 'Assessment', 'p' => 'Planning'],
+        'sbar' => ['s' => 'Situation', 'b' => 'Background', 'a' => 'Assessment', 'r' => 'Recommendation'],
+    ];
 @endphp
 
 {{-- ===== Judul ===== --}}
@@ -155,11 +160,12 @@
                                 </div>
                             </td>
                             <td data-label="Hasil pemeriksaan">
-                                <div class="min-w-0">
+                                <div @class(['min-w-0 rs-cppt-hasil', 'rs-cppt-hasil-dokter' => $c['profesi'] === 'dokter'])>
                                     <span class="rs-format-tag">{{ strtoupper($c['format']) }}</span>
-                                    <dl class="rs-soap-list">
+                                    <dl class="rs-cppt-isi">
                                         @foreach ($c['isi'] as $huruf => $teks)
-                                            <div><dt>{{ strtoupper($huruf) }}</dt><dd>{{ $teks }}</dd></div>
+                                            <dt>{{ $judulBagian[$c['format']][$huruf] ?? strtoupper($huruf) }}:</dt>
+                                            <dd>{{ $teks }}</dd>
                                         @endforeach
                                     </dl>
                                 </div>

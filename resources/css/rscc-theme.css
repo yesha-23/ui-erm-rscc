@@ -11,6 +11,10 @@
     --rs-success: #157A4F;
     --rs-success-text: #0F6B43;
     --rs-success-soft: #E7F5EE;
+
+    /* Hasil CPPT dokter (mengikuti warna sistem lama) */
+    --rs-cppt-dokter-bg: #EBF5E1;
+    --rs-cppt-dokter-teks: #4F6228;
     --rs-danger: #C4320A;
     --rs-danger-text: #B42318;
     --rs-danger-soft: #FEF0EB;
@@ -2622,6 +2626,38 @@
     margin: 0;
     white-space: pre-line;
 }
+
+
+/* Hasil CPPT: judul bagian lengkap; catatan dokter dalam kotak hijau (seperti sistem lama) */
+.rs-cppt-hasil {
+    padding: 2px 0;
+    font-size: 13.5px;
+}
+
+.rs-cppt-hasil-dokter {
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: var(--rs-cppt-dokter-bg);
+    color: var(--rs-cppt-dokter-teks);
+}
+
+.rs-cppt-isi {
+    margin: 0;
+}
+
+.rs-cppt-isi dt {
+    font-weight: 700;
+}
+
+.rs-cppt-isi dd {
+    margin: 0 0 6px;
+    white-space: pre-line;
+}
+
+.rs-cppt-isi dd:last-child {
+    margin-bottom: 0;
+}
+
 
 .rs-table-cppt td:nth-child(2) {
     min-width: 280px;
