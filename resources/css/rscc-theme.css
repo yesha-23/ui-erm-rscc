@@ -4930,3 +4930,13 @@
 .rs-idp.is-terbuka .rs-sensor-asli {
     display: inline;
 }
+
+/* Detail Identitas: DPJP satu baris penuh di bawah, dropdown tidak terlalu lebar */
+.rs-idp-detail>.rs-idp-detail-penuh {
+    grid-column: 1 / -1;
+    border-bottom: 0;
+}
+
+.rs-idp-pilih-dpjp {
+    max-width: 360px;
+}

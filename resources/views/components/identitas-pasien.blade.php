@@ -142,15 +142,20 @@
     {{-- Detail lengkap (bisa diringkas) --}}
     <div class="collapse show" id="identitasDetail">
         <dl class="rs-idp-detail">
+            {{-- Baris 1: kepesertaan --}}
             <div><dt>NIK</dt><dd>{{ $rahasia($pasien['nik']) }}</dd></div>
+            <div><dt>No. BPJS</dt><dd>{{ $jkn ? $rahasia($pasien['no_bpjs']) : '—' }}</dd></div>
+            <div><dt>Penjaminan</dt><dd>{{ $penjamin }} · {{ $pasien['kelas_hak'] }}</dd></div>
+            {{-- Baris 2: data pribadi --}}
             <div><dt>Pekerjaan</dt><dd>{{ $pasien['pekerjaan'] }}</dd></div>
             <div><dt>Agama</dt><dd>{{ $pasien['agama'] }}</dd></div>
             <div><dt>Status kawin</dt><dd>{{ $pasien['status_kawin'] }}</dd></div>
-            <div><dt>No. BPJS</dt><dd>{{ $jkn ? $rahasia($pasien['no_bpjs']) : '—' }}</dd></div>
-            <div><dt>Daftar / jam</dt><dd>{{ $pasien['datang'] }}</dd></div>
+            {{-- Baris 3: alamat & kunjungan --}}
             <div><dt>Alamat</dt><dd>{{ $rahasia($pasien['alamat']) }}</dd></div>
             <div><dt>Alamat domisili</dt><dd>{{ $rahasia($pasien['alamat_domisili']) }}</dd></div>
-            <div>
+            <div><dt>Daftar / jam</dt><dd>{{ $pasien['datang'] }}</dd></div>
+            {{-- Baris 4: DPJP selebar penuh --}}
+            <div class="rs-idp-detail-penuh">
                 <dt>DPJP</dt>
                 <dd>
                     {{ $pasien['dpjp_nama'] }}
@@ -161,7 +166,7 @@
                     </button>
                     <div class="collapse" id="ubahDpjp">
                         <label for="pilihDpjp" class="visually-hidden">Pilih DPJP</label>
-                        <select id="pilihDpjp" class="form-select form-select-sm mt-2" aria-describedby="catatanDpjp">
+                        <select id="pilihDpjp" class="form-select form-select-sm mt-2 rs-idp-pilih-dpjp" aria-describedby="catatanDpjp">
                             <option selected>{{ $pasien['dpjp_nama'] }}</option>
                             <option>[Nama dokter lain]</option>
                         </select>
