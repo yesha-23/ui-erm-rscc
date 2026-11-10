@@ -8,11 +8,7 @@
 @endphp
 
 {{-- ===== Judul + tab jenis ===== --}}
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-    <div>
-        <p class="rs-eyebrow mb-1"><i class="bi bi-eyedropper me-1" aria-hidden="true"></i>Penunjang</p>
-        <h2 class="h4 fw-bold mb-0">Permintaan pemeriksaan</h2>
-    </div>
+<x-judul-form ikon="bi-eyedropper" kelompok="Penunjang" judul="Permintaan pemeriksaan">
     <nav class="rs-doc-tabs" aria-label="Jenis pemeriksaan">
         @foreach ($semuaJenis as $k => $j)
             <a href="{{ route('rekam-medis.permintaan', [$pasien['no_reg'], $k]) }}"
@@ -22,7 +18,7 @@
             </a>
         @endforeach
     </nav>
-</div>
+</x-judul-form>
 
 @if ($errors->any())
     <div class="alert alert-danger d-flex gap-2" role="alert">

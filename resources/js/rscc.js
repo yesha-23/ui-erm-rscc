@@ -1335,38 +1335,3 @@ export function initFormAlergi() {
 }
 
 
-/* ---------- Tombol Kembali: buka halaman yang dibuka sebelumnya ----------
-   Setiap halaman dicatat di sessionStorage (per tab). Halaman yang sama berturut-turut (mis. setelah
-   simpan, atau pindah filter ?tampil=) dihitung satu, jadi Kembali tidak "memantul" ke halaman itu sendiri.
-   Bila riwayat kosong, tombol memakai href-nya (Ringkasan pasien). */
-export function initTombolKembali() {
-    const KUNCI = 'rs-riwayat-halaman';
-    const baca = () => {
-        try { return JSON.parse(sessionStorage.getItem(KUNCI)) || []; } catch { return []; }
-    };
-    const tulis = (daftar) => {
-        try { sessionStorage.setItem(KUNCI, JSON.stringify(daftar.slice(-30))); } catch { /* abaikan */ }
-    };
-
-    const sekarang = { path: location.pathname, url: location.pathname + location.search };
-    const riwayat = baca();
-    const terakhir = riwayat[riwayat.length - 1];
-    if (terakhir && terakhir.path === sekarang.path) {
-        terakhir.url = sekarang.url; // halaman sama: cukup perbarui alamatnya
-    } else {
-        riwayat.push(sekarang);
-    }
-    tulis(riwayat);
-
-    document.querySelectorAll('[data-rs-kembali]').forEach((tombol) => {
-        tombol.addEventListener('click', (e) => {
-            const daftar = baca();
-            daftar.pop(); // halaman ini
-            const tujuan = daftar.pop(); // halaman sebelumnya (akan dicatat lagi saat dibuka)
-            if (!tujuan) return; // tidak ada riwayat → ikuti href (Ringkasan)
-            e.preventDefault();
-            tulis(daftar);
-            location.href = tujuan.url;
-        });
-    });
-}

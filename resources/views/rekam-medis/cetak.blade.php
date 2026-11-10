@@ -2,10 +2,7 @@
 @section('title', 'Cetak')
 
 @section('content')
-<div class="mb-3">
-    <p class="rs-eyebrow mb-1"><i class="bi bi-printer me-1" aria-hidden="true"></i>Dokumen · Cetak</p>
-    <h2 class="h4 fw-bold mb-0">Cetak dokumen</h2>
-</div>
+<x-judul-form ikon="bi-printer" kelompok="Dokumen · Cetak" judul="Cetak dokumen" />
 
 {{-- Resume medis --}}
 <section class="rs-card d-flex flex-wrap align-items-center gap-3 mb-3">

@@ -8,11 +8,9 @@
         $ikonStatus = ['selesai' => 'bi-check-lg', 'draf' => 'bi-pencil', 'belum' => 'bi-exclamation-lg'];
     @endphp
 
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-        <div>
-            <p class="rs-eyebrow mb-1">Ringkasan pasien · {{ $pasien['unit'] }}</p>
-            <h2 class="h4 fw-bold mb-0">Ringkasan kunjungan</h2>
-        </div>
+    <x-judul-form ikon="" :kelompok="'Ringkasan pasien · ' . $pasien['unit']" judul="Ringkasan kunjungan"
+                  :kembali-ke="route($pasien['unit_route'], $pasien['unit_sub'] ? [$pasien['unit_sub']] : [])"
+                  :label-kembali="'Kembali ke daftar kunjungan ' . $pasien['unit']">
         <div class="d-flex flex-wrap gap-2">
             <a href="{{ route('rekam-medis.dokumen', [$noReg, 'surat']) }}" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>Buat surat
@@ -21,7 +19,7 @@
                 <i class="bi bi-printer me-1" aria-hidden="true"></i>Resume medis
             </a>
         </div>
-    </div>
+    </x-judul-form>
 
     <div class="row g-3">
         {{-- 1. Perlu dikerjakan --}}

@@ -9,18 +9,14 @@
 @endphp
 
 {{-- ===== Judul halaman ===== --}}
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-    <div>
-        <p class="rs-eyebrow mb-1">
-            <i class="bi bi-folder2-open me-1" aria-hidden="true"></i>
-            Dokumen · {{ $jenis === 'surat' ? 'Pembuatan surat' : 'Persetujuan' }}
-        </p>
-        <h2 class="h4 fw-bold mb-0">{{ $dokumen['nama'] ?? 'Pilih dokumen' }}</h2>
-    </div>
+<x-judul-form ikon="bi-folder2-open" :kelompok="'Dokumen · ' . ($jenis === 'surat' ? 'Pembuatan surat' : 'Persetujuan')"
+              :judul="$dokumen['nama'] ?? 'Pilih dokumen'"
+              :kembali-ke="$dokumen ? route('rekam-medis.dokumen', [$pasien['no_reg'], $jenis]) : null"
+              :label-kembali="$dokumen ? 'Kembali ke daftar ' . $namaJenis : 'Kembali ke Ringkasan pasien'">
     @if ($dokumen)
         <x-badge jenis="peringatan">Draf · belum ditandatangani</x-badge>
     @endif
-</div>
+</x-judul-form>
 
 {{-- ===== Pemilih dokumen ===== --}}
 <section class="rs-card rs-doc-picker mb-3" aria-label="Pilih dokumen">

@@ -3412,6 +3412,21 @@
     outline-offset: 2px;
 }
 
+/* Panel samping yang ikut menempel (Pemeriksaan, Permintaan) turun di bawah judul yang menempel,
+   dan lompatan ke bagian (#bag-s, dst.) tidak tertutup judul */
+@media (min-width: 1200px) {
+
+    .rs-rm-main .rs-px-panel,
+    .rs-rm-main .rs-permintaan-ringkasan {
+        top: 96px;
+    }
+}
+
+.rs-rm-main [id],
+.rs-rm-main .rs-px section[id] {
+    scroll-margin-top: 130px;
+}
+
 /* ---------- Layar HP ---------- */
 @media (max-width: 767.98px) {
     .rs-topbar {

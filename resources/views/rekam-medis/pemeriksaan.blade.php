@@ -18,19 +18,15 @@
     @endphp
 
     {{-- Judul + lompat ke bagian S/O/A/P --}}
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
-        <div>
-            <p class="rs-eyebrow mb-1"><i class="bi bi-clipboard2-pulse me-1" aria-hidden="true"></i>Form rekam medis · Rawat Jalan</p>
-            <h2 class="h4 fw-bold mb-1">Pemeriksaan dokter</h2>
-            <p class="rs-text-muted mb-0">{{ $pasien['unit_tujuan'] }} · {{ $pasien['dpjp_nama'] }}</p>
-        </div>
+    <x-judul-form ikon="bi-clipboard2-pulse" kelompok="Form rekam medis · Rawat Jalan" judul="Pemeriksaan dokter"
+                  :sub="$pasien['unit_tujuan'] . ' · ' . $pasien['dpjp_nama']">
         <nav class="rs-px-nav" aria-label="Lompat ke bagian">
             <a href="#bag-s" title="Subjective">S</a>
             <a href="#bag-o" title="Objective">O</a>
             <a href="#bag-a" title="Assessment">A</a>
             <a href="#bag-p" title="Planning">P</a>
         </nav>
-    </div>
+    </x-judul-form>
 
     @if ($errors->any())
         <div class="alert alert-danger rs-flash" role="alert">

@@ -3,16 +3,12 @@
 
 @section('content')
 {{-- ===== Judul + tombol unggah ===== --}}
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-    <div>
-        <p class="rs-eyebrow mb-1"><i class="bi bi-folder2-open me-1" aria-hidden="true"></i>Penunjang</p>
-        <h2 class="h4 fw-bold mb-0">Berkas digital</h2>
-        <p class="small rs-text-muted mb-0 mt-1">Hasil pemeriksaan dari luar, surat rujukan, dan dokumen pendukung pasien.</p>
-    </div>
+<x-judul-form ikon="bi-folder2-open" kelompok="Penunjang" judul="Berkas digital"
+              sub="Hasil pemeriksaan dari luar, surat rujukan, dan dokumen pendukung pasien.">
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUnggah">
         <i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Unggah berkas
     </button>
-</div>
+</x-judul-form>
 
 {{-- ===== Filter jenis ===== --}}
 <nav class="d-flex flex-wrap gap-2 mb-3" aria-label="Saring jenis berkas">

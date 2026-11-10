@@ -1,32 +1,34 @@
 {{--
   Judul halaman form di ruang kerja pasien: ikon Kembali di kiri judul + judul yang tetap di atas saat digulir.
-  Ikon Kembali membuka halaman yang dibuka sebelumnya (diatur initTombolKembali di rscc.js);
-  bila tidak ada riwayat, kembali ke Ringkasan pasien.
+  Ikon Kembali naik satu tingkat ke halaman induknya:
+    form (menu samping) → Ringkasan pasien (bawaan) · Ringkasan → daftar kunjungan · isi dokumen → daftar dokumen.
+  Atur tujuan lain lewat kembali-ke dan label-kembali.
   Pemakaian:
     <x-judul-form ikon="bi-journal-text" kelompok="Catatan terintegrasi" judul="CPPT dan SBAR" sub="Keterangan singkat">
         (opsional) tombol aksi di kanan, mis. <button class="btn btn-primary">…</button>
     </x-judul-form>
 --}}
 @props([
-    'ikon'     => 'bi-file-earmark-text',
-    'kelompok' => '',
+    'ikon'         => 'bi-file-earmark-text',
+    'kelompok'     => '',
     'judul',
-    'sub'      => null,
+    'sub'          => null,
+    'kembaliKe'    => null,
+    'labelKembali' => 'Kembali ke Ringkasan pasien',
 ])
 
 @php
     // No. Reg diambil dari URL /rekam-medis/{noReg}/…
-    $noReg = request()->route('noReg');
+    $kembaliKe ??= route('rekam-medis.show', request()->route('noReg'));
 @endphp
 
 <div {{ $attributes->merge(['class' => 'rs-judul-form']) }}>
     <div class="rs-judul-form-teks">
         @if ($kelompok)
-            <p class="rs-eyebrow mb-1"><i class="bi {{ $ikon }} me-1" aria-hidden="true"></i>{{ $kelompok }}</p>
+            <p class="rs-eyebrow mb-1">@if ($ikon)<i class="bi {{ $ikon }} me-1" aria-hidden="true"></i>@endif{{ $kelompok }}</p>
         @endif
         <div class="rs-judul-form-baris">
-            <a href="{{ route('rekam-medis.show', $noReg) }}" class="rs-kembali" data-rs-kembali
-               aria-label="Kembali ke halaman sebelumnya" title="Kembali">
+            <a href="{{ $kembaliKe }}" class="rs-kembali" aria-label="{{ $labelKembali }}" title="{{ $labelKembali }}">
                 <i class="bi bi-arrow-left" aria-hidden="true"></i>
             </a>
             <h2 class="h4 fw-bold mb-0">{{ $judul }}</h2>

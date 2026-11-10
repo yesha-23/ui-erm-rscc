@@ -13,11 +13,8 @@
         $kenaikan = isset($pra['bb_pre'], $pra['bb_kering']) ? $pra['bb_pre'] - $pra['bb_kering'] : null;
     @endphp
 
-    <div class="mb-3">
-        <p class="rs-eyebrow mb-1"><i class="bi bi-droplet me-1" aria-hidden="true"></i>Form rekam medis · Hemodialisa</p>
-        <h2 class="h4 fw-bold mb-1">Sesi hemodialisa · HD ke-{{ $sesiKe }}</h2>
-        <p class="rs-text-muted mb-0">{{ now()->translatedFormat('l, d F Y') }} · Perawat: {{ $pasien['ppa2'] }}</p>
-    </div>
+    <x-judul-form ikon="bi-droplet" kelompok="Form rekam medis · Hemodialisa" :judul="'Sesi hemodialisa · HD ke-' . $sesiKe"
+                  :sub="now()->translatedFormat('l, d F Y') . ' · Perawat: ' . $pasien['ppa2']" />
 
     {{-- Angka penting sesi ini --}}
     <dl class="rs-hd-ringkas mb-3">
