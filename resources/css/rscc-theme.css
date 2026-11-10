@@ -5134,3 +5134,16 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
+
+/* Tab asesmen (Objective / Assessment / Planning): hanya panel aktif yang tampil.
+   Atribut hidden kalah oleh .d-flex Bootstrap (sama-sama !important, .d-flex ditulis belakangan),
+   jadi dikuatkan dengan selektor yang lebih spesifik. */
+[data-rs-langkah-panel][hidden] {
+    display: none !important;
+}
+
+/* Saat pindah tab, halaman menggulir ke awal panel; beri jarak supaya baris tab tetap terlihat
+   di bawah judul form yang menempel */
+#form-asesmen [data-rs-langkah-panel] {
+    scroll-margin-top: 200px;
+}
