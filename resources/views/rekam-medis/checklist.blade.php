@@ -10,15 +10,8 @@
 @endphp
 
 {{-- ===== Judul ===== --}}
-<div class="mb-3">
-    <p class="rs-eyebrow mb-1">
-        <i class="bi {{ $info['ikon'] }} me-1" aria-hidden="true"></i>Mutu · {{ $info['panjang'] }}
-    </p>
-    <h2 class="h4 fw-bold mb-0">{{ $form['nama'] }}</h2>
-    <p class="small rs-text-muted mb-0 mt-1">
-        {{ $total }} butir · {{ $waktu ? 'Terakhir disimpan ' . $waktu : 'Belum pernah diisi' }}
-    </p>
-</div>
+<x-judul-form :ikon="$info['ikon']" :kelompok="'Mutu · ' . $info['panjang']" :judul="$form['nama']"
+              :sub="$total . ' butir · ' . ($waktu ? 'Terakhir disimpan ' . $waktu : 'Belum pernah diisi')" />
 
 {{-- ===== Pilih form ===== --}}
 <nav class="rs-card mb-3" aria-label="Pilih form {{ $info['judul'] }}">

@@ -19,11 +19,8 @@
 @endphp
 
 {{-- ===== Judul ===== --}}
-<div class="mb-3">
-    <p class="rs-eyebrow mb-1"><i class="bi bi-journal-text me-1" aria-hidden="true"></i>Catatan terintegrasi</p>
-    <h2 class="h4 fw-bold mb-0">CPPT dan SBAR</h2>
-    <p class="small rs-text-muted mb-0 mt-1">Catatan perkembangan pasien dari semua profesional pemberi asuhan (PPA).</p>
-</div>
+<x-judul-form ikon="bi-journal-text" kelompok="Catatan terintegrasi" judul="CPPT dan SBAR"
+              sub="Catatan perkembangan pasien dari semua profesional pemberi asuhan (PPA)." />
 
 {{-- ===== Form catatan baru ===== --}}
 <form method="POST" action="{{ route('rekam-medis.cppt.simpan', $pasien['no_reg']) }}" novalidate

@@ -13,24 +13,11 @@
 @endphp
 
 {{-- ===== Judul ===== --}}
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-    <div>
-        <p class="rs-eyebrow mb-1"><i class="bi bi-capsule me-1" aria-hidden="true"></i>Farmasi</p>
-        <h2 class="h4 fw-bold mb-0">E-Resep</h2>
-        <p class="small rs-text-muted mb-0 mt-1">{{ $pasien['dpjp_nama'] }} · {{ $keterangan }}</p>
-    </div>
+<x-judul-form ikon="bi-capsule" kelompok="Farmasi" judul="E-Resep" :sub="$pasien['dpjp_nama'] . ' · ' . $keterangan">
     <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalRiwayatObat">
         <i class="bi bi-clock-history me-1" aria-hidden="true"></i>Riwayat pemberian obat
     </button>
-</div>
-
-<div class="alert alert-warning d-flex gap-2 align-items-start" role="note">
-    <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
-    <div>
-        <strong>Alergi: {{ $pasien['alergi'] }}</strong>
-        <div class="small">Periksa kembali sebelum meresepkan.</div>
-    </div>
-</div>
+</x-judul-form>
 
 @if ($errors->any())
     <div class="alert alert-danger d-flex gap-2" role="alert">

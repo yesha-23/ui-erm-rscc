@@ -23,20 +23,14 @@
 @endphp
 
 {{-- ===== Judul ===== --}}
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-    <div>
-        <p class="rs-eyebrow mb-1">
-            <i class="bi bi-clipboard2-pulse me-1" aria-hidden="true"></i>Form rekam medis · {{ $pasien['unit'] }}
-        </p>
-        <h2 class="h4 fw-bold mb-0">Asesmen awal keperawatan gawat darurat</h2>
-        <p class="small rs-text-muted mb-0 mt-1">Diisi oleh perawat · {{ $keterangan }}</p>
-    </div>
+<x-judul-form ikon="bi-clipboard2-pulse" :kelompok="'Form rekam medis · ' . $pasien['unit']"
+              judul="Asesmen awal keperawatan gawat darurat" :sub="'Diisi oleh perawat · ' . $keterangan">
     @if ($status === 'final')
         <x-badge jenis="sukses">Final</x-badge>
     @elseif ($status === 'draf')
         <x-badge jenis="peringatan">Draf</x-badge>
     @endif
-</div>
+</x-judul-form>
 
 {{-- ===== Navigasi langkah ===== --}}
 <div class="rs-langkah-nav" role="tablist" aria-label="Langkah asesmen">

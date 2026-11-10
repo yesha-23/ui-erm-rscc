@@ -1,6 +1,5 @@
 @php
-    $menu = \App\Support\Navigasi::pelayanan();
-    $belumDibaca = collect(\App\Support\DataContoh::pesan())->where('dibaca', false)->count();
+        $menu = \App\Support\Navigasi::pelayanan();
 @endphp
 
 <div class="rs-sidebar">
@@ -66,20 +65,8 @@
             @endforeach
         </div>
 
-        {{-- Bagian bawah: tetap di tempat --}}
+        {{-- Bagian bawah: tetap di tempat. Inbox & Pengaturan dipindah ke menu profil di topbar (revisi mentor) --}}
         <div class="rs-sidebar-foot">
-            <a href="{{ route('akun.inbox') }}" title="Inbox"
-               @class(['rs-menu-item', 'active' => request()->routeIs('akun.inbox')])>
-                <i class="bi bi-inbox" aria-hidden="true"></i>
-                <span class="rs-menu-text">Inbox</span>
-                @if ($belumDibaca)
-                    <span class="rs-badge-count">{{ $belumDibaca }}</span>
-                @endif
-            </a>
-            <a href="{{ route('akun.pengaturan') }}" title="Pengaturan"
-               @class(['rs-menu-item', 'active' => request()->routeIs('akun.pengaturan')])>
-                <i class="bi bi-gear" aria-hidden="true"></i><span class="rs-menu-text">Pengaturan</span>
-            </a>
             <a href="{{ route('login') }}" class="rs-menu-item rs-danger" title="Keluar">
                 <i class="bi bi-box-arrow-left" aria-hidden="true"></i><span class="rs-menu-text">Keluar</span>
             </a>

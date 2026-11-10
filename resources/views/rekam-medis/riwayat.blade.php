@@ -3,11 +3,8 @@
 
 @section('content')
 {{-- ===== Judul ===== --}}
-<div class="mb-3">
-    <p class="rs-eyebrow mb-1"><i class="bi bi-clock-history me-1" aria-hidden="true"></i>Riwayat</p>
-    <h2 class="h4 fw-bold mb-0">Riwayat pemeriksaan</h2>
-    <p class="small rs-text-muted mb-0 mt-1">Semua kunjungan dan hasil pemeriksaan {{ $pasien['nama'] }}, terbaru di atas.</p>
-</div>
+<x-judul-form ikon="bi-clock-history" kelompok="Riwayat" judul="Riwayat pemeriksaan"
+              :sub="'Semua kunjungan dan hasil pemeriksaan ' . $pasien['nama'] . ', terbaru di atas.'" />
 
 {{-- ===== Cari + filter jenis ===== --}}
 <div class="rs-card mb-3">

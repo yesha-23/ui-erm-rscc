@@ -8,21 +8,14 @@
     $panah = fn ($st) => $st === 'tinggi' ? ' ↑' : ($st === 'rendah' ? ' ↓' : '');
 @endphp
 
-{{-- ===== Judul ===== --}}
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-    <div>
-        <p class="rs-eyebrow mb-1"><i class="bi bi-heart-pulse me-1" aria-hidden="true"></i>Asesmen & pemeriksaan</p>
-        <h2 class="h4 fw-bold mb-0">Tanda vital</h2>
-        <p class="small rs-text-muted mb-0 mt-1">
-            {{ $observasi->count() }} kali observasi · terakhir {{ $terakhir['waktu'] ?? '–' }}
-        </p>
-    </div>
+<x-judul-form ikon="bi-heart-pulse" kelompok="Asesmen & pemeriksaan" judul="Tanda vital"
+              :sub="$observasi->count() . ' kali observasi · terakhir ' . ($terakhir['waktu'] ?? '–')">
     <button type="button" @class(['btn btn-primary', 'collapsed' => ! $errors->any()])
             data-bs-toggle="collapse" data-bs-target="#formObservasi"
             aria-expanded="{{ $errors->any() ? 'true' : 'false' }}" aria-controls="formObservasi">
         <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Tambah observasi
     </button>
-</div>
+</x-judul-form>
 
 {{-- ===== Form observasi baru (terlipat) ===== --}}
 <div id="formObservasi" @class(['collapse', 'show' => $errors->any()]) data-rs-focus-on-show>

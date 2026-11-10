@@ -10,11 +10,8 @@
 @endphp
 
 {{-- ===== Judul ===== --}}
-<div class="mb-3">
-    <p class="rs-eyebrow mb-1"><i class="bi bi-scissors me-1" aria-hidden="true"></i>Form rekam medis · Kamar Operasi</p>
-    <h2 class="h4 fw-bold mb-1">Checklist keselamatan operasi</h2>
-    <p class="rs-text-muted mb-0">{{ $pasien['diagnosa_kerja'] }} · DPJP: {{ $pasien['dpjp_nama'] }}</p>
-</div>
+<x-judul-form ikon="bi-scissors" kelompok="Form rekam medis · Kamar Operasi" judul="Checklist keselamatan operasi"
+              :sub="$pasien['diagnosa_kerja'] . ' · DPJP: ' . $pasien['dpjp_nama']" />
 
 {{-- ===== Ringkasan jam tiap tahap ===== --}}
 <dl class="rs-hd-ringkas mb-3">

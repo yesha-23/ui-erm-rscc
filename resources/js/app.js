@@ -3,7 +3,7 @@ import {
     initSidebar, initPasswordToggle, initFormLoading, initGrafik,
     initPasswordStrength, initFilterDaftar, initHitungHari, initFokusSaatBuka, initSesiHd,
     initPilihPemeriksaan, initUnggahBerkas, initRentangTanggal, initFilterOtomatis, initPilihIcd, initFormPemeriksaan,
-    initAsesmen, initSisipTeks, initResep, initChecklist, initMenuRmCari, initCariMenu, initFormAlergi, initGrafikTtv,
+    initAsesmen, initSisipTeks, initResep, initChecklist, initMenuRmCari, initCariMenu, initFormAlergi, initGrafikTtv, initTombolKembali,
 } from './rscc';
 
 window.bootstrap = bootstrap;
@@ -35,4 +35,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initMenuRmCari();
     initCariMenu();
     initGrafikTtv();
+    initTombolKembali();
 });
