@@ -23,14 +23,6 @@
             <aside id="menuRekamMedis" class="rs-rm-menu collapse d-lg-block">
                 <x-menu-rm :no-reg="$pasien['no_reg']" :aktif="$menuAktif ?? ''" />
             </aside>
-            {{-- Pulihkan posisi gulir menu SEBELUM halaman tampil, supaya menu tidak terlihat melompat
-                 (posisi disimpan oleh initMenuRmTetap di rscc.js) --}}
-            <script>
-                try {
-                    const posisiMenu = sessionStorage.getItem('rs-rmmenu-gulir');
-                    if (posisiMenu !== null) document.getElementById('menuRekamMedis').scrollTop = Number(posisiMenu);
-                } catch (e) { /* abaikan */ }
-            </script>
 
             <main class="rs-rm-main">
                 <x-flash />
