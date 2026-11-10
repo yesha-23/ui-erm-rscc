@@ -372,7 +372,7 @@ class DataContoh
                 'sorot' => ['Triase ' . ($opsi['triase'][$triase] ?? 'Kuning · P2'), $warnaTriase[$triase] ?? 'peringatan'],
                 'progres' => null,
                 'baris' => [
-                    'Cara datang'  => $opsi['cara_datang'][$isi['cara_datang'] ?? 'keluarga'] ?? 'Diantar keluarga',
+                    'Cara datang'  => $opsi['cara_datang'][$isi['cara_datang'] ?? 'datang-sendiri'] ?? 'Datang Sendiri',
                     'Waktu datang' => $p['datang'],
                     'Tujuan'       => $p['unit_tujuan'],
                     'Status'       => $p['close'] ? 'Sudah close' : 'Belum close',
@@ -571,79 +571,159 @@ class DataContoh
         ];
     }
 
-        /**
+    /**
      * Pilihan untuk Asesmen Awal Keperawatan Gawat Darurat (CONTOH).
      * IT RSCC: sesuaikan dengan master data / SPO keperawatan RS.
      */
     public static function opsiAsesmenGd(): array
     {
+        // Kunci dibuat dari teks (slug), teks ditulis sama persis dengan ERM lama (form igd_aak).
         $kunci = fn (array $daftar) => collect($daftar)
             ->mapWithKeys(fn ($nama) => [\Illuminate\Support\Str::slug($nama) => $nama])
             ->all();
+        $yaTidak = ['ya' => 'Ya', 'tidak' => 'Tidak'];
 
         return [
-            'cara_datang' => [
-                'sendiri'  => 'Datang sendiri',
-                'keluarga' => 'Diantar keluarga',
-                'ambulans' => 'Ambulans',
-                'rujukan'  => 'Rujukan faskes lain',
-            ],
+            // Bagian atas form
+            // Catatan untuk IT: di ERM lama daftar ini tampil berulang (mis. "Datang Sendiri" muncul dua kali),
+            // di sini cukup satu kali per pilihan.
+            'cara_datang' => $kunci([
+                'Datang Sendiri', 'Rujukan', 'Kasus Polisi', 'D O A', 'Kontrol',
+                'Diantar (Oleh Orang Lain/Bukan Kerabat)', 'Rujukan Internal', 'Kontrol Post Rawat Inap',
+            ]),
+
+            // Triase dipakai kartu "Triase & kedatangan" di Ringkasan IGD (form triase terpisah, belum dibuat).
             'triase' => [
                 'merah'  => 'Merah · P1',
                 'kuning' => 'Kuning · P2',
                 'hijau'  => 'Hijau · P3',
                 'hitam'  => 'Hitam · P0',
             ],
-            'keadaan_umum' => ['baik' => 'Baik', 'sedang' => 'Sedang', 'lemah' => 'Lemah', 'buruk' => 'Buruk'],
+
+            // OBJECTIVE — Keadaan umum
+            // Teks skor tertinggi mengikuti ERM lama; skor lain mohon dicocokkan dengan pilihan di ERM lama.
             'gcs_e' => [
-                4 => 'Membuka spontan', 3 => 'Dengan perintah suara',
-                2 => 'Dengan rangsang nyeri', 1 => 'Tidak membuka',
+                4 => 'Membuka mata secara spontan', 3 => 'Membuka mata dengan perintah suara',
+                2 => 'Membuka mata dengan rangsang nyeri', 1 => 'Tidak membuka mata',
             ],
             'gcs_v' => [
-                5 => 'Orientasi baik', 4 => 'Bingung', 3 => 'Kata-kata tidak tepat',
-                2 => 'Suara tidak jelas', 1 => 'Tidak ada suara',
+                5 => 'Percakapan normal', 4 => 'Bingung / disorientasi', 3 => 'Kata-kata tidak tepat',
+                2 => 'Suara tidak jelas / mengerang', 1 => 'Tidak ada suara',
             ],
             'gcs_m' => [
-                6 => 'Mengikuti perintah', 5 => 'Melokalisir nyeri', 4 => 'Menarik dari nyeri',
+                6 => 'Normal', 5 => 'Melokalisir nyeri', 4 => 'Menarik diri dari nyeri',
                 3 => 'Fleksi abnormal', 2 => 'Ekstensi abnormal', 1 => 'Tidak ada gerakan',
             ],
-            'nyeri_sifat' => $kunci(['Ditusuk', 'Terikat', 'Tumpul', 'Berdenyut', 'Terbakar']),
-            'nyeri_waktu' => $kunci(['Hilang timbul', 'Terus menerus', 'Jarang']),
-            'fisik' => [
-                'kepala'            => 'Kepala & wajah',
-                'leher'             => 'Leher',
-                'dada'              => 'Dada / paru',
-                'jantung'           => 'Jantung',
-                'abdomen'           => 'Abdomen',
-                'ekstremitas_atas'  => 'Ekstremitas atas',
-                'ekstremitas_bawah' => 'Ekstremitas bawah',
-                'kulit'             => 'Kulit',
+            'kesadaran' => $kunci(['Compos Mentis', 'Apatis', 'Somnolen', 'Sopor', 'Coma']),
+
+            // OBJECTIVE — Nyeri (Wong Baker Faces Pain Scale)
+            'nyeri_wajah' => [ // [ikon, keterangan] untuk skor genap
+                0  => ['bi-emoji-laughing', 'No Hurt'],
+                2  => ['bi-emoji-smile', 'Hurts Little Bit'],
+                4  => ['bi-emoji-neutral', 'Hurts Little More'],
+                6  => ['bi-emoji-frown', 'Hurts Even More'],
+                8  => ['bi-emoji-grimace', 'Hurts Whole Lot'],
+                10 => ['bi-emoji-tear', 'Hurts Worst'],
             ],
+            'nyeri_pemberat'  => $kunci(['Cahaya', 'Gerakan', 'Suara', 'Lainnya']),
+            'nyeri_kualitas'  => $kunci(['Ditusuk', 'Terikat', 'Tumpul', 'Berdenyut', 'Lainnya']),
+            'nyeri_keparahan' => $kunci(['Ringan', 'Sedang', 'Berat', 'Tidak Nyeri']),
+            'nyeri_lama'      => $kunci(['Kurang Dari 30 Menit', 'Lebih Dari 30 Menit']),
+            'nyeri_waktu'     => $kunci(['Terus Menerus', 'Hilang Timbul', 'Jarang']),
+
+            'ya_tidak' => $yaTidak,
+
+            // OBJECTIVE — Pengkajian oleh perawat
             'risiko_jatuh' => [
-                'a' => 'Cara berjalan tidak seimbang / memakai alat bantu',
-                'b' => 'Menopang saat akan duduk (memegang kursi atau benda lain)',
+                'a' => '1. Cara berjalan pasien: tidak seimbang/jalan dengan menggunakan alat bantu',
+                'b' => '2. Menopang saat akan duduk (tampak memegang pinggiran kursi/benda lain)',
             ],
-            'diagnosa' => $kunci([
-                'Bersihan jalan napas tidak efektif', 'Pola napas tidak efektif',
-                'Perfusi jaringan tidak efektif', 'Hipertermia', 'Nyeri akut', 'Nyeri kronis',
-                'Kecemasan', 'Risiko infeksi', 'Diare', 'Kekurangan volume cairan',
-                'Gangguan pertukaran gas', 'Intoleransi aktivitas',
+            'adl' => $kunci(['Mandiri', 'Dibantu']),
+            'psikologi' => $kunci([
+                'Tenang', 'Risiko Bunuh Diri', 'Marah/tegang', 'Disorientasi', 'Cemas',
+                'Sedih', 'Gelisah', 'Takut', 'Lainnya',
             ]),
+            'jaminan' => $kunci([
+                'UMUM TUNAI', 'PERUSAHAAN', 'KARYAWAN RSCC', 'ASURANSI', 'PELANGGAN KHUSUS',
+                'KELG. KARYAWAN', 'JAMKESOS', 'INSTIPER - AKPY', 'BPJS KETENAGAKERJAAN', 'BPJS KESEHATAN',
+                'JAMPERSAL', 'PENJAMINAN COVID', 'DINAS KESEHATAN', 'AMIKOM', 'DINAS SOSIAL', 'JASA RAHARJA',
+            ]),
+
+            // ASSESSMENT — Diagnosis keperawatan (urutan dan istilah sama dengan ERM lama; salah ketik diperbaiki)
+            'diagnosa' => $kunci([
+                'Ketidakefektifan bersihan jalan nafas', 'Ketidakefektifan pola nafas',
+                'Ketidakefektifan perfusi jaringan', 'Kekurangan volume cairan', 'Kelebihan volume cairan',
+                'Kerusakan mobilitas fisik', 'Risiko infeksi', 'Nyeri akut', 'Nyeri kronis', 'Kecemasan',
+                'Hipertermia', 'Diare', 'Konstipasi', 'Bersihan jalan nafas tidak efektif',
+                'Pola nafas tidak efektif', 'Gangguan pertukaran gas', 'Penurunan curah jantung',
+                'Kerusakan ventilasi spontan', 'Resiko syok', 'Defisit volume cairan',
+                'Intoleransi aktivitas', 'Defisit perawatan diri', 'Lainnya',
+            ]),
+
+            // PLANNING — Intervensi keperawatan, per kelompok (kunci kelompok dipakai sebagai nama isian)
             'intervensi' => [
-                'Nyeri' => $kunci([
+                'nyeri' => ['Intervensi nyeri', $kunci([
                     'Mengajarkan teknik relaksasi dan distraksi',
-                    'Mengontrol lingkungan (cahaya, kebisingan)',
-                ]),
-                'Risiko jatuh' => $kunci([
-                    'Pakaikan pita kuning di pergelangan tangan',
-                    'Edukasi pencegahan jatuh kepada pasien dan keluarga',
-                ]),
-                'Lainnya' => $kunci([
-                    'Kolaborasi dengan dokter untuk pemberian obat',
-                    'Kompres hangat',
-                    'Pantau tanda vital tiap jam',
-                ]),
+                    'Mengontrol lingkungan yang dapat mempengaruhi nyeri, seperti cahaya, tingkat kebisingan, dll',
+                    'Lainnya',
+                ])],
+                'jatuh' => ['Intervensi resiko jatuh', $kunci([
+                    'Pakaikan pita berwarna kuning di pergelangan tangan',
+                    'Nilai kemampuan pasien untuk ke kamar mandi, bantu jika dibutuhkan',
+                    'Edukasi tentang pencegahan jatuh kepada pasien dan keluarga',
+                    'Lainnya',
+                ])],
+                'fungsional' => ['Intervensi status fungsional', $kunci([
+                    'Libatkan partisipasi keluarga dalam membantu pasien melakukan aktivitas',
+                    'Lainnya',
+                ])],
+                'psikologi' => ['Intervensi psikologi', $kunci([
+                    'Menenangkan pasien mengajarkan teknik relaksasi',
+                    'Menawarkan kepada pasien dan keluarga untuk berkonsultasi dengan psikolog',
+                    'Lainnya',
+                ])],
+                'sosial' => ['Intervensi sosial, ekonomi, kultural, spiritual', $kunci([
+                    'Menjelaskan kepada pasien dan keluarga terkait prosedur penggunaan asuransi kesehatan',
+                    'Menawarkan kepada pasien/keluarga tentang bantuan perawatan di rumah yang difasilitasi RS',
+                    'Memberikan alternatif tindakan lain yang tidak bertentangan dengan kepercayaan',
+                    'Lainnya',
+                ])],
+                'lainnya' => ['Intervensi keperawatan lainnya', $kunci([
+                    'Stabilisasi jalan nafas', 'Keluarkan benda asing, lakukan suction',
+                    'Pasang Oropharingeal Airways/stabilisasi servikal (neck collar)',
+                    'Berikan bantuan nafas buatan/ventilasi mekanik', 'Berikan O2 melalui nasal kanul/NRM/RM',
+                    'Delegatif nebulizer', 'Monitor tanda-tanda vital secara periodik',
+                    'Monitor tingkat kesadaran secara periodik', 'Monitor EKG', 'Berikan posisi semifowler',
+                    'Pasang dower catheter', 'Monitor intake dan output cairan', 'Kompres hangat',
+                    'Pasang infus/cairan intravena, cairan koloid, darah atau produk darah, ekspander plasma',
+                    'Lakukan perawatan luka',
+                    'Kolaborasi dengan dokter untuk pemberian obat-obatan IV/IC/SC/IM/oral/supp',
+                    'Kaji turgor kulit dan membran mukosa mulut', 'Pasang pengaman, spalk, lakukan imobilisasi',
+                    'Mengobservasi tanda-tanda adanya kompartemen sindrom', 'Pasang NGT', 'Lainnya',
+                ])],
             ],
+
+            // PLANNING — Discharge planning
+            'discharge' => [
+                'usia'      => '1. Usia pasien ≥ 65 tahun',
+                'nyeri'     => '2. Riwayat nyeri kronik, dengan skala >7',
+                'mobilitas' => '3. Terdapat keterbatasan dalam mobilitas dan memerlukan bantuan',
+                'nutrisi'   => '4. Terdapat risiko gangguan nutrisi',
+                'psikologis' => '5. Terdapat gangguan pada status psikologis',
+                'lanjutan'  => '6. Rencana perawatan/pengobatan lanjutan',
+                'alat'      => '7. Pasien menggunakan alat bantu medis (kateter/NGT, dsb)',
+            ],
+            'edukasi' => $kunci([
+                'Edukasi dan pelatihan tentang teknik relaksasi',
+                'Edukasi tentang perawatan diri',
+                'Edukasi tentang pemantauan pemberian obat',
+                'Edukasi tentang pemantauan diet',
+                'Edukasi tentang perawatan luka',
+                'Edukasi tentang latihan fisik lanjutan',
+                'Edukasi tentang pendampingan tenaga khusus',
+                'Edukasi mengenai teknik pencegahan jatuh kepada pasien dan keluarga',
+                'Edukasi tentang cara perawatan dan penggunaan terhadap alat bantu medis yang digunakan',
+            ]),
         ];
     }
 
