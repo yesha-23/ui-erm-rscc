@@ -75,9 +75,10 @@
             </section>
         </div>
 
-        {{-- 3. Tanda vital terakhir (di samping Perlu dikerjakan) --}}
-        <div class="col-xl-5">
-            <section class="rs-card h-100" aria-labelledby="judul-ttv">
+        {{-- Kolom kanan: Tanda vital + kartu unit bertumpuk, supaya tidak ada ruang kosong di samping "Perlu dikerjakan" --}}
+        <div class="col-xl-5 d-flex flex-column gap-3">
+            {{-- 3. Tanda vital terakhir --}}
+            <section class="rs-card" aria-labelledby="judul-ttv">
                 <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
                     <h3 id="judul-ttv" class="h6 fw-bold mb-0">
                         Tanda vital terakhir <span class="rs-text-muted fw-normal">· {{ $ttv['waktu'] }}</span>
@@ -102,11 +103,9 @@
                     @endforeach
                 </div>
             </section>
-        </div>
 
-        {{-- 4. Kunjungan ini: kartu khusus unit + diagnosa kerja (gabungan kartu "Diagnosa & DPJP") --}}
-        <div class="col-lg-5">
-            <section class="rs-card h-100" aria-labelledby="judul-kartu-unit">
+            {{-- 4. Kunjungan ini: kartu khusus unit + diagnosa kerja (gabungan kartu "Diagnosa & DPJP") --}}
+            <section class="rs-card flex-grow-1" aria-labelledby="judul-kartu-unit">
                 <h3 id="judul-kartu-unit" class="h6 fw-bold d-flex align-items-center gap-2 mb-3">
                     <span class="rs-rk-ikon" aria-hidden="true"><i class="bi {{ $kartu['ikon'] }}"></i></span>
                     {{ $kartu['judul'] }}
@@ -139,9 +138,9 @@
             </section>
         </div>
 
-        {{-- 5. Aktivitas terakhir --}}
-        <div class="col-lg-7">
-            <section class="rs-card h-100" aria-labelledby="judul-aktivitas">
+        {{-- 5. Aktivitas terakhir (selebar penuh) --}}
+        <div class="col-12">
+            <section class="rs-card" aria-labelledby="judul-aktivitas">
                 <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
                     <h3 id="judul-aktivitas" class="h6 fw-bold mb-0">Aktivitas terakhir</h3>
                     <a href="{{ route('rekam-medis.riwayat', $noReg) }}" class="small fw-semibold">

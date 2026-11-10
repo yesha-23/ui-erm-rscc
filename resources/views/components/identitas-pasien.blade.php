@@ -150,7 +150,6 @@
             <div><dt>Daftar / jam</dt><dd>{{ $pasien['datang'] }}</dd></div>
             <div><dt>Alamat</dt><dd>{{ $rahasia($pasien['alamat']) }}</dd></div>
             <div><dt>Alamat domisili</dt><dd>{{ $rahasia($pasien['alamat_domisili']) }}</dd></div>
-            <div><dt>Penjaminan</dt><dd>{{ $penjamin }} · {{ $pasien['kelas_hak'] }}</dd></div>
             <div>
                 <dt>DPJP</dt>
                 <dd>
