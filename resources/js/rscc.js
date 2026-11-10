@@ -1335,3 +1335,20 @@ export function initFormAlergi() {
 }
 
 
+/* ---------- Menu rekam medis tidak melompat ke atas saat pindah halaman ----------
+   Posisi gulir menu samping disimpan sebelum pindah halaman. Posisi itu dipulihkan oleh skrip kecil
+   di layouts/rekam-medis (tepat setelah menu), supaya pulih sebelum halaman tampil.
+   Di sini cukup memastikan item aktif terlihat (mis. dibuka dari Ctrl+K) dan menyimpan posisi. */
+export function initMenuRmTetap() {
+    const wadah = document.querySelector('.rs-rm-menu');
+    if (!wadah) return;
+
+    wadah.querySelector('.rs-rmmenu-item.active')?.scrollIntoView({ block: 'nearest' });
+
+    const simpan = () => {
+        try { sessionStorage.setItem('rs-rmmenu-gulir', String(wadah.scrollTop)); } catch { /* abaikan */ }
+    };
+    wadah.addEventListener('click', simpan);
+    window.addEventListener('pagehide', simpan);
+}
+
