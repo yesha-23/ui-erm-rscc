@@ -257,7 +257,19 @@ class DataContoh
             'jk'             => in_array($row['nama'], $perempuan, true) ? 'Perempuan' : 'Laki-laki',
             'umur'           => (18 + (int) $row['no_rm'] % 50) . ' th',
             'tgl_lahir'      => '[tgl lahir]',
+            'tempat_lahir'   => '[tempat lahir]',
             'alamat'         => '[alamat pasien]',
+            'alamat_domisili' => '[alamat domisili]',
+            'pekerjaan'      => '[pekerjaan]',
+            'agama'          => '[agama]',
+            'status_kawin'   => '[status kawin]',
+            // Kelas hak rawat untuk badge di Identitas pasien. Ranap/OK = kelas kamar; unit lain contoh dari No. RM.
+            // TODO (IT RSCC): ambil dari data kepesertaan BPJS (JKN) atau pilihan kelas pasien umum.
+            'kelas_hak'      => match (true) {
+                in_array($unit, ['ranap', 'ok'], true) => $row['kelas'],
+                $row['penjamin'] !== 'JKN'             => 'Umum',
+                default                                => ['Kelas I', 'Kelas II', 'Kelas III'][(int) $row['no_rm'] % 3],
+            },
             'nik'            => '[NIK]',
             'no_hp'          => '[No. HP]',
             'no_bpjs'        => $row['penjamin'] === 'JKN' ? '[No. BPJS]' : '—',
@@ -304,7 +316,6 @@ class DataContoh
                     'Dokter'           => $p['ppa1'],
                     'Jenis kunjungan'  => 'Kontrol ke-3',
                     'Rujukan / konsul' => $p['rujukan'] ? 'Ada (rujukan FKTP)' : 'Tidak ada',
-                    'Surat kontrol'    => $p['kontrol'] ? 'Sudah dibuat' : 'Perlu dibuat',
                 ],
             ],
             'rm' => [
