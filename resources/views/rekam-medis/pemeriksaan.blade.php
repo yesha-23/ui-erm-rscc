@@ -71,7 +71,7 @@
                     <span>TD {{ $ttv['td_sistolik'] }}/{{ $ttv['td_diastolik'] }} mmHg</span>
                     <span>Nadi {{ $ttv['nadi'] }} x/menit</span>
                     <span>Napas {{ $ttv['napas'] }} x/menit</span>
-                    <span>Suhu {{ number_format($ttv['suhu'], 1, ',', '') }} °C</span>
+                    <span>Suhu {{ number_format((float) $ttv['suhu'], 1, ',', '') }} °C</span>
                     <span>SpO₂ {{ $ttv['spo2'] }} %</span>
                 </div>
 

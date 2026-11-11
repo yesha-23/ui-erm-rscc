@@ -2,6 +2,8 @@
 
 namespace App\Support;
 use App\Http\Controllers\KeselamatanOperasiController;
+use App\Http\Controllers\TtvController;
+use Illuminate\Support\Carbon;
 
 /**
  * Pengaturan ruang kerja rekam medis per unit:
@@ -129,6 +131,10 @@ class KonfigurasiRekamMedis
         $r = fn (string $nama, array $p = []) => route("rekam-medis.$nama", [$noReg, ...$p]);
         $t = fn (string $label, string $status, string $ket, string $href = '#', bool $wajib = true)
             => compact('label', 'status', 'ket', 'href', 'wajib');
+        
+        // Waktu observasi TTV terakhir (ikut berubah saat perawat menambah observasi di halaman Tanda vital)
+        $jamTtv = Carbon::parse(TtvController::terakhir($noReg)['stempel']);
+        $ketTtv = 'Terakhir ' . $jamTtv->locale('id')->translatedFormat($jamTtv->isToday() ? 'H:i' : 'd M, H:i');
 
         // Status form yang punya draf/final
         $statusForm = fn (?array $data) => match ($data['status'] ?? null) {
@@ -150,7 +156,7 @@ class KonfigurasiRekamMedis
 
         return match ($unit) {
             'rajal' => [
-                $t('Tanda vital', 'selesai', 'Terakhir 14:00', $r('ttv')),
+                $t('Tanda vital', 'selesai', $ketTtv, $r('ttv')),
                 $t('Pemeriksaan dokter (SOAP)', $stPeriksa, $ketPeriksa, $r('pemeriksaan')),
                 $t('E-Resep', 'belum', 'Bila ada terapi obat', $r('resep'), false),
                 $t('Surat kontrol', 'belum', 'Bila pasien perlu kontrol', $r('dokumen', ['surat']), false),
@@ -170,7 +176,7 @@ class KonfigurasiRekamMedis
             'ranap' => [
                 $t('Asesmen awal medis', 'selesai', 'Hari pertama rawat'),
                 $t('Asesmen awal keperawatan', 'selesai', 'Hari pertama rawat'),
-                $t('Monitoring tanda vital', 'selesai', 'Terakhir 14:00', $r('ttv')),
+                $t('Monitoring tanda vital', 'selesai', $ketTtv, $r('ttv')),
                 $t('CPPT hari ini', 'belum', 'Catatan harian PPA', $r('cppt'), false),
                 $t('Discharge summary', 'belum', 'Diisi saat pasien pulang'),
             ],
@@ -185,7 +191,7 @@ class KonfigurasiRekamMedis
             default => [ // igd — "Close kunjungan" diganti tombol Submit final
                 $t('Triase', 'selesai', '08:52', $r('asesmen')),
                 $t('Asesmen awal keperawatan GD', $stAsesmen, $ketAsesmen, $r('asesmen')),
-                $t('Tanda vital', 'selesai', 'Terakhir 14:00', $r('ttv')),
+                $t('Tanda vital', 'selesai', $ketTtv, $r('ttv')),
                 $t('CPPT dokter', 'selesai', '10:21', $r('cppt')),
                 $t('E-Resep', 'belum', 'Bila ada terapi obat', $r('resep'), false),
             ],

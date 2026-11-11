@@ -42,7 +42,7 @@ class PemeriksaanController extends Controller
             'isi'        => $tersimpan['isi'] ?? [],
             'status'     => $tersimpan['status'] ?? null,   // null | 'draf' | 'final'
             'waktu'      => $tersimpan['waktu'] ?? null,
-            'ttv'        => DataContoh::observasiTtv()[0],
+            'ttv'        => TtvController::terakhir($noReg),
             'penunjang'  => collect(DataContoh::riwayatPemeriksaan())
                                 ->whereIn('jenis', ['lab', 'radiologi'])->take(2)->values()->all(),
             'sebelumnya' => DataContoh::kunjunganSebelumnya(),

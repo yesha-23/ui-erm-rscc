@@ -140,21 +140,18 @@ class CpptController extends Controller
         return back()->with('sukses', 'Catatan terverifikasi.');
     }
 
-    /** TTV terakhir: dari Asesmen GD (bila sudah diisi), kalau belum pakai contoh. */
+        /** TTV terakhir untuk tombol "Sisipkan TTV terakhir": observasi baru di halaman Tanda vital,
+     *  lalu Asesmen GD, lalu data contoh (sama dengan yang tampil di Ringkasan). */
     private function ttvTerakhir(string $noReg): string
     {
-         // Observasi terbaru dari halaman Tanda vital; kalau belum ada, dari Asesmen GD
         $a = collect(session("ttv.$noReg", []))->sortByDesc('stempel')->first()
-            ?? session("asesmen.$noReg.isi", []);
+            ?? (filled(session("asesmen.$noReg.isi.td_sistolik")) ? session("asesmen.$noReg.isi") : null)
+            ?? TtvController::terakhir($noReg);
 
-        if (filled($a['td_sistolik'] ?? null)) {
-            return sprintf(
-                'TD %s/%s mmHg, N %s x/mnt, RR %s x/mnt, S %s °C, SpO₂ %s %%',
-                $a['td_sistolik'], $a['td_diastolik'] ?? '-', $a['nadi'] ?? '-',
-                $a['napas'] ?? '-', str_replace('.', ',', (string) ($a['suhu'] ?? '-')), $a['spo2'] ?? '-'
-            );
-        }
-
-        return 'TD 120/70 mmHg, N 102 x/mnt, RR 22 x/mnt, S 40,1 °C, SpO₂ 98 %';
+        return sprintf(
+            'TD %s/%s mmHg, N %s x/mnt, RR %s x/mnt, S %s °C, SpO₂ %s %%',
+            $a['td_sistolik'], $a['td_diastolik'] ?? '-', $a['nadi'] ?? '-',
+            $a['napas'] ?? '-', str_replace('.', ',', (string) ($a['suhu'] ?? '-')), $a['spo2'] ?? '-'
+        );
     }
 }

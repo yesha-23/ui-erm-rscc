@@ -6,6 +6,7 @@ use App\Support\DataContoh;
 use App\Support\RentangTtv;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 class TtvController extends Controller
@@ -18,12 +19,27 @@ class TtvController extends Controller
         'koma'     => 'Koma',
     ];
 
+        /**
+     * Semua observasi TTV pasien, terbaru di atas: input dari halaman Tanda vital (session) + contoh.
+     * Dipakai juga oleh Ringkasan, Pemeriksaan, CPPT, dan "Perlu dikerjakan", supaya angkanya selalu sama.
+     * TODO (IT RSCC): ganti dengan query tabel observasi_ttv per No. Reg.
+     */
+    public static function observasi(string $noReg): Collection
+    {
+        return collect(array_merge(session("ttv.$noReg", []), DataContoh::observasiTtv()))
+            ->sortByDesc('stempel')
+            ->values();
+    }
+
+    /** Observasi TTV paling baru. */
+    public static function terakhir(string $noReg): array
+    {
+        return self::observasi($noReg)->first();
+    }
+
     public function index(string $noReg)
     {
-        // Simulasi: observasi baru (session) + contoh, terbaru di atas
-        $observasi = collect(array_merge(session("ttv.$noReg", []), DataContoh::observasiTtv()))
-            ->sortByDesc('stempel')
-            ->values()
+        $observasi = self::observasi($noReg)
             ->map(function ($o) {
                 $o['waktu'] = Carbon::parse($o['stempel'])->locale('id')->translatedFormat('d M · H:i');
                 return $o;
